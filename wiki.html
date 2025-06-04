@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>oU1TS Wiki & Repository Showcase</title>
-    <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -61,23 +59,97 @@
         details details summary::before {
             left: 0;
         }
+
+        /* Mobile menu button fixed positioning */
+        @media (max-width: 1023px) { /* Applies only to screens smaller than 'lg' breakpoint */
+            #menu-button {
+                position: fixed;
+                top: 1.5rem; /* Adjust as needed */
+                right: 1.5rem; /* Adjust as needed */
+                z-index: 70; /* Ensure it's above everything else */
+            }
+
+            /* Overlay for closing menu by clicking outside */
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 45; /* Below sidebar, above main content */
+                display: none; /* Hidden by default */
+            }
+            .overlay.visible {
+                display: block;
+            }
+
+            /* Mobile sidebar fixed positioning and dropdown behavior */
+            aside {
+                position: fixed;
+                top: 0; /* Start at the top */
+                left: 0; /* Align to the left */
+                right: 0; /* Align to the right */
+                width: calc(100% - 3rem); /* Full width minus horizontal padding, or specific width if desired */
+                max-height: 0; /* Hidden by default, expands downwards */
+                overflow: hidden; /* Hide content that overflows max-height */
+                transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out; /* Smooth expansion */
+                z-index: 50; /* Ensure it's above main content and below menu button */
+                background-color: #2d3748; /* Match sidebar background */
+                padding: 0 1.5rem; /* No padding when closed, will expand */
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow */
+            }
+
+            /* When the sidebar is visible, apply specific styles */
+            aside:not(.hidden) {
+                max-height: 100vh; /* Expands to full height */
+                padding: 1.5rem; /* Apply padding when open */
+                overflow-y: auto; /* Allow scrolling within the sidebar if content is long */
+            }
+
+            /* Ensure internal sidebar components adjust */
+            aside .flex.items-center.justify-between {
+                margin-bottom: 0; /* Adjust spacing when expanding from top */
+            }
+            aside .flex.items-center.justify-between h1 {
+                margin-bottom: 0; /* Ensure title also moves correctly */
+            }
+        }
+
+        /* Desktop sidebar fixed positioning */
+        @media (min-width: 1024px) { /* Applies only to screens 'lg' breakpoint and larger */
+            aside {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh; /* Make it span the full viewport height */
+                border-radius: 0; /* Remove bottom border-radius when fixed and full height */
+                box-shadow: none; /* Remove shadow on the bottom when fixed and full height */
+                z-index: 40; /* Ensure it's above main content */
+                transform: translateX(0) !important; /* Force sidebar to be visible on desktop */
+                max-height: none !important; /* Remove max-height constraint */
+                overflow-y: auto; /* Allow scrolling */
+                padding: 1.5rem 2rem !important; /* Restore original padding */
+            }
+            main {
+                margin-left: 16rem; /* Push main content to the right by the sidebar's width (w-64 = 16rem) */
+            }
+        }
     </style>
 </head>
 <body class="bg-zinc-900 text-zinc-100 min-h-screen flex flex-col lg:flex-row">
 
-    <!-- Sidebar -->
-    <aside class="w-full lg:w-64 bg-zinc-800 p-6 lg:p-8 shadow-lg lg:shadow-xl flex-shrink-0 rounded-b-lg lg:rounded-r-lg lg:rounded-bl-none">
+    <aside class="w-full lg:w-64 bg-zinc-800 p-6 lg:p-8 shadow-lg lg:shadow-xl flex-shrink-0 rounded-b-lg lg:rounded-r-lg lg:rounded-bl-none hidden lg:block">
         <div class="flex items-center justify-between lg:justify-start mb-6">
             <h1 class="text-2xl font-bold text-blue-400">oU1TS Wiki</h1>
-            <!-- Hamburger menu for mobile -->
-            <button id="menu-button" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="menu-button-inside-aside" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <svg class="w-6 h-6 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path>
                 </svg>
             </button>
         </div>
 
-        <nav id="sidebar-nav" class="hidden lg:block">
+        <nav id="sidebar-nav">
             <ul class="space-y-4">
                 <li>
                     <a href="https://ou1ts.github.io/" class="block text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out font-medium">oU1TS Website</a>
@@ -95,10 +167,10 @@
                     <h3 class="text-lg font-semibold text-zinc-200 mb-3">Wiki Contents</h3>
                     <ul class="space-y-2">
                         <li>
-                            <a href="https://github.com/oU1TS/.github/wiki" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Home</a>
+                            <a href="#home-section" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Home</a>
                         </li>
                         <li>
-                            <a href="https://github.com/oU1TS/.github/wiki/Forks-by-Course" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Forks by Course</a>
+                            <a href="#forks-by-course-section" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Forks by Course</a>
                         </li>
                         <li>
                             <a href="#records-section" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Records</a>
@@ -119,111 +191,152 @@
         </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-grow p-6 lg:p-8">
-        <a href="https://github.com/oU1TS/.github/wiki" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out mb-6 block">← Go Home</a>
-        <hr class="border-zinc-700 mb-6">
+    <button id="menu-button" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <svg class="w-6 h-6 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path>
+        </svg>
+    </button>
 
-        <!-- Course Records Section -->
-        <section id="course-records" class="mb-12">
-            <h2 class="text-3xl font-bold text-zinc-100 mb-6">Course Records</h2>
-            <ul class="space-y-3">
-                <li><a href="https://github.com/oU1TS/CSE0613112-SPL-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613112-SPL-Lab</a></li>
-                <li><a href="https://github.com/oU1TS/CSE0613122-OOP-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613122-OOP-Lab</a></li>
-                <li><a href="https://github.com/oU1TS/CSE0613124-WAD-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613124-WAD-Lab</a></li>
-                <li><a href="https://github.com/oU1TS/CSE0612223-DSA-1-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612223-DSA-1-Lab</a></li>
-                <li><a href="https://github.com/oU1TS/CSE0612216-DBMS-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612216-DBMS-Lab</a></li>
-                <li><a href="https://github.com/oU1TS/CSE252-DSA-2-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE252-DSA-2-Lab</a></li>
-                <li><a href="https://github.com/oU1TS/CSE208-IP-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE208-IP-Lab</a></li>
+    <div id="overlay" class="overlay"></div>
+
+    <main class="flex-grow p-6 lg:p-8">
+
+        <section id="home-section" class="mb-12">
+            <h2 class="text-3xl font-bold text-zinc-100 mb-6">Welcome to the oU1TS Wiki!</h2>
+            <p class="text-zinc-300 mb-4">Here we will be indexing our Repositories based on their categories/purpose.</p>
+
+            <ul class="list-disc list-inside space-y-2 text-zinc-300">
+                <li>For Records, visit <a href="#records-section" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Records</a></li>
+                <li>For Student Support, visit <a href="#student-support-repositories" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">SSR Projects</a></li>
+                <li>To browse forks, visit <a href="#forks-by-course-section" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Forks by Course</a></li>
             </ul>
         </section>
 
         <hr class="border-zinc-700 mb-12">
 
-        <!-- Project Records Section -->
-        <section id="project-records" class="mb-12">
-            <h2 class="text-3xl font-bold text-zinc-100 mb-6">Project Records</h2>
+        <section id="forks-by-course-section" class="mb-12">
+            <h2 class="text-3xl font-bold text-zinc-100 mb-6">Forks by Course</h2>
+            <p class="text-zinc-300 mb-4">In this page, we track and organize forks owned by oU1TS. Essentially all repositories here have been forked from outside but we intend to ease things up by more organization (⁠๑⁠•⁠﹏⁠•⁠) </p>
 
-            <!-- Batch 55 -->
             <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
-                <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 55</summary>
+                <summary class="text-xl font-semibold text-zinc-200 py-2">CSE208-IP-Lab</summary>
                 <div class="mt-4 pl-4 border-l border-zinc-700">
-                    <details class="mb-4">
-                        <summary class="text-lg font-medium text-zinc-300 py-1">0432410005101088</summary>
-                        <div class="mt-2 pl-4">
-                            <a href="https://github.com/b1tranger" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
-                            <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                <li>CSE0612223-DSA-1-Lab: <a href="https://github.com/b1tranger/DSA-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a></li>
-                                <li>CSE0613124-WAD-Lab: <a href="https://github.com/b1tranger/oUITS-Scheduler-offline" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="https://b1tranger.github.io/oUITS-Scheduler-offline/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                            </ul>
-                        </div>
-                    </details>
+                    <ul class="list-disc list-inside space-y-2 text-zinc-400">
+                        <li><a href="https://github.com/oU1TS/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">php-project</a></li>
+                        <li><a href="https://github.com/oU1TS/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">The-Begging-From-The-Beginning</a></li>
+                    </ul>
                 </div>
             </details>
 
-            <!-- Batch 54 -->
             <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
-                <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 54</summary>
+                <summary class="text-xl font-semibold text-zinc-200 py-2">CSE063212-DSA-1-Lab</summary>
                 <div class="mt-4 pl-4 border-l border-zinc-700">
-                    <details class="mb-4">
-                        <summary class="text-lg font-medium text-zinc-300 py-1">0432320005101085</summary>
-                        <div class="mt-2 pl-4">
-                            <a href="https://github.com/FahimHossain1085" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
-                            <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                <li>CSE208-IP-Lab: <a href="https://github.com/oU1TS/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> (forked from <a href="https://github.com/FahimHossain1085/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">source</a>) &rarr; <a href="https://codecraftstudios.great-site.net/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                                <li>CSE0613124-WAD-Lab: <a href="https://github.com/FahimHossain1085/web-application-design-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="https://fahimhossain1085.github.io/web-application-design-project/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                            </ul>
-                        </div>
-                    </details>
-                    <details class="mb-4">
-                        <summary class="text-lg font-medium text-zinc-300 py-1">0432320005101064</summary>
-                        <div class="mt-2 pl-4">
-                            <a href="https://github.com/shoytanbaba99" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
-                            <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                <li>CSE208-IP-Lab: <a href="https://github.com/shoytanbaba99/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> + <a href="https://github.com/cristal-node/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Mod</a> &rarr; <a href="https://begging.cristal-node.workers.dev/welcome.html" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                                <li>CSE252-DSA-2-Lab: <span class="text-zinc-500">No project link available</span></li>
-                            </ul>
-                        </div>
-                    </details>
-                </div>
-            </details>
-
-            <!-- Batch 53 -->
-            <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
-                <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 53</summary>
-                <div class="mt-4 pl-4 border-l border-zinc-700">
-                    <details class="mb-4">
-                        <summary class="text-lg font-medium text-zinc-300 py-1">432310005101080</summary>
-                        <div class="mt-2 pl-4">
-                            <a href="https://github.com/safridbhueyan" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
-                            <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                <li>CSE208-IP-Lab: <a href="https://github.com/safridbhueyan/Task-Room" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a></li>
-                            </ul>
-                        </div>
-                    </details>
-                </div>
-            </details>
-
-            <!-- Batch 52 -->
-            <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
-                <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 52</summary>
-                <div class="mt-4 pl-4 border-l border-zinc-700">
-                    <details class="mb-4">
-                        <summary class="text-lg font-medium text-zinc-300 py-1">0432220005101061</summary>
-                        <div class="mt-2 pl-4">
-                            <a href="https://github.com/AkibReza" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
-                            <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                <li>CSE356-Software-Engineering-SESA: <a href="https://github.com/AkibReza/TerraNova" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="http://TerraNovaAI.netlify.app" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                            </ul>
-                        </div>
-                    </details>
+                    <ul class="list-disc list-inside space-y-2 text-zinc-400">
+                        <li><a href="https://github.com/oU1TS/DSA-project-55-3B-088" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">DSA-project-55-3B-088</a></li>
+                    </ul>
                 </div>
             </details>
         </section>
 
         <hr class="border-zinc-700 mb-12">
 
-        <!-- Student Support Repositories Section -->
+        <section id="records-section" class="mb-12">
+            <h2 class="text-3xl font-bold text-zinc-100 mb-6">Records</h2>
+
+            <section id="course-records" class="mb-12">
+                <h3 class="text-2xl font-bold text-zinc-100 mb-6">Course Records</h3>
+                <ul class="space-y-3">
+                    <li><a href="https://github.com/oU1TS/CSE0613112-SPL-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613112-SPL-Lab</a></li>
+                    <li><a href="https://github.com/oU1TS/CSE0613122-OOP-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613122-OOP-Lab</a></li>
+                    <li><a href="https://github.com/oU1TS/CSE0613124-WAD-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613124-WAD-Lab</a></li>
+                    <li><a href="https://github.com/oU1TS/CSE0612223-DSA-1-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612223-DSA-1-Lab</a></li>
+                    <li><a href="https://github.com/oU1TS/CSE0612216-DBMS-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612216-DBMS-Lab</a></li>
+                    <li><a href="https://github.com/oU1TS/CSE252-DSA-2-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE252-DSA-2-Lab</a></li>
+                    <li><a href="https://github.com/oU1TS/CSE208-IP-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE208-IP-Lab</a></li>
+                </ul>
+            </section>
+
+            <hr class="border-zinc-700 mb-12">
+
+            <section id="project-records" class="mb-12">
+                <h3 class="text-2xl font-bold text-zinc-100 mb-6">Project Records</h3>
+
+                <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
+                    <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 55</summary>
+                    <div class="mt-4 pl-4 border-l border-zinc-700">
+                        <details class="mb-4">
+                            <summary class="text-lg font-medium text-zinc-300 py-1">0432410005101088</summary>
+                            <div class="mt-2 pl-4">
+                                <a href="https://github.com/b1tranger" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <ul class="list-disc list-inside space-y-1 text-zinc-400">
+                                    <li>CSE0612223-DSA-1-Lab: <a href="https://github.com/b1tranger/DSA-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a></li>
+                                    <li>CSE0613124-WAD-Lab: <a href="https://github.com/b1tranger/oUITS-Scheduler-offline" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="https://b1tranger.github.io/oUITS-Scheduler-offline/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </details>
+
+                <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
+                    <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 54</summary>
+                    <div class="mt-4 pl-4 border-l border-zinc-700">
+                        <details class="mb-4">
+                            <summary class="text-lg font-medium text-zinc-300 py-1">0432320005101085</summary>
+                            <div class="mt-2 pl-4">
+                                <a href="https://github.com/FahimHossain1085" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <ul class="list-disc list-inside space-y-1 text-zinc-400">
+                                    <li>CSE208-IP-Lab: <a href="https://github.com/oU1TS/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> (forked from <a href="https://github.com/FahimHossain1085/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">source</a>) &rarr; <a href="https://codecraftstudios.great-site.net/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                    <li>CSE0613124-WAD-Lab: <a href="https://github.com/FahimHossain1085/web-application-design-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="https://fahimhossain1085.github.io/web-application-design-project/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                </ul>
+                            </div>
+                        </details>
+                        <details class="mb-4">
+                            <summary class="text-lg font-medium text-zinc-300 py-1">0432320005101064</summary>
+                            <div class="mt-2 pl-4">
+                                <a href="https://github.com/shoytanbaba99" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <ul class="list-disc list-inside space-y-1 text-zinc-400">
+                                    <li>CSE208-IP-Lab: <a href="https://github.com/shoytanbaba99/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> + <a href="https://github.com/cristal-node/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Mod</a> &rarr; <a href="https://begging.cristal-node.workers.dev/welcome.html" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                    <li>CSE252-DSA-2-Lab: <span class="text-zinc-500">No project link available</span></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </details>
+
+                <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
+                    <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 53</summary>
+                    <div class="mt-4 pl-4 border-l border-zinc-700">
+                        <details class="mb-4">
+                            <summary class="text-lg font-medium text-zinc-300 py-1">432310005101080</summary>
+                            <div class="mt-2 pl-4">
+                                <a href="https://github.com/safridbhueyan" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <ul class="list-disc list-inside space-y-1 text-zinc-400">
+                                    <li>CSE208-IP-Lab: <a href="https://github.com/safridbhueyan/Task-Room" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </details>
+
+                <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
+                    <summary class="text-xl font-semibold text-zinc-200 py-2">Batch 52</summary>
+                    <div class="mt-4 pl-4 border-l border-zinc-700">
+                        <details class="mb-4">
+                            <summary class="text-lg font-medium text-zinc-300 py-1">0432220005101061</summary>
+                            <div class="mt-2 pl-4">
+                                <a href="https://github.com/AkibReza" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <ul class="list-disc list-inside space-y-1 text-zinc-400">
+                                    <li>CSE356-Software-Engineering-SESA: <a href="https://github.com/AkibReza/TerraNova" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="http://TerraNovaAI.netlify.app" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </details>
+            </section>
+        </section>
+
+        <hr class="border-zinc-700 mb-12">
+
         <section id="student-support-repositories" class="mb-12">
             <h2 class="text-3xl font-bold text-zinc-100 mb-6">Student Support Repositories</h2>
             <p class="text-zinc-300 mb-4">Repositories intended to aid in the academics of students.</p>
@@ -247,21 +360,75 @@
     </main>
 
     <script>
-        // JavaScript for mobile sidebar toggle
         const menuButton = document.getElementById('menu-button');
-        const sidebarNav = document.getElementById('sidebar-nav');
+        const sidebar = document.querySelector('aside');
+        const overlay = document.getElementById('overlay');
 
+        // Function to open the sidebar
+        function openSidebar() {
+            sidebar.classList.remove('hidden');
+            overlay.classList.add('visible');
+            document.body.style.overflow = 'hidden'; // Prevent body scrolling
+        }
+
+        // Function to close the sidebar
+        function closeSidebar() {
+            sidebar.classList.add('hidden');
+            overlay.classList.remove('visible');
+            document.body.style.overflow = ''; // Restore body scrolling
+        }
+
+        // Toggle sidebar on menu button click
         menuButton.addEventListener('click', () => {
-            sidebarNav.classList.toggle('hidden');
+            if (sidebar.classList.contains('hidden')) {
+                openSidebar();
+            } else {
+                closeSidebar();
+            }
         });
 
-        // Close sidebar when a link is clicked on mobile
-        sidebarNav.querySelectorAll('a').forEach(link => {
+        // Close sidebar when clicking on a link inside it (mobile view)
+        sidebar.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                if (window.innerWidth < 1024) { // Tailwind's 'lg' breakpoint is 1024px
-                    sidebarNav.classList.add('hidden');
+                if (window.innerWidth < 1024) { // Only on mobile
+                    closeSidebar();
                 }
             });
+        });
+
+        // Close sidebar when clicking on the overlay
+        overlay.addEventListener('click', () => {
+            closeSidebar();
+        });
+
+        // Handle window resize to ensure correct sidebar state
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                // Desktop view: ensure sidebar is visible and overlay is hidden
+                sidebar.classList.remove('hidden');
+                overlay.classList.remove('visible');
+                document.body.style.overflow = ''; // Restore body scrolling
+            } else {
+                // Mobile view: ensure sidebar is hidden if it was opened on desktop and then resized
+                if (!sidebar.classList.contains('hidden')) {
+                    // If sidebar is currently open, keep it open and overlay visible
+                    overlay.classList.add('visible');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    // If sidebar is hidden, ensure overlay is hidden too
+                    overlay.classList.remove('visible');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        // Initialize sidebar state on page load based on screen width
+        window.addEventListener('load', () => {
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('hidden'); // Start hidden on mobile
+            } else {
+                sidebar.classList.remove('hidden'); // Start visible on desktop
+            }
         });
     </script>
 </body>
