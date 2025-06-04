@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,61 +13,80 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+
         /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
+
         ::-webkit-scrollbar-track {
-            background: #2d3748; /* Dark gray for track */
+            background: #2d3748;
+            /* Dark gray for track */
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb {
-            background: #4a5568; /* Slightly lighter gray for thumb */
+            background: #4a5568;
+            /* Slightly lighter gray for thumb */
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280; /* Even lighter gray on hover */
+            background: #6b7280;
+            /* Even lighter gray on hover */
         }
 
         /* Specific styling for details/summary to ensure consistent appearance */
         details summary {
             cursor: pointer;
-            list-style: none; /* Remove default arrow */
+            list-style: none;
+            /* Remove default arrow */
             position: relative;
-            padding-left: 1.5rem; /* Space for custom arrow */
+            padding-left: 1.5rem;
+            /* Space for custom arrow */
         }
 
         details summary::before {
-            content: '▶'; /* Right arrow for closed state */
+            content: '▶';
+            /* Right arrow for closed state */
             position: absolute;
             left: 0;
             top: 50%;
             transform: translateY(-50%) rotate(0deg);
             transition: transform 0.2s ease-in-out;
-            color: #9ca3af; /* Light gray arrow */
+            color: #9ca3af;
+            /* Light gray arrow */
         }
 
         details[open] summary::before {
-            content: '▼'; /* Down arrow for open state */
-            transform: translateY(-50%) rotate(0deg); /* No rotation needed for down arrow */
+            content: '▼';
+            /* Down arrow for open state */
+            transform: translateY(-50%) rotate(0deg);
+            /* No rotation needed for down arrow */
         }
 
         /* Adjusting nested details summary padding */
         details details summary {
             padding-left: 1.5rem;
         }
+
         details details summary::before {
             left: 0;
         }
 
         /* Mobile menu button fixed positioning */
-        @media (max-width: 1023px) { /* Applies only to screens smaller than 'lg' breakpoint */
+        @media (max-width: 1023px) {
+
+            /* Applies only to screens smaller than 'lg' breakpoint */
             #menu-button {
                 position: fixed;
-                top: 1.5rem; /* Adjust as needed */
-                right: 1.5rem; /* Adjust as needed */
-                z-index: 70; /* Ensure it's above everything else */
+                top: 1.5rem;
+                /* Adjust as needed */
+                right: 1.5rem;
+                /* Adjust as needed */
+                z-index: 70;
+                /* Ensure it's above everything else */
             }
 
             /* Overlay for closing menu by clicking outside */
@@ -76,10 +96,14 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-                z-index: 45; /* Below sidebar, above main content */
-                display: none; /* Hidden by default */
+                background-color: rgba(0, 0, 0, 0.5);
+                /* Semi-transparent black */
+                z-index: 45;
+                /* Below sidebar, above main content */
+                display: none;
+                /* Hidden by default */
             }
+
             .overlay.visible {
                 display: block;
             }
@@ -87,79 +111,134 @@
             /* Mobile sidebar fixed positioning and dropdown behavior */
             aside {
                 position: fixed;
-                top: 0; /* Start at the top */
-                left: 0; /* Align to the left */
-                right: 0; /* Align to the right */
-                width: calc(100% - 3rem); /* Full width minus horizontal padding, or specific width if desired */
-                max-height: 0; /* Hidden by default, expands downwards */
-                overflow: hidden; /* Hide content that overflows max-height */
-                transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out; /* Smooth expansion */
-                z-index: 50; /* Ensure it's above main content and below menu button */
-                background-color: #2d3748; /* Match sidebar background */
-                padding: 0 1.5rem; /* No padding when closed, will expand */
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow */
+                top: 0;
+                /* Start at the top */
+                left: 0;
+                /* Align to the left */
+                right: 0;
+                /* Align to the right */
+                width: calc(100% - 3rem);
+                /* Full width minus horizontal padding, or specific width if desired */
+                max-height: 0;
+                /* Hidden by default, expands downwards */
+                overflow: hidden;
+                /* Hide content that overflows max-height */
+                transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+                /* Smooth expansion */
+                z-index: 50;
+                /* Ensure it's above main content and below menu button */
+                background-color: #2d3748;
+                /* Match sidebar background */
+                padding: 0 1.5rem;
+                /* No padding when closed, will expand */
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                /* Optional shadow */
             }
 
             /* When the sidebar is visible, apply specific styles */
             aside:not(.hidden) {
-                max-height: 100vh; /* Expands to full height */
-                padding: 1.5rem; /* Apply padding when open */
-                overflow-y: auto; /* Allow scrolling within the sidebar if content is long */
+                max-height: 100vh;
+                /* Expands to full height */
+                padding: 1.5rem;
+                /* Apply padding when open */
+                overflow-y: auto;
+                /* Allow scrolling within the sidebar if content is long */
             }
 
             /* Ensure internal sidebar components adjust */
             aside .flex.items-center.justify-between {
-                margin-bottom: 0; /* Adjust spacing when expanding from top */
+                margin-bottom: 0;
+                /* Adjust spacing when expanding from top */
             }
+
             aside .flex.items-center.justify-between h1 {
-                margin-bottom: 0; /* Ensure title also moves correctly */
+                margin-bottom: 0;
+                /* Ensure title also moves correctly */
             }
         }
 
         /* Desktop sidebar fixed positioning */
-        @media (min-width: 1024px) { /* Applies only to screens 'lg' breakpoint and larger */
+        @media (min-width: 1024px) {
+
+            /* Applies only to screens 'lg' breakpoint and larger */
             aside {
                 position: fixed;
                 top: 0;
                 left: 0;
-                height: 100vh; /* Make it span the full viewport height */
-                border-radius: 0; /* Remove bottom border-radius when fixed and full height */
-                box-shadow: none; /* Remove shadow on the bottom when fixed and full height */
-                z-index: 40; /* Ensure it's above main content */
-                transform: translateX(0) !important; /* Force sidebar to be visible on desktop */
-                max-height: none !important; /* Remove max-height constraint */
-                overflow-y: auto; /* Allow scrolling */
-                padding: 1.5rem 2rem !important; /* Restore original padding */
+                height: 100vh;
+                /* Make it span the full viewport height */
+                border-radius: 0;
+                /* Remove bottom border-radius when fixed and full height */
+                box-shadow: none;
+                /* Remove shadow on the bottom when fixed and full height */
+                z-index: 40;
+                /* Ensure it's above main content */
+                transform: translateX(0) !important;
+                /* Force sidebar to be visible on desktop */
+                max-height: none !important;
+                /* Remove max-height constraint */
+                overflow-y: auto;
+                /* Allow scrolling */
+                padding: 1.5rem 2rem !important;
+                /* Restore original padding */
             }
+
             main {
-                margin-left: 16rem; /* Push main content to the right by the sidebar's width (w-64 = 16rem) */
+                margin-left: 16rem;
+                /* Push main content to the right by the sidebar's width (w-64 = 16rem) */
             }
+
+            /* The mobile menu button is hidden by 'lg:hidden' on desktop, so no need to unfix it here. */
         }
     </style>
 </head>
+
 <body class="bg-zinc-900 text-zinc-100 min-h-screen flex flex-col lg:flex-row">
 
-    <aside class="w-full lg:w-64 bg-zinc-800 p-6 lg:p-8 shadow-lg lg:shadow-xl flex-shrink-0 rounded-b-lg lg:rounded-r-lg lg:rounded-bl-none hidden lg:block">
+    <aside
+        class="w-full lg:w-64 bg-zinc-800 p-6 lg:p-8 shadow-lg lg:shadow-xl flex-shrink-0 rounded-b-lg lg:rounded-r-lg lg:rounded-bl-none hidden lg:block">
         <div class="flex items-center justify-between lg:justify-start mb-6">
             <h1 class="text-2xl font-bold text-blue-400">oU1TS Wiki</h1>
-            <button id="menu-button-inside-aside" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <svg class="w-6 h-6 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path>
+
+            <button id="menu-button-inside-aside"
+                class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-6 h-6 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4">
+                    </path>
                 </svg>
             </button>
+        </div>
+        <br>
+        <div class="flex items-center justify-between lg:justify-start mb-6">
+            <a href="index.html"
+                class="block text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out font-medium"
+                style="border: #00000038; padding: 5px;border-style: dashed;background-color: rgba(0, 0, 0, 0.267);max-width: 180px;border-radius: 10px;text-align: center;">go
+                back to oU1TS </a>
+
         </div>
 
         <nav id="sidebar-nav">
             <ul class="space-y-4">
-                <li>
+                <li class="mt-6 pt-4 border-t border-zinc-700">
+                    <!-- <a href="index.html"
+                        class="block text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out font-medium"
+                        style="border: #00000038; padding: 5px;border-style: dashed;background-color: rgba(0, 0, 0, 0.267);max-width: 180px;border-radius: 10px;text-align: center;">go
+                        back to oU1TS </a> -->
+                </li>
+                <!-- <li>
                     <a href="https://ou1ts.github.io/" class="block text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out font-medium">oU1TS Website</a>
-                </li>
+                </li> -->
                 <li>
-                    <a href="https://github.com/oU1TS/ou1ts.github.io" class="block text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out font-medium">oU1TS Repository</a>
+                    <a href="https://github.com/oU1TS/ou1ts.github.io"
+                        class="block text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out font-medium">GitHub
+                        Repositories</a>
                 </li>
+<br>
                 <li class="mt-6 pt-4 border-t border-zinc-700">
                     <p class="text-zinc-400 text-sm mb-2">Join the Organization:</p>
-                    <a href="https://forms.gle/treGsBbsE3UTFUos9" class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md text-center transition duration-200 ease-in-out shadow-md">
+                    <a href="https://forms.gle/treGsBbsE3UTFUos9"
+                        class="block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md text-center transition duration-200 ease-in-out shadow-md">
                         Fill out this form
                     </a>
                 </li>
@@ -167,22 +246,34 @@
                     <h3 class="text-lg font-semibold text-zinc-200 mb-3">Wiki Contents</h3>
                     <ul class="space-y-2">
                         <li>
-                            <a href="#home-section" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Home</a>
+                            <a href="#home-section"
+                                class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Home</a>
                         </li>
                         <li>
-                            <a href="#forks-by-course-section" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Forks by Course</a>
+                            <a href="#forks-by-course-section"
+                                class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Forks
+                                by Course</a>
                         </li>
                         <li>
-                            <a href="#records-section" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Records</a>
+                            <a href="#records-section"
+                                class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">Records</a>
                             <ul class="ml-4 mt-1 space-y-1">
-                                <li><a href="#course-records" class="block text-zinc-400 hover:text-blue-400 transition duration-200 ease-in-out text-sm">Course Records</a></li>
-                                <li><a href="#project-records" class="block text-zinc-400 hover:text-blue-400 transition duration-200 ease-in-out text-sm">Project Records</a></li>
+                                <li><a href="#course-records"
+                                        class="block text-zinc-400 hover:text-blue-400 transition duration-200 ease-in-out text-sm">Course
+                                        Records</a></li>
+                                <li><a href="#project-records"
+                                        class="block text-zinc-400 hover:text-blue-400 transition duration-200 ease-in-out text-sm">Project
+                                        Records</a></li>
                             </ul>
                         </li>
                         <li>
-                            <a href="#ssr-projects-section" class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">SSR Projects</a>
+                            <a href="#ssr-projects-section"
+                                class="block text-zinc-300 hover:text-blue-400 transition duration-200 ease-in-out">SSR
+                                Projects</a>
                             <ul class="ml-4 mt-1 space-y-1">
-                                <li><a href="#student-support-repositories" class="block text-zinc-400 hover:text-blue-400 transition duration-200 ease-in-out text-sm">Student Support Repositories</a></li>
+                                <li><a href="#student-support-repositories"
+                                        class="block text-zinc-400 hover:text-blue-400 transition duration-200 ease-in-out text-sm">Student
+                                        Support Repositories</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -192,7 +283,8 @@
     </aside>
 
     <button id="menu-button" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <svg class="w-6 h-6 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-6 h-6 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path>
         </svg>
     </button>
@@ -203,12 +295,18 @@
 
         <section id="home-section" class="mb-12">
             <h2 class="text-3xl font-bold text-zinc-100 mb-6">Welcome to the oU1TS Wiki!</h2>
-            <p class="text-zinc-300 mb-4">Here we will be indexing our Repositories based on their categories/purpose.</p>
+            <p class="text-zinc-300 mb-4">Here we will be indexing our Repositories based on their categories/purpose.
+            </p>
 
             <ul class="list-disc list-inside space-y-2 text-zinc-300">
-                <li>For Records, visit <a href="#records-section" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Records</a></li>
-                <li>For Student Support, visit <a href="#student-support-repositories" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">SSR Projects</a></li>
-                <li>To browse forks, visit <a href="#forks-by-course-section" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Forks by Course</a></li>
+                <li>For Records, visit <a href="#records-section"
+                        class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Records</a></li>
+                <li>For Student Support, visit <a href="#student-support-repositories"
+                        class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">SSR Projects</a>
+                </li>
+                <li>To browse forks, visit <a href="#forks-by-course-section"
+                        class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Forks by
+                        Course</a></li>
             </ul>
         </section>
 
@@ -216,14 +314,20 @@
 
         <section id="forks-by-course-section" class="mb-12">
             <h2 class="text-3xl font-bold text-zinc-100 mb-6">Forks by Course</h2>
-            <p class="text-zinc-300 mb-4">In this page, we track and organize forks owned by oU1TS. Essentially all repositories here have been forked from outside but we intend to ease things up by more organization (⁠๑⁠•⁠﹏⁠•⁠) </p>
+            <p class="text-zinc-300 mb-4">In this page, we track and organize forks owned by oU1TS. Essentially all
+                repositories here have been forked from outside but we intend to ease things up by more organization
+                (⁠๑⁠•⁠﹏⁠•⁠) </p>
 
             <details class="mb-6 bg-zinc-800 p-4 rounded-lg shadow-md">
                 <summary class="text-xl font-semibold text-zinc-200 py-2">CSE208-IP-Lab</summary>
                 <div class="mt-4 pl-4 border-l border-zinc-700">
                     <ul class="list-disc list-inside space-y-2 text-zinc-400">
-                        <li><a href="https://github.com/oU1TS/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">php-project</a></li>
-                        <li><a href="https://github.com/oU1TS/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">The-Begging-From-The-Beginning</a></li>
+                        <li><a href="https://github.com/oU1TS/php-project"
+                                class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">php-project</a>
+                        </li>
+                        <li><a href="https://github.com/oU1TS/The-Begging-From-The-Beginning"
+                                class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">The-Begging-From-The-Beginning</a>
+                        </li>
                     </ul>
                 </div>
             </details>
@@ -232,7 +336,9 @@
                 <summary class="text-xl font-semibold text-zinc-200 py-2">CSE063212-DSA-1-Lab</summary>
                 <div class="mt-4 pl-4 border-l border-zinc-700">
                     <ul class="list-disc list-inside space-y-2 text-zinc-400">
-                        <li><a href="https://github.com/oU1TS/DSA-project-55-3B-088" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">DSA-project-55-3B-088</a></li>
+                        <li><a href="https://github.com/oU1TS/DSA-project-55-3B-088"
+                                class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">DSA-project-55-3B-088</a>
+                        </li>
                     </ul>
                 </div>
             </details>
@@ -246,13 +352,27 @@
             <section id="course-records" class="mb-12">
                 <h3 class="text-2xl font-bold text-zinc-100 mb-6">Course Records</h3>
                 <ul class="space-y-3">
-                    <li><a href="https://github.com/oU1TS/CSE0613112-SPL-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613112-SPL-Lab</a></li>
-                    <li><a href="https://github.com/oU1TS/CSE0613122-OOP-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613122-OOP-Lab</a></li>
-                    <li><a href="https://github.com/oU1TS/CSE0613124-WAD-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613124-WAD-Lab</a></li>
-                    <li><a href="https://github.com/oU1TS/CSE0612223-DSA-1-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612223-DSA-1-Lab</a></li>
-                    <li><a href="https://github.com/oU1TS/CSE0612216-DBMS-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612216-DBMS-Lab</a></li>
-                    <li><a href="https://github.com/oU1TS/CSE252-DSA-2-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE252-DSA-2-Lab</a></li>
-                    <li><a href="https://github.com/oU1TS/CSE208-IP-Lab" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE208-IP-Lab</a></li>
+                    <li><a href="https://github.com/oU1TS/CSE0613112-SPL-Lab"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613112-SPL-Lab</a>
+                    </li>
+                    <li><a href="https://github.com/oU1TS/CSE0613122-OOP-Lab"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613122-OOP-Lab</a>
+                    </li>
+                    <li><a href="https://github.com/oU1TS/CSE0613124-WAD-Lab"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0613124-WAD-Lab</a>
+                    </li>
+                    <li><a href="https://github.com/oU1TS/CSE0612223-DSA-1-Lab"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612223-DSA-1-Lab</a>
+                    </li>
+                    <li><a href="https://github.com/oU1TS/CSE0612216-DBMS-Lab"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE0612216-DBMS-Lab</a>
+                    </li>
+                    <li><a href="https://github.com/oU1TS/CSE252-DSA-2-Lab"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE252-DSA-2-Lab</a>
+                    </li>
+                    <li><a href="https://github.com/oU1TS/CSE208-IP-Lab"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">CSE208-IP-Lab</a>
+                    </li>
                 </ul>
             </section>
 
@@ -267,10 +387,19 @@
                         <details class="mb-4">
                             <summary class="text-lg font-medium text-zinc-300 py-1">0432410005101088</summary>
                             <div class="mt-2 pl-4">
-                                <a href="https://github.com/b1tranger" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <a href="https://github.com/b1tranger"
+                                    class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit
+                                    GitHub Profile</a>
                                 <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                    <li>CSE0612223-DSA-1-Lab: <a href="https://github.com/b1tranger/DSA-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a></li>
-                                    <li>CSE0613124-WAD-Lab: <a href="https://github.com/b1tranger/oUITS-Scheduler-offline" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="https://b1tranger.github.io/oUITS-Scheduler-offline/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                    <li>CSE0612223-DSA-1-Lab: <a href="https://github.com/b1tranger/DSA-project"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a>
+                                    </li>
+                                    <li>CSE0613124-WAD-Lab: <a
+                                            href="https://github.com/b1tranger/oUITS-Scheduler-offline"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a>
+                                        &rarr; <a href="https://b1tranger.github.io/oUITS-Scheduler-offline/"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                                    </li>
                                 </ul>
                             </div>
                         </details>
@@ -283,20 +412,44 @@
                         <details class="mb-4">
                             <summary class="text-lg font-medium text-zinc-300 py-1">0432320005101085</summary>
                             <div class="mt-2 pl-4">
-                                <a href="https://github.com/FahimHossain1085" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <a href="https://github.com/FahimHossain1085"
+                                    class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit
+                                    GitHub Profile</a>
                                 <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                    <li>CSE208-IP-Lab: <a href="https://github.com/oU1TS/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> (forked from <a href="https://github.com/FahimHossain1085/php-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">source</a>) &rarr; <a href="https://codecraftstudios.great-site.net/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                                    <li>CSE0613124-WAD-Lab: <a href="https://github.com/FahimHossain1085/web-application-design-project" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="https://fahimhossain1085.github.io/web-application-design-project/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                    <li>CSE208-IP-Lab: <a href="https://github.com/oU1TS/php-project"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a>
+                                        (forked from <a href="https://github.com/FahimHossain1085/php-project"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">source</a>)
+                                        &rarr; <a href="https://codecraftstudios.great-site.net/"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                                    </li>
+                                    <li>CSE0613124-WAD-Lab: <a
+                                            href="https://github.com/FahimHossain1085/web-application-design-project"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a>
+                                        &rarr; <a
+                                            href="https://fahimhossain1085.github.io/web-application-design-project/"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                                    </li>
                                 </ul>
                             </div>
                         </details>
                         <details class="mb-4">
                             <summary class="text-lg font-medium text-zinc-300 py-1">0432320005101064</summary>
                             <div class="mt-2 pl-4">
-                                <a href="https://github.com/shoytanbaba99" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <a href="https://github.com/shoytanbaba99"
+                                    class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit
+                                    GitHub Profile</a>
                                 <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                    <li>CSE208-IP-Lab: <a href="https://github.com/shoytanbaba99/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> + <a href="https://github.com/cristal-node/The-Begging-From-The-Beginning" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Mod</a> &rarr; <a href="https://begging.cristal-node.workers.dev/welcome.html" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                                    <li>CSE252-DSA-2-Lab: <span class="text-zinc-500">No project link available</span></li>
+                                    <li>CSE208-IP-Lab: <a
+                                            href="https://github.com/shoytanbaba99/The-Begging-From-The-Beginning"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a>
+                                        + <a href="https://github.com/cristal-node/The-Begging-From-The-Beginning"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Mod</a>
+                                        &rarr; <a href="https://begging.cristal-node.workers.dev/welcome.html"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                                    </li>
+                                    <li>CSE252-DSA-2-Lab: <span class="text-zinc-500">No project link available</span>
+                                    </li>
                                 </ul>
                             </div>
                         </details>
@@ -309,9 +462,13 @@
                         <details class="mb-4">
                             <summary class="text-lg font-medium text-zinc-300 py-1">432310005101080</summary>
                             <div class="mt-2 pl-4">
-                                <a href="https://github.com/safridbhueyan" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <a href="https://github.com/safridbhueyan"
+                                    class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit
+                                    GitHub Profile</a>
                                 <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                    <li>CSE208-IP-Lab: <a href="https://github.com/safridbhueyan/Task-Room" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a></li>
+                                    <li>CSE208-IP-Lab: <a href="https://github.com/safridbhueyan/Task-Room"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a>
+                                    </li>
                                 </ul>
                             </div>
                         </details>
@@ -324,9 +481,16 @@
                         <details class="mb-4">
                             <summary class="text-lg font-medium text-zinc-300 py-1">0432220005101061</summary>
                             <div class="mt-2 pl-4">
-                                <a href="https://github.com/AkibReza" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit GitHub Profile</a>
+                                <a href="https://github.com/AkibReza"
+                                    class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out block mb-2">Visit
+                                    GitHub Profile</a>
                                 <ul class="list-disc list-inside space-y-1 text-zinc-400">
-                                    <li>CSE356-Software-Engineering-SESA: <a href="https://github.com/AkibReza/TerraNova" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a> &rarr; <a href="http://TerraNovaAI.netlify.app" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                                    <li>CSE356-Software-Engineering-SESA: <a
+                                            href="https://github.com/AkibReza/TerraNova"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Project</a>
+                                        &rarr; <a href="http://TerraNovaAI.netlify.app"
+                                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                                    </li>
                                 </ul>
                             </div>
                         </details>
@@ -344,15 +508,27 @@
             <div class="bg-zinc-800 p-4 rounded-lg shadow-md mb-6">
                 <h3 class="text-xl font-semibold text-zinc-200 mb-3">From 0432410005101088</h3>
                 <ul class="list-disc list-inside space-y-2 text-zinc-400">
-                    <li><a href="https://github.com/oU1TS/Resources" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Resources</a> &rarr; <a href="https://ouits-res.netlify.app/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
-                    <li><a href="https://github.com/oU1TS/Scheduler" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Scheduler</a> &rarr; <a href="https://ouits-schedule.netlify.app/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                    <li><a href="https://github.com/oU1TS/Resources"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Resources</a>
+                        &rarr; <a href="https://ouits-res.netlify.app/"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                    </li>
+                    <li><a href="https://github.com/oU1TS/Scheduler"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Scheduler</a>
+                        &rarr; <a href="https://ouits-schedule.netlify.app/"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                    </li>
                 </ul>
             </div>
 
             <div class="bg-zinc-800 p-4 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold text-zinc-200 mb-3">From 0432220005101061</h3>
                 <ul class="list-disc list-inside space-y-2 text-zinc-400">
-                    <li><a href="https://github.com/AkibReza/uitsBOT" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">uitsBOT</a> &rarr; <a href="https://akibreza.github.io/uitsBOT/" class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a></li>
+                    <li><a href="https://github.com/AkibReza/uitsBOT"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">uitsBOT</a>
+                        &rarr; <a href="https://akibreza.github.io/uitsBOT/"
+                            class="text-blue-400 hover:text-blue-300 transition duration-200 ease-in-out">Website</a>
+                    </li>
                 </ul>
             </div>
         </section>
@@ -409,9 +585,8 @@
                 overlay.classList.remove('visible');
                 document.body.style.overflow = ''; // Restore body scrolling
             } else {
-                // Mobile view: ensure sidebar is hidden if it was opened on desktop and then resized
+                // Mobile view: if currently open, keep it open and overlay visible
                 if (!sidebar.classList.contains('hidden')) {
-                    // If sidebar is currently open, keep it open and overlay visible
                     overlay.classList.add('visible');
                     document.body.style.overflow = 'hidden';
                 } else {
@@ -432,4 +607,5 @@
         });
     </script>
 </body>
+
 </html>
