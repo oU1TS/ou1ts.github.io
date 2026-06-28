@@ -1,10 +1,13 @@
 // Project Roster
 const primaryProjects = [
-    { name: "Projects Portal", icon: "fa-solid fa-globe", url: "https://ou1ts.github.io/portal" },
+    { name: "Projects Hub", icon: "fa-solid fa-globe", url: "https://ou1ts.github.io/portal" },
     { name: "Wiki", icon: "fa-solid fa-book", url: "wiki.html" },
-    { name: "Join Us", icon: "fa-solid fa-handshake", url: "https://forms.gle/treGsBbsE3UTFUos9" },
+    // { name: "Join Us", icon: "fa-solid fa-handshake", url: "https://forms.gle/treGsBbsE3UTFUos9" },
     { name: "Blood Donation", icon: "fa-solid fa-droplet", url: "https://bd-ou1ts.netlify.app/" },
-    { name: "Scheduler", icon: "fa-solid fa-calendar-days", url: "https://b1tsched.netlify.app/" }
+    { name: "Scheduler", icon: "fa-solid fa-calendar-days", url: "https://b1tsched.netlify.app/" },
+    { name: "Archive", icon: "fa-solid fa-boxes-packing", url: "https://b1tacad.netlify.app/" },
+    { name: "Events", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" }
+    // ,{ name: "", icon: "", url: "" }
 ];
 
 // Create animated stars
