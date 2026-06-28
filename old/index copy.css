@@ -1,0 +1,622 @@
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Remove after-click highlight for mobile screens */
+        body, .projects-track-overlay-left, .projects-track-overlay-right {
+            -webkit-tap-highlight-color: transparent; /* For iOS */
+            touch-action: manipulation; /* For other mobile browsers */
+        }
+
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px; /* Default padding for content within the container */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+            width: 100%; /* Ensure header uses full available width */
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #ff00ff, #ffff00);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .github-link:hover {
+            color: #00d4ff;
+            transform: translateY(-2px);
+        }
+
+        .projects-section {
+            width: 100%;
+            margin-top: 40px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+            padding: 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #00d4ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .primary-projects {
+            position: relative;
+            margin-bottom: 80px;
+            width: 100vw; /* Make it viewport width */
+            left: 50%; /* Center it relative to body */
+            right: 50%;
+            margin-left: -50vw; /* Pull it left by half viewport width */
+            margin-right: -50vw; /* Pull it right by half viewport width */
+            padding: 0; /* Ensure no internal padding interferes */
+            overflow: hidden; /* Hide anything that goes beyond viewport width */
+            min-height: 400px; /* Same as projects-carousel height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .projects-carousel {
+            position: relative; /* Crucial for absolute positioning of indicator */
+            padding: 0;
+            height: 400px;
+            display: flex;
+            flex-direction: column; /* Changed to column to stack track and indicator */
+            align-items: center;
+            justify-content: center;
+            width: 100%; /* Now takes 100% of the 100vw parent */
+            overflow: hidden;
+        }
+
+        .projects-track {
+            position: relative;
+            width: 100%; /* Let projects-track take 100% of projects-carousel width */
+            max-width: 900px; /* Set a reasonable max-width for the track itself */
+            height: 350px;
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Styles for click/hover overlays - direct children of primary-projects */
+        .projects-track-overlay-left,
+        .projects-track-overlay-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            /* Width calculation: covers from screen edge up to the side of the active card */
+            /* Assuming active card is 350px. Half of that is 175px. */
+            /* Half of max-width of projects-track is 450px. */
+            /* So the gap from track edge to card edge is 450 - 175 = 275px. */
+            /* We need to span from 0 to (viewport_center - 175px) */
+            /* For the right side, it's (viewport_center + 175px) to 100vw */
+            /* A simple percentage based on viewport width, adjusted for responsiveness */
+            width: calc(50vw - 175px); /* Half viewport width - half active card width */
+            z-index: 10; /* Make sure overlays are on top to catch clicks */
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            pointer-events: all; 
+        }
+
+        .projects-track-overlay-left {
+            left: 0;
+            background: transparent; /* No initial background */
+        }
+
+        .projects-track-overlay-right {
+            right: 0;
+            background: transparent; /* No initial background */
+        }
+
+        /* Remove hover background colors for left/right overlays */
+        .projects-track-overlay-left:hover {
+            background: transparent; /* No hover background */
+        }
+
+        .projects-track-overlay-right:hover {
+            background: transparent; /* No hover background */
+        }
+
+        /* Adjustments for when viewport is narrower than projects-track max-width */
+        @media (max-width: 900px) {
+            .projects-track-overlay-left,
+            .projects-track-overlay-right {
+                /* On smaller screens, the 'track' itself will shrink.
+                   We still want the overlays to cover the side areas.
+                   Let's use a percentage relative to the shrinking viewport */
+                width: calc(50% - (350px / 2)); /* 50% of parent minus half card width */
+                min-width: 10%; /* Ensure a minimum clickable area */
+            }
+        }
+        /* Further refinement for very wide screens, prevent overlays from becoming too wide */
+        @media (min-width: 1200px) {
+            .projects-track-overlay-left,
+            .projects-track-overlay-right {
+                width: calc(50vw - 200px); /* This calculation means it stops at the edge of the max-width:900px track */
+            }
+        }
+        /* Ensure cursor change is applied as the only visual hover effect */
+        .projects-track-overlay-left,
+        .projects-track-overlay-right {
+            cursor: w-resize; /* For left */
+        }
+        .projects-track-overlay-right {
+            cursor: e-resize; /* For right */
+        }
+
+
+
+        .stack-indicator {
+            position: absolute; /* Changed to absolute */
+            bottom: 5px; /* Adjusted to 5px to move it further down */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .stack-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stack-dot.active {
+            background: #00d4ff;
+            transform: scale(1.2);
+        }
+
+        .other-repos {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.6s forwards;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px; /* Apply container padding to this section */
+        }
+
+        .repos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .repo-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .repo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .repo-card:hover::before {
+            left: 100%;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .repo-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(255, 0, 255, 0.3));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .repo-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .repo-description {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
+            z-index: 2;
+        }
+
+        .project-card {
+            position: absolute;
+            top: 0;
+            left: 50%; 
+            transform-origin: center center;
+            width: 350px;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transform-style: preserve-3d;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            pointer-events: none; /* Cards generally not clickable except for specific links */
+        }
+        
+        .project-card.active {
+            z-index: 4;
+            transform: translateX(-50%) translateZ(0px) rotateY(0deg); 
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #00d4ff;
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+            pointer-events: auto; /* Active card and its children can receive clicks */
+        }
+        /* Ensure the project link within the active card is clickable */
+        .project-card.active .project-link {
+            pointer-events: auto;
+        }
+
+
+        .project-card.next {
+            z-index: 3;
+            transform: translateX(-50%) translateZ(-50px) translateX(400px) rotateY(-15deg); 
+            opacity: 0.7;
+        }
+
+        .project-card.prev {
+            z-index: 2;
+            transform: translateX(-50%) translateZ(-50px) translateX(-400px) rotateY(15deg); 
+            opacity: 0.7;
+        }
+
+        .project-card.hidden {
+            z-index: 1;
+            transform: translateX(-50%) translateZ(-150px) scale(0.6);
+            opacity: 0.0;
+            pointer-events: none;
+        }
+
+        /* Hover effect for active card */
+        .project-card:hover.active {
+            transform: translateX(-50%) translateZ(10px) rotateY(0deg) scale(1.02);
+            border-color: rgba(0, 212, 255, 0.8);
+            box-shadow: 0 25px 50px rgba(0, 212, 255, 0.3);
+        }
+        
+        /* Ensure no hover effects on non-active project cards */
+        .project-card:not(.active) {
+            --card-offset: 0px; /* Default offset for non-active cards, overridden by next/prev classes */
+            --card-rotation: 0deg; /* Default rotation */
+        }
+        .project-card.next { --card-offset: 400px; --card-rotation: -15deg; }
+        .project-card.prev { --card-offset: -400px; --card-rotation: 15deg; }
+
+        .project-card:not(.active):hover {
+            transform: translateX(-50%) translateZ(-50px) translateX(var(--card-offset)) rotateY(var(--card-rotation));
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+            z-index: 1;
+        }
+
+        .project-card:hover::before {
+            left: 100%;
+        }
+
+        .project-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #00d4ff, #ff00ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .project-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .project-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            font-size: 0.95rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            pointer-events: auto; /* Ensure link is clickable */
+        }
+        /* Ensure the project link can be clicked on mobile too,
+           as touch-action on body might affect it. */
+        .project-link:active {
+            background: linear-gradient(45deg, #007bb6, #00b0e0); /* Slightly darker on active tap */
+        }
+
+
+        .project-link:hover {
+            background: linear-gradient(45deg, #0099cc, #00d4ff);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.1), rgba(255, 0, 255, 0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .projects-carousel {
+                height: 350px;
+            }
+            
+            .projects-track {
+                width: 100%;
+                height: 300px;
+                max-width: unset;
+            }
+            
+            .project-card {
+                width: 300px;
+                height: 300px;
+                padding: 25px;
+            }
+
+            /* Adjust mobile spacing for prev/next cards */
+            .project-card.next {
+                transform: translateX(-50%) translateZ(-50px) translateX(180px) rotateY(-15deg);
+            }
+            .project-card.prev {
+                transform: translateX(-50%) translateZ(-50px) translateX(-180px) rotateY(15deg);
+            }
+            
+            .project-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            
+            .project-title {
+                font-size: 1.4rem;
+            }
+            
+            .project-description {
+                font-size: 0.9rem;
+            }
+            
+            .project-link {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            
+            .stack-indicator {
+                bottom: -10px; /* Adjusted for smaller mobile height to be clearly visible */
+            }
+            
+            .repos-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .repo-card {
+                padding: 20px 15px;
+            }
+
+            /* Responsive adjustments for edge hover areas */
+            .projects-track-overlay-left,
+            .projects-track-overlay-right {
+                /* On mobile, covers up to the card's edge, using half of mobile card width */
+                width: calc(50% - (300px / 2)); 
+                min-width: unset;
+            }
+        }
+
+        @media (hover: none) {
+            /* Remove hover effects on touch devices for the track edges */
+            .projects-track-overlay-left,
+            .projects-track-overlay-right {
+                background: transparent; /* No hover effect on touch */
+                cursor: default;
+            }
+        }

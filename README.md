@@ -1,73 +1,55 @@
-# 🎓 oU1TS - Online UITS Support <span style="font-size: 0.5em;">*( Unofficial )*</span>
+# 🎓 oU1TS - Student Support Center <span style="font-size: 0.5em;">*(Unofficial)*</span>
 
-Welcome to **oU1TS**, the <u>unofficial</u> GitHub organization for building and maintaining an **online support center** for the students of **UITS**.
+Welcome to the redesigned **oU1TS Student Support Center website** (https://ou1ts.github.io/), the unofficial student-centered portal for the University of Information Technology & Sciences (UITS).
 
-Our mission is to **empower students** through open-source tools, academic resources, guides, and collaborative platforms tailored to the needs of the UITS community.
-
----
-
-## 🌟 Our Vision
-
-To create a unified, accessible, and collaborative digital space where students of UITS can:
-
-- Find academic resources organized by department and semester.
-- Access guides, tools, and notes for better learning.
-- Contribute to open-source student projects.
-- Connect and collaborate with peers and mentors.
+This portal is built to empower students through open-source tools, collaborative directories, academic resources, and templates.
 
 ---
 
-## 📁 Key Repositories
-
-Below are some of our core projects (in progress or planned):
-
-| Repository | Description |
-|------------|-------------|
-| `uits-resources` | Centralized academic materials sorted by department and semester (PDFs, notes, slides). |
-| `uits-scheduler` | A web-based dashboard for planning and maintaining academic tasks, notices, and reminders. |
-| `course-materials` | Repositories containing course materials (Lab works, projects, codes). |
-| `guides-and-tutorials` | Step-by-step tutorials and how-to guides (coding, Git, exam prep, etc.). |
+## 🌟 Vision & Rationale
+> "oU1TS" is an initiative to build the foundation of an online student-centered community for UITS. We seek people who are inherently ambitious about their career and want to pursue a productive university life. No matter the struggles that lie in the face of reality.
+>
+> This portal is just another effort at listing projects regarding UITS from its students. It's a scalable project in a sense that new projects can be listed here in the future and there are practically limitless options to organize that list.
 
 ---
 
-## 🛠️ Contributing
+## 🛠️ Tech Stack & Key Features
 
-We welcome contributions from **students, alumni, and faculty members**. Whether you’re a coder, content writer, designer, or just enthusiastic about helping others — there’s a place for you here.
-
-### How to Start:
-1. Fork a repository.
-2. Clone it and create a new branch.
-3. Make your changes.
-4. Open a pull request with a meaningful description.
-
-Check out our Contribution Guidelines (to be added) for more details.
-<!-- Check out our [Contribution Guidelines](https://github.com/oU1TS/.github/blob/main/CONTRIBUTING.md) for more details. -->
+Our root website has been built from the ground up as a responsive, premium **Single Page Application (SPA)**:
+- **Core Technology:** HTML5, CSS3 Custom Properties (CSS variables), Vanilla JavaScript (ES6).
+- **Design System:** Custom dark-indigo base theme with a high-contrast slate-blue Light Mode transition. Includes glassmorphic nav headers, squircle-clipped card cells, and custom depth shadows.
+- **Background Animations:** Fully transition-aware twinkling starfield and floating organic bubble components that adapt dynamically to theme selections.
+- **Projects Scroller:** A 4-row infinite carousel grid (supporting 4x4 desktop layout and 4x3 mobile layout) featuring custom mouse drag inertia/momentum glide and bounce-animated side chevron buttons.
+- **Mobile Experience:** Fully optimized sidebar menu drawer with responsive gesture scaling and overlay triggers.
+- **Icons Integration:** Fully migrated to vector-based rendering using **Font Awesome v6.4.0** for unified branding.
 
 ---
 
-## 💬 Community
+## 📁 Repository Structure
 
-Join the discussion, get help, or suggest ideas:
+- [index.html](ou1ts.github.io/index.html) - Main SPA entry point (Home, Projects, Repos, and About sections).
+- [index.css](ou1ts.github.io/index.css) - Global CSS design tokens, keyframes, transitions, and theme mappings.
+- [index.js](ou1ts.github.io/index.js) - Navigation tabs, infinite scroll drag physics, parallax motion, and dynamic rendering.
+- [wiki.html](ou1ts.github.io/wiki.html) - Interactive student repository showcase and directory wiki.
+- [documentation.md](ou1ts.github.io/documentation.md) - Detailed technical documentation and development release version history.
 
-<!-- - 📢 [Discussions](https://github.com/oU1TS/discussions)
-- 📬 [Issues](https://github.com/oU1TS/issues) -->
-- 🎧 [Discord Server](https://discord.gg/weetUpfS5X) 
+---
+
+## 🤝 Contributing
+
+We welcome contributions from students, alumni, and faculty members. If you'd like to list a project, improve the scroller physics, or update academic resources, get involved:
+1. Fork this repository.
+2. Clone it and create your branch (`git checkout -b feature/cool-feature`).
+3. Make changes and commit (`git commit -m "Add feature info"`).
+4. Push to your fork and submit a Pull Request.
+
+---
+
+## 💬 Community Channels
 - 💬 [Telegram Group](https://t.me/s/oUITS_ORnU)
+- 🎧 [Discord Server](https://discord.gg/BdmArz6FHY)
 - 🌐 [Facebook Group](https://facebook.com/groups/1074592960836263/)
-
-<!-- ---
-
-## 📌 About UITS
-
-The **University of Information Technology & Sciences (UITS)** is dedicated to producing skilled professionals in the fields of computing, business, and engineering. This initiative is run **by students, for students** to promote academic success and community growth. 
--->
----
-
-## 📄 License
-
-All repositories are released under appropriate open-source licenses. Please refer to individual repos for licensing terms.
+- 👤 Developed by: [b1tranger](https://github.com/b1tranger)
 
 ---
-
-**Let’s build a better academic experience — together. 💙**
-
+**Let's build a better student experience — together. 💙**

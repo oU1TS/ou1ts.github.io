@@ -5,212 +5,256 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>oU1TS - Student Support Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-    <div class="stars" style="margin-top:15px;"></div>
+    <div class="stars"></div>
     <div class="floating-elements"></div>
 
-    <br><br>
+    <!-- Sticky Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">oU1TS</a>
 
-    <div class="container">
-        <header class="header">
-            <h1 class="logo">oU1TS</h1>
-            <p class="tagline">Student Support Center</p>
-            <a href="https://github.com/oU1TS" class="github-link" target="_blank">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                </svg>
-                View on GitHub
-            </a>
-
-        </header>
-
-        <div class="projects-section">
-            <div class="primary-projects">
-                <h2 class="section-title">Primary Projects</h2>
-                <div class="projects-carousel">
-                    <div class="projects-track" id="projectsTrack">
-                        <div class="project-card active" data-index="0">
-                            <!-- <div class="project-icon">Pr</div> -->
-                            <h2 class="project-title">Projects Portal</h2>
-                            <p class="project-description">Projects by the students of UITS. To add yours, share them in the social platforms of oU1TS.</p>
-                            <a href="https://ouits-res.netlify.app/" class="project-link" target="_blank"
-                                onclick="event.stopPropagation()">
-                                Visit oUITS-Resources
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15,3 21,3 21,9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                            </a>
-                        </div>
-
-                        <!-- <div class="project-card next" data-index="1">
-                            <div class="project-icon">Sc</div>
-                            <h2 class="project-title">Scheduler</h2>
-                            <p class="project-description">Advanced scheduling platform for managing events,
-                                appointments, and time-based activities with intuitive interfaces.</p>
-                            <a href="https://b1tsched.netlify.app/" class="project-link" target="_blank"
-                                onclick="event.stopPropagation()">
-                                Open Scheduler
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15,3 21,3 21,9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                            </a>
-                        </div> -->
-
-                        <div class="project-card hidden" data-index="1">
-                            <!-- <div class="project-icon">PrI</div> -->
-                            <h2 class="project-title">Project Index</h2>
-                            <p class="project-description">Refer to the wiki of oUITS where we index our repositories
-                                according to their categories.</p>
-                            <a href="wiki.html" class="project-link" onclick="event.stopPropagation()">
-                                Visit Wiki
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15,3 21,3 21,9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                            </a>
-                        </div>
-
-                        <div class="project-card hidden" data-index="2">
-                            <!-- <div  class="project-icon">Join</div> -->
-                            <h2 class="project-title">Join Us</h2>
-                            <p class="project-description">Want to join the Organization and contribute?<br>Fill out the
-                                form and submit your projects. It's fine if you don't have any. You can create them as
-                                you contribute in GitHub.</p>
-                            <a href="https://forms.gle/treGsBbsE3UTFUos9" class="project-link" target="_blank"
-                                onclick="event.stopPropagation()">
-                                Join oU1TS
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15,3 21,3 21,9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                            </a>
-                        </div>
-                        <div class="project-card hidden" data-index="3">
-                            <!-- <div  class="project-icon" style="font-size: medium;">BDN</div> -->
-                            <h2 class="project-title">Blood Donation Network</h2>
-                            <p class="project-description">A network of Blood Donators  to make the Blood Reception faster for the requester.</p>
-                            <a href="https://bd-ou1ts.netlify.app/" class="project-link" target="_blank"
-                                onclick="event.stopPropagation()">
-                                Donate Blood
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                    <polyline points="15,3 21,3 21,9"></polyline>
-                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="stack-indicator" id="stackIndicator">
-                        <div class="stack-dot active" data-index="0"></div>
-                        <div class="stack-dot" data-index="1"></div>
-                        <div class="stack-dot" data-index="2"></div>
-                        <div class="stack-dot" data-index="3"></div>
-                    </div>
-                </div>
-                <div class="projects-track-overlay-left" data-action="prev"></div>
-                <div class="projects-track-overlay-right" data-action="next"></div>
+            <!-- Desktop navigation links -->
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#repos" class="nav-link">Unified Repo</a>
+                <a href="#about" class="nav-link">About</a>
             </div>
 
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fa-regular fa-moon moon-icon" style="font-size: 1.25rem;"></i>
+                    <i class="fa-regular fa-sun sun-icon" style="font-size: 1.25rem;"></i>
+                </button>
 
-            <section class="header" style="margin-top: -50px;">
-                <p class="tagline" style="font-size: 18px">Our Socials</p>
-                <a href="https://discord.gg/BdmArz6FHY" class="github-link" target="_blank"><img
-                        src="Social-logo/discord-512.png" alt="Discord Server (Protein Shake)" width="30"
-                        height="30"></a>
-                &nbsp;
-                <a href="https://t.me/s/oUITS_ORnU" class="github-link" target="_blank"><img
-                        src="Social-logo/telegram-3-512.png"
-                        alt="Telegram Channel (oUITS - Online Resources and Updates)" width="30" height="30"></a>
-                &nbsp;
-                <a href="https://facebook.com/groups/1074592960836263/" class="github-link" target="_blank"><img
-                        src="Social-logo/facebook-7-512.png" alt="Facebook Group (oUITS - Online Resources)" width="30"
-                        height="30"></a>
-            </section>
-
-
-            <div class="other-repos" style="margin-bottom: 100px;">
-                <h2 class="section-title">Other Repositories</h2>
-                <div class="repos-grid">
-                    <div class="repo-card"
-                        onclick="window.open('https://github.com/oU1TS/CSE0613124-WAD-Lab', '_blank')">
-                        <div class="repo-icon">web</div>
-                        <h3 class="repo-title">CSE0613124-WAD-Lab</h3>
-                        <p class="repo-description">Web Application Design Lab Course</p>
-                    </div>
-
-                    <div class="repo-card"
-                        onclick="window.open('https://github.com/oU1TS/CSE0613112-SPL-Lab', '_blank')">
-                        <div class="repo-icon">SPL</div>
-                        <h3 class="repo-title">CSE0613112-SPL-Lab</h3>
-                        <p class="repo-description">Structured Programming Langugae Lab (using C)</p>
-                    </div>
-
-                    <div class="repo-card"
-                        onclick="window.open('https://github.com/oU1TS/CSE0612223-DSA-1-Lab', '_blank')">
-                        <div class="repo-icon">DSA1</div>
-                        <h3 class="repo-title">CSE0612223-DSA-1-Lab</h3>
-                        <p class="repo-description">Data Structures and Algorithms 1 lab</p>
-                    </div>
-
-                    <div class="repo-card"
-                        onclick="window.open('https://github.com/oU1TS/CSE0612216-DBMS-Lab', '_blank')">
-                        <div class="repo-icon">DB</div>
-                        <h3 class="repo-title">CSE0612216-DBMS-Lab</h3>
-                        <p class="repo-description">Database Management Systems Lab (using SQL)</p>
-                    </div>
-
-                    <div class="repo-card" onclick="window.open('https://github.com/oU1TS/CSE208-IP-Lab', '_blank')">
-                        <div class="repo-icon">PHP</div>
-                        <h3 class="repo-title">CSE208-IP-Lab</h3>
-                        <p class="repo-description">Internet Programming Lab</p>
-                    </div>
-
-                    <div class="repo-card" onclick="window.open('https://github.com/oU1TS/CSE252-DSA-2-Lab', '_blank')">
-                        <div class="repo-icon">DSA2</div>
-                        <h3 class="repo-title">CSE252-DSA-2-Lab</h3>
-                        <p class="repo-description">Data Structures and Algorithms 2 lab</p>
-                    </div>
-
-                    <div class="repo-card"
-                        onclick="window.open('https://github.com/oU1TS/CSE0613122-OOP-Lab', '_blank')">
-                        <div class="repo-icon">OOP</div>
-                        <h3 class="repo-title">CSE0613122-OOP-Lab</h3>
-                        <p class="repo-description">Object Oriented Programming Lab (using Java)</p>
-                    </div>
-
-                    <!-- <div class="repo-card" onclick="window.open('https://github.com/oU1TS/experiments', '_blank')">
-                        <div class="repo-icon">demo</div>
-                        <h3 class="repo-title">Experiments</h3>
-                        <p class="repo-description">Experimental features and proof-of-concepts</p>
-                    </div> -->
-                </div>
+                <!-- Hamburger button for mobile displays -->
+                <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
             </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar mobile menu -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="sidebar-header">
+            <a href="#home" class="sidebar-logo-link">oU1TS</a>
+            <button class="close-btn" id="closeBtn" aria-label="Close menu">&times;</button>
+        </div>
+        <div class="sidebar-links">
+            <a href="#home" class="sidebar-link active">Home</a>
+            <a href="#projects" class="sidebar-link">Projects</a>
+            <a href="#repos" class="sidebar-link">Unified Repo</a>
+            <a href="#about" class="sidebar-link">About</a>
         </div>
     </div>
 
-    <div class="container">
-        <header class="header">
-            <p class="tagline">"Open source isn't just code—it's proof of your potential."
-                <br><br><small><i>- ChatGPT said that</i></small>
-            </p>
-        </header>
+    <!-- SPA Sections Container -->
+    <div class="sections-wrapper">
+
+        <!-- 1. Home Section (starts active) -->
+        <section id="home" class="spa-section active">
+            <div class="container section-content">
+                <header class="header">
+                    <h1 class="logo">oU1TS</h1>
+                    <p class="tagline">Student Support Center</p>
+                    <a href="https://github.com/oU1TS" class="github-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-github" style="font-size: 1.2rem; margin-right: 4px;"></i>
+                        View on GitHub
+                    </a>
+                </header>
+
+                <div class="cta-wrapper">
+                    <a href="#projects" class="cta-btn" id="browseFeatures">Browse Features</a>
+                </div>
+            </div>
+
+            <!-- ChatGPT Quote Section taking up exactly 100vh -->
+            <div class="quote-viewport-section">
+                <div class="quote-content">
+                    <p class="quote-text">"Open source isn't just code—it's proof of your potential."</p>
+                    <p class="quote-author">- ChatGPT said that</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Primary Projects Section -->
+        <section id="projects" class="spa-section">
+            <div class="projects-header-container">
+                <h2 class="section-title">Primary Projects</h2>
+                <p class="section-subtitle">Our core web tools and directory hubs</p>
+            </div>
+
+            <div class="projects-section-container">
+                <button class="scroll-arrow prev-arrow" id="prevArrow" aria-label="Scroll left">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="scroll-arrow next-arrow" id="nextArrow" aria-label="Scroll right">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <div class="projects-scroll-wrapper">
+                    <div class="projects-grid-container" id="projectsGrid">
+                        <!-- Dynamically filled with Squircle cards from JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Unified Repo Section -->
+        <section id="repos" class="spa-section">
+            <div class="container section-content">
+                <div class="other-repos">
+                    <h2 class="section-title">Unified Repositories</h2>
+                    <p class="section-subtitle">Academic lab works and practical experiments</p>
+
+                    <div class="repos-grid">
+                        <a href="https://github.com/oU1TS/CSE0613124-WAD-Lab" target="_blank" rel="noopener noreferrer"
+                            class="repo-card">
+                            <div class="repo-icon"><i class="fa-solid fa-code"></i></div>
+                            <h3 class="repo-title">CSE0613124-WAD-Lab</h3>
+                            <p class="repo-description">Web Application Design Lab Course</p>
+                        </a>
+
+                        <a href="https://github.com/oU1TS/CSE0613112-SPL-Lab" target="_blank" rel="noopener noreferrer"
+                            class="repo-card">
+                            <div class="repo-icon"><i class="fa-solid fa-terminal"></i></div>
+                            <h3 class="repo-title">CSE0613112-SPL-Lab</h3>
+                            <p class="repo-description">Structured Programming Language Lab (using C)</p>
+                        </a>
+
+                        <a href="https://github.com/oU1TS/CSE0612223-DSA-1-Lab" target="_blank"
+                            rel="noopener noreferrer" class="repo-card">
+                            <div class="repo-icon"><i class="fa-solid fa-sitemap"></i></div>
+                            <h3 class="repo-title">CSE0612223-DSA-1-Lab</h3>
+                            <p class="repo-description">Data Structures and Algorithms 1 lab</p>
+                        </a>
+
+                        <a href="https://github.com/oU1TS/CSE0612216-DBMS-Lab" target="_blank" rel="noopener noreferrer"
+                            class="repo-card">
+                            <div class="repo-icon"><i class="fa-solid fa-database"></i></div>
+                            <h3 class="repo-title">CSE0612216-DBMS-Lab</h3>
+                            <p class="repo-description">Database Management Systems Lab (using SQL)</p>
+                        </a>
+
+                        <a href="https://github.com/oU1TS/CSE208-IP-Lab" target="_blank" rel="noopener noreferrer"
+                            class="repo-card">
+                            <div class="repo-icon"><i class="fa-brands fa-php"></i></div>
+                            <h3 class="repo-title">CSE208-IP-Lab</h3>
+                            <p class="repo-description">Internet Programming Lab</p>
+                        </a>
+
+                        <a href="https://github.com/oU1TS/CSE252-DSA-2-Lab" target="_blank" rel="noopener noreferrer"
+                            class="repo-card">
+                            <div class="repo-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                            <h3 class="repo-title">CSE252-DSA-2-Lab</h3>
+                            <p class="repo-description">Data Structures and Algorithms 2 lab</p>
+                        </a>
+
+                        <a href="https://github.com/oU1TS/CSE0613122-OOP-Lab" target="_blank" rel="noopener noreferrer"
+                            class="repo-card">
+                            <div class="repo-icon"><i class="fa-solid fa-cubes"></i></div>
+                            <h3 class="repo-title">CSE0613122-OOP-Lab</h3>
+                            <p class="repo-description">Object Oriented Programming Lab (using Java)</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. About Section -->
+        <section id="about" class="spa-section">
+            <div class="container section-content">
+                <h2 class="section-title">About oU1TS</h2>
+                <p class="section-subtitle">Connect with our student support ecosystem</p>
+
+                <!-- Relocated Rationale Card -->
+                <div class="rationale-card">
+                    <p class="rationale-paragraph">"oU1TS" is an initiative to build the foundation of an online
+                        student-centered community for UITS. We seek people who are inherently ambitious about their
+                        career and want to pursue a productive university life. No matter the struggles that lie in the
+                        face of reality.</p>
+                    <p class="rationale-paragraph">This portal is just another effort at listing projects regarding UITS
+                        from its students. It's a scalable project in a sense that new projects can be listed here in
+                        the future and there are practically limitless options to organize that list. There is an app
+                        version of this if anyone fancies that.</p>
+                    <p class="rationale-paragraph">Reach out to us in any of the social platforms (preferably
+                        Telegram/Discord) if you have any feedback or just want to talk about doing projects together.
+                    </p>
+                    <p class="rationale-signature">Jazakallahu khair, o wanderer of life!</p>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-card">
+                        <h3 class="about-card-title">Social Ecosystem</h3>
+                        <p class="about-card-desc">Reach out, discuss ideas, and work on open-source projects together.
+                        </p>
+
+                        <div class="social-links">
+                            <a href="https://facebook.com/groups/1074592960836263/" class="social-link-btn facebook"
+                                target="_blank" rel="noopener noreferrer">
+                                <i class="fa-brands fa-facebook-f" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                                Facebook
+                            </a>
+                            <a href="https://t.me/s/oUITS_ORnU" class="social-link-btn telegram" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fa-brands fa-telegram" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                                Telegram
+                            </a>
+                            <a href="https://github.com/oU1TS" class="social-link-btn github" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fa-brands fa-github" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                                GitHub
+                            </a>
+                            <a href="https://www.reddit.com" class="social-link-btn reddit" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fa-brands fa-reddit" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                                Reddit
+                            </a>
+                            <a href="https://discord.gg/BdmArz6FHY" class="social-link-btn discord" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fa-brands fa-discord" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                                Discord
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="about-card">
+                        <h3 class="about-card-title">Development & Support</h3>
+                        <p class="about-card-desc">Crafted with care to assist the UITS student community in organizing,
+                            exploring, and implementing computational projects.</p>
+
+                        <div class="dev-info">
+                            <p class="attribution">Developed by: <a href="https://github.com/b1tranger" target="_blank"
+                                    rel="noopener noreferrer" class="developer-link">b1tranger</a></p>
+                            <a href="https://b1tranger.bro.bd/index.html#support" class="support-btn" target="_blank"
+                                rel="noopener noreferrer">Support the Dev</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </div>
+
+    <!-- SVG Squircle clip-path container -->
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <clipPath id="squircle-clip" clipPathUnits="objectBoundingBox">
+                <path d="M 0.15,0.15 Q 0.5,0 0.85,0.15 Q 1,0.5 0.85,0.85 Q 0.5,1 0.15,0.85 Q 0,0.5 0.15,0.15 Z" />
+            </clipPath>
+        </defs>
+    </svg>
 
     <script src="index.js"></script>
 </body>
