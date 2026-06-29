@@ -103,10 +103,14 @@ body {
 }
 
 /* Remove tap highlight on mobile */
-body,
-.projects-grid-container {
+body {
     -webkit-tap-highlight-color: transparent;
     touch-action: pan-y;
+}
+
+.projects-grid-container {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-x pan-y;
 }
 
 /* Background elements */
