@@ -6,8 +6,9 @@ const primaryProjects = [
     { name: "Blood Donation", icon: "fa-solid fa-droplet", url: "https://bd-ou1ts.netlify.app/" },
     { name: "Scheduler", icon: "fa-solid fa-calendar-days", url: "https://b1tsched.netlify.app/" },
     { name: "Archive", icon: "fa-solid fa-boxes-packing", url: "https://b1tacad.netlify.app/" },
-    { name: "Events", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" }
-    , { name: "English Speaking", icon: "fa-regular fa-comments", url: "https://ou1ts.github.io/english/" }
+    { name: "Events", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" },
+    { name: "English Speaking", icon: "fa-regular fa-comments", url: "https://ou1ts.github.io/english/" },
+    { name: "QBank", icon: "fa-solid fa-file-circle-question", url: "https://ou1ts.github.io/qbank/" }
 
     // ,{ name: "", icon: "", url: "" }
 ];
