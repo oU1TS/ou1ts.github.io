@@ -32,13 +32,17 @@ The oU1TS website operates as a performance-oriented **Single Page Application (
 - **Inertial Momentum:** Dragging calculates scroll displacement velocity. On release, a recursive frame decay loop (`velocity *= 0.95`) glides the grid smoothly to a stop.
 - **Overlaid Controls:** Circular chevron navigations (`#prevArrow` and `#nextArrow`) sit on the outer gutters, remaining fixed on screen while cells slide beneath.
 
-### 3. iOS-Style Section Transitions
-- Sections fade in using a cubic-bezier ease (`sectionFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1)`).
-- Combines opacity shift (`0` to `1`), spatial scale-up (`0.985` to `1.0`), and a progressive blur sweep (`blur(4px)` to `blur(0)`) to create a premium, fluid transition effect.
+### 3. Hardware-Accelerated Section Transitions
+- Sections transition using a performant custom timing matching the home header intro (`sectionFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1)`).
+- Animates exclusively opacity (`0` to `1`) and a smooth vertical glide (`translateY(25px)` to `translateY(0)`). This matches the staggered entrance feel of the home logo while remaining fully hardware-accelerated.
 
 ### 4. Responsive Drawer Menu (Mobile)
 - Standard navbar links transition to a mobile hamburger toggle button on touch displays.
 - Clicking the hamburger slides out a high-blur sidebar drawer (`.sidebar-menu`) with a backdrop overlay.
+
+### 5. Global Scrollbar Hiding
+- Visual scrollbar widgets are hidden globally for all elements (`html`, `body`, and inner scrolling panels like the Projects carousel) using webkit and standard vendor overrides (`scrollbar-width: none` and `::-webkit-scrollbar { display: none; }`).
+- Standard vertical and horizontal track scrolling gestures/actions remain fully functional and active.
 
 ---
 
@@ -90,7 +94,7 @@ The background stars and floating circles dynamically transition when switching 
 - Wrapped `pushState` in safety handlers to support local `file://` runs without console crashes.
 - Implemented dynamic script loaders in `index.js` to asynchronously resolve `env-config.js` and Supabase SDK CDN dependencies.
 - Synced About section "Join oU1TS" CTA button styling to match primary branding.
-- Added iOS-style blur-scale-fade transitions to tab switching.
+- Implemented hardware-accelerated fade-in/slide-up section transitions.
 
 ### **v2.0.0 (Redesign Milestone)**
 - Migrated multi-page structures into a fluid Single Page Application (SPA).
