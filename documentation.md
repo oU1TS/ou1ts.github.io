@@ -6,15 +6,18 @@ Welcome to the technical documentation for the redesigned **oU1TS Student Suppor
 
 ## 🛠️ Architecture & Technology Stack
 
-The oU1TS website has been redesigned from a static landing page into a modern, performance-oriented **Single Page Application (SPA)** using:
+The oU1TS website operates as a performance-oriented **Single Page Application (SPA)** using:
 1. **Core:** Semantic HTML5, Vanilla JavaScript (ES6+).
 2. **Styling:** Custom Vanilla CSS utilizing CSS Custom Variables (`:root` & `body.light-mode`) for absolute runtime design consistency and instant theme switching.
 3. **Icons:** Vector rendering using **Font Awesome v6.4.0** CDN for unified branding.
 4. **Visual Effects:** Canvas/DOM-based twinkling starfields and moving gradient bubbles with subtle parallax motion.
+5. **Database & Auth (Hybrid):** 
+   - **Supabase Client SDK:** Leveraged for user signup, login, OAuth (Google), and profile persistence when variables are configured.
+   - **Local Mock Database Fallback:** A robust, `localStorage`-backed engine that automatically seeds and runs a local database simulation if Supabase config is missing or uses default placeholders.
 
 ---
 
-## 🎨 Layout & Animations
+## 🎨 Layout, Navigation & Animations
 
 ### 1. Vertical Snap-Scrolling (Home Fold)
 - The primary **Home** section occupies exactly `100vh`.
@@ -29,9 +32,34 @@ The oU1TS website has been redesigned from a static landing page into a modern, 
 - **Inertial Momentum:** Dragging calculates scroll displacement velocity. On release, a recursive frame decay loop (`velocity *= 0.95`) glides the grid smoothly to a stop.
 - **Overlaid Controls:** Circular chevron navigations (`#prevArrow` and `#nextArrow`) sit on the outer gutters, remaining fixed on screen while cells slide beneath.
 
-### 3. Responsive Drawer Menu (Mobile)
+### 3. iOS-Style Section Transitions
+- Sections fade in using a cubic-bezier ease (`sectionFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1)`).
+- Combines opacity shift (`0` to `1`), spatial scale-up (`0.985` to `1.0`), and a progressive blur sweep (`blur(4px)` to `blur(0)`) to create a premium, fluid transition effect.
+
+### 4. Responsive Drawer Menu (Mobile)
 - Standard navbar links transition to a mobile hamburger toggle button on touch displays.
-- Clicking the hamburger slides out a high-blur sidebar drawer (`.sidebar-menu`) with an backdrop overlay.
+- Clicking the hamburger slides out a high-blur sidebar drawer (`.sidebar-menu`) with a backdrop overlay.
+
+---
+
+## 🔐 Authentication & User Profiles (v3.0.0)
+
+### 1. Dynamic Script Loader
+To prevent blocked rendering or slow loading times when offline, dependencies are fetched asynchronously:
+- **`loadEnvConfig()`**: Checks for the gitignored `env-config.js` file and loads it dynamically. If absent, it automatically defines a safe fallback with configuration placeholders.
+- **`loadSupabaseScript()`**: Asynchronously injects the Supabase SDK CDN only if live configuration parameters are detected.
+- If dependencies are missing or CDN loading fails, the system automatically falls back to the **Local Mock Database** without raising execution errors or blocking index rendering.
+
+### 2. Input Validation Rules
+- **Student ID:** Strictly numeric digits (enforced via regular expressions/HTML patterns).
+- **Blood Group:** Enforced as uppercase alphabets followed by a positive or negative symbol (e.g., `A+`, `B-`, `O+`, `AB-`).
+- **Department Options:** Supported select dropdowns include `CSE`, `IT`, `EEE`, `Civil`, `Pharmacy`, `BBA`, `English`, and `Law`.
+
+### 3. State Synchronization
+- Nav links dynamically update based on user authentication status:
+  - **Logged Out:** Shows a **Login** link with a user lock icon (`fa-user-lock`) directing to the login form (`#auth`).
+  - **Logged In:** Switches to a **Profile** link with a gear icon (`fa-user-gear`) directing to the profile card (`#profile`).
+- **Local Scheme Guard:** `history.pushState` operations are enclosed in `try-catch` blocks to protect local browser tests (such as opening `index.html` via the `file://` protocol) from crashing due to origin constraints.
 
 ---
 
@@ -51,6 +79,18 @@ The background stars and floating circles dynamically transition when switching 
 ---
 
 ## 📜 Version History
+
+### **v3.0.0 (Authentication & Profile Milestone)**
+- Introduced the **User Authentication & Profile Engine** supporting user logins, registration, profile viewing, and profile updates.
+- Implemented **Local Mock Database Fallback** (storing users in `localStorage`) enabling out-of-the-box offline simulations.
+- Pre-seeded local user database with a test account (`test@uits.edu.bd` / `password123`).
+- Added strict format constraints for Student IDs (numeric) and Blood Groups (alphabetical + symbol).
+- Added `Civil` and `IT` departments to registration forms.
+- Replaced manual hash redirects with a global `window.switchTab` transition engine.
+- Wrapped `pushState` in safety handlers to support local `file://` runs without console crashes.
+- Implemented dynamic script loaders in `index.js` to asynchronously resolve `env-config.js` and Supabase SDK CDN dependencies.
+- Synced About section "Join oU1TS" CTA button styling to match primary branding.
+- Added iOS-style blur-scale-fade transitions to tab switching.
 
 ### **v2.0.0 (Redesign Milestone)**
 - Migrated multi-page structures into a fluid Single Page Application (SPA).

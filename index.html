@@ -26,6 +26,8 @@
                 <a href="#projects" class="nav-link">Projects</a>
                 <a href="#repos" class="nav-link">Unified Repo</a>
                 <a href="#about" class="nav-link">About</a>
+                <a href="#auth" class="nav-link" id="navAuthLink"><i class="fa-solid fa-user-lock"
+                        style="margin-right: 6px; font-size: 0.9em;"></i>Login</a>
             </div>
 
             <div class="nav-actions">
@@ -56,204 +58,493 @@
             <a href="#projects" class="sidebar-link">Projects</a>
             <a href="#repos" class="sidebar-link">Unified Repo</a>
             <a href="#about" class="sidebar-link">About</a>
+            <a href="#auth" class="sidebar-link" id="sidebarAuthLink"><i class="fa-solid fa-user-lock"
+                    style="margin-right: 8px;"></i>Login</a>
         </div>
         <hr class="sidebar-divider">
         <div class="sidebar-join">
-            <a href="https://forms.gle/treGsBbsE3UTFUos9" class="sidebar-join-btn" target="_blank"
+            <a href="https://forms.gle/treGsBbsE3UTFUos9" class="sidebar-join-btn cta-btn" target="_blank"
                 rel="noopener noreferrer">
                 <i class="fa-solid fa-handshake" style="margin-right: 8px;"></i>Join oU1TS
             </a>
         </div>
     </div>
 
-    <!-- SPA Sections Container -->
-    <div class="sections-wrapper">
 
-        <!-- 1. Home Section (starts active) -->
-        <section id="home" class="spa-section active">
-            <div class="container section-content">
-                <header class="header">
-                    <h1 class="logo">oU1TS</h1>
-                    <p class="tagline">Student Support Center</p>
-                    <a href="https://github.com/oU1TS" class="github-link" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-brands fa-github" style="font-size: 1.2rem; margin-right: 4px;"></i>
-                        View on GitHub
+    <!-- 1. Home Section (starts active) -->
+    <section id="home" class="spa-section active">
+        <div class="container section-content">
+            <header class="header">
+                <h1 class="logo">oU1TS</h1>
+                <p class="tagline">Student Support Center</p>
+                <a href="https://github.com/oU1TS" class="github-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-brands fa-github" style="font-size: 1.2rem; margin-right: 4px;"></i>
+                    View on GitHub
+                </a>
+            </header>
+
+            <div class="cta-wrapper">
+                <a href="#projects" class="cta-btn" id="browseFeatures">Browse oU1TS</a>
+            </div>
+        </div>
+
+        <!-- ChatGPT Quote Section taking up exactly 100vh -->
+        <div class="quote-viewport-section">
+            <div class="quote-content">
+                <p class="quote-text">"Open source isn't just code—it's proof of your potential."</p>
+                <p class="quote-author">- ChatGPT said that</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Primary Projects Section -->
+    <section id="projects" class="spa-section">
+        <div class="projects-header-container">
+            <h2 class="section-title">Primary Projects</h2>
+            <p class="section-subtitle">Our core web tools and directory hubs</p>
+        </div>
+
+        <div class="projects-section-container">
+            <button class="scroll-arrow prev-arrow" id="prevArrow" aria-label="Scroll left">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="scroll-arrow next-arrow" id="nextArrow" aria-label="Scroll right">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <div class="projects-scroll-wrapper">
+                <div class="projects-grid-container" id="projectsGrid">
+                    <!-- Dynamically filled with Squircle cards from JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Unified Repo Section -->
+    <section id="repos" class="spa-section">
+        <div class="container section-content">
+            <div class="other-repos">
+                <h2 class="section-title">Unified Repositories</h2>
+                <p class="section-subtitle">Academic lab works and practical experiments</p>
+
+                <div class="repos-grid">
+                    <a href="https://github.com/oU1TS/CSE0613124-WAD-Lab" target="_blank" rel="noopener noreferrer"
+                        class="repo-card">
+                        <div class="repo-icon"><i class="fa-solid fa-code"></i></div>
+                        <h3 class="repo-title">CSE0613124-WAD-Lab</h3>
+                        <p class="repo-description">Web Application Design Lab Course</p>
                     </a>
-                </header>
 
-                <div class="cta-wrapper">
-                    <a href="#projects" class="cta-btn" id="browseFeatures">Browse oU1TS</a>
+                    <a href="https://github.com/oU1TS/CSE0613112-SPL-Lab" target="_blank" rel="noopener noreferrer"
+                        class="repo-card">
+                        <div class="repo-icon"><i class="fa-solid fa-terminal"></i></div>
+                        <h3 class="repo-title">CSE0613112-SPL-Lab</h3>
+                        <p class="repo-description">Structured Programming Language Lab (using C)</p>
+                    </a>
+
+                    <a href="https://github.com/oU1TS/CSE0612223-DSA-1-Lab" target="_blank" rel="noopener noreferrer"
+                        class="repo-card">
+                        <div class="repo-icon"><i class="fa-solid fa-sitemap"></i></div>
+                        <h3 class="repo-title">CSE0612223-DSA-1-Lab</h3>
+                        <p class="repo-description">Data Structures and Algorithms 1 lab</p>
+                    </a>
+
+                    <a href="https://github.com/oU1TS/CSE0612216-DBMS-Lab" target="_blank" rel="noopener noreferrer"
+                        class="repo-card">
+                        <div class="repo-icon"><i class="fa-solid fa-database"></i></div>
+                        <h3 class="repo-title">CSE0612216-DBMS-Lab</h3>
+                        <p class="repo-description">Database Management Systems Lab (using SQL)</p>
+                    </a>
+
+                    <a href="https://github.com/oU1TS/CSE208-IP-Lab" target="_blank" rel="noopener noreferrer"
+                        class="repo-card">
+                        <div class="repo-icon"><i class="fa-brands fa-php"></i></div>
+                        <h3 class="repo-title">CSE208-IP-Lab</h3>
+                        <p class="repo-description">Internet Programming Lab</p>
+                    </a>
+
+                    <a href="https://github.com/oU1TS/CSE252-DSA-2-Lab" target="_blank" rel="noopener noreferrer"
+                        class="repo-card">
+                        <div class="repo-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                        <h3 class="repo-title">CSE252-DSA-2-Lab</h3>
+                        <p class="repo-description">Data Structures and Algorithms 2 lab</p>
+                    </a>
+
+                    <a href="https://github.com/oU1TS/CSE0613122-OOP-Lab" target="_blank" rel="noopener noreferrer"
+                        class="repo-card">
+                        <div class="repo-icon"><i class="fa-solid fa-cubes"></i></div>
+                        <h3 class="repo-title">CSE0613122-OOP-Lab</h3>
+                        <p class="repo-description">Object Oriented Programming Lab (using Java)</p>
+                    </a>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- ChatGPT Quote Section taking up exactly 100vh -->
-            <div class="quote-viewport-section">
-                <div class="quote-content">
-                    <p class="quote-text">"Open source isn't just code—it's proof of your potential."</p>
-                    <p class="quote-author">- ChatGPT said that</p>
-                </div>
+    <!-- 4. About Section -->
+    <section id="about" class="spa-section">
+        <div class="container section-content">
+            <h2 class="section-title">About oU1TS</h2>
+            <p class="section-subtitle">Connect with our student support ecosystem</p>
+
+            <!-- Relocated Rationale Card -->
+            <div class="rationale-card">
+                <p class="rationale-paragraph">"oU1TS" is an initiative to build the foundation of an online
+                    student-centered community for UITS. We seek people who are inherently ambitious about their
+                    career and want to pursue a productive university life. No matter the struggles that lie in the
+                    face of reality.</p>
+
+                <p class="rationale-paragraph">Reach out to us in any of the social platforms (preferably
+                    Telegram/Discord) if you have any feedback or just want to talk about doing projects together.
+                </p>
+                <p class="rationale-signature">Jazakallahu khair, o wanderer of life!</p>
+                <p style="text-align: right;"><a href="https://forms.gle/treGsBbsE3UTFUos9" class="rationale-join-btn"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-handshake" style="margin-right: 8px;"></i>Join oU1TS
+                    </a></p>
             </div>
-        </section>
 
-        <!-- 2. Primary Projects Section -->
-        <section id="projects" class="spa-section">
-            <div class="projects-header-container">
-                <h2 class="section-title">Primary Projects</h2>
-                <p class="section-subtitle">Our core web tools and directory hubs</p>
-            </div>
-
-            <div class="projects-section-container">
-                <button class="scroll-arrow prev-arrow" id="prevArrow" aria-label="Scroll left">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                <button class="scroll-arrow next-arrow" id="nextArrow" aria-label="Scroll right">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-
-                <div class="projects-scroll-wrapper">
-                    <div class="projects-grid-container" id="projectsGrid">
-                        <!-- Dynamically filled with Squircle cards from JS -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 3. Unified Repo Section -->
-        <section id="repos" class="spa-section">
-            <div class="container section-content">
-                <div class="other-repos">
-                    <h2 class="section-title">Unified Repositories</h2>
-                    <p class="section-subtitle">Academic lab works and practical experiments</p>
-
-                    <div class="repos-grid">
-                        <a href="https://github.com/oU1TS/CSE0613124-WAD-Lab" target="_blank" rel="noopener noreferrer"
-                            class="repo-card">
-                            <div class="repo-icon"><i class="fa-solid fa-code"></i></div>
-                            <h3 class="repo-title">CSE0613124-WAD-Lab</h3>
-                            <p class="repo-description">Web Application Design Lab Course</p>
-                        </a>
-
-                        <a href="https://github.com/oU1TS/CSE0613112-SPL-Lab" target="_blank" rel="noopener noreferrer"
-                            class="repo-card">
-                            <div class="repo-icon"><i class="fa-solid fa-terminal"></i></div>
-                            <h3 class="repo-title">CSE0613112-SPL-Lab</h3>
-                            <p class="repo-description">Structured Programming Language Lab (using C)</p>
-                        </a>
-
-                        <a href="https://github.com/oU1TS/CSE0612223-DSA-1-Lab" target="_blank"
-                            rel="noopener noreferrer" class="repo-card">
-                            <div class="repo-icon"><i class="fa-solid fa-sitemap"></i></div>
-                            <h3 class="repo-title">CSE0612223-DSA-1-Lab</h3>
-                            <p class="repo-description">Data Structures and Algorithms 1 lab</p>
-                        </a>
-
-                        <a href="https://github.com/oU1TS/CSE0612216-DBMS-Lab" target="_blank" rel="noopener noreferrer"
-                            class="repo-card">
-                            <div class="repo-icon"><i class="fa-solid fa-database"></i></div>
-                            <h3 class="repo-title">CSE0612216-DBMS-Lab</h3>
-                            <p class="repo-description">Database Management Systems Lab (using SQL)</p>
-                        </a>
-
-                        <a href="https://github.com/oU1TS/CSE208-IP-Lab" target="_blank" rel="noopener noreferrer"
-                            class="repo-card">
-                            <div class="repo-icon"><i class="fa-brands fa-php"></i></div>
-                            <h3 class="repo-title">CSE208-IP-Lab</h3>
-                            <p class="repo-description">Internet Programming Lab</p>
-                        </a>
-
-                        <a href="https://github.com/oU1TS/CSE252-DSA-2-Lab" target="_blank" rel="noopener noreferrer"
-                            class="repo-card">
-                            <div class="repo-icon"><i class="fa-solid fa-diagram-project"></i></div>
-                            <h3 class="repo-title">CSE252-DSA-2-Lab</h3>
-                            <p class="repo-description">Data Structures and Algorithms 2 lab</p>
-                        </a>
-
-                        <a href="https://github.com/oU1TS/CSE0613122-OOP-Lab" target="_blank" rel="noopener noreferrer"
-                            class="repo-card">
-                            <div class="repo-icon"><i class="fa-solid fa-cubes"></i></div>
-                            <h3 class="repo-title">CSE0613122-OOP-Lab</h3>
-                            <p class="repo-description">Object Oriented Programming Lab (using Java)</p>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 4. About Section -->
-        <section id="about" class="spa-section">
-            <div class="container section-content">
-                <h2 class="section-title">About oU1TS</h2>
-                <p class="section-subtitle">Connect with our student support ecosystem</p>
-
-                <!-- Relocated Rationale Card -->
-                <div class="rationale-card">
-                    <p class="rationale-paragraph">"oU1TS" is an initiative to build the foundation of an online
-                        student-centered community for UITS. We seek people who are inherently ambitious about their
-                        career and want to pursue a productive university life. No matter the struggles that lie in the
-                        face of reality.</p>
-
-                    <p class="rationale-paragraph">Reach out to us in any of the social platforms (preferably
-                        Telegram/Discord) if you have any feedback or just want to talk about doing projects together.
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3 class="about-card-title">Social Ecosystem</h3>
+                    <p class="about-card-desc">Reach out, discuss ideas, and work on open-source projects together.
                     </p>
-                    <p class="rationale-signature">Jazakallahu khair, o wanderer of life!</p>
-                    <p style="text-align: right;"><a href="https://forms.gle/treGsBbsE3UTFUos9"
-                            class="rationale-join-btn" target="_blank" rel="noopener noreferrer">
-                            <i class="fa-solid fa-handshake" style="margin-right: 8px;"></i>Join oU1TS
-                        </a></p>
+
+                    <div class="social-links">
+                        <a href="https://facebook.com/groups/1074592960836263/" class="social-link-btn facebook"
+                            target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-facebook-f" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                            Facebook
+                        </a>
+                        <a href="https://t.me/s/oUITS_ORnU" class="social-link-btn telegram" target="_blank"
+                            rel="noopener noreferrer">
+                            <i class="fa-brands fa-telegram" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                            Telegram
+                        </a>
+                        <a href="https://github.com/oU1TS" class="social-link-btn github" target="_blank"
+                            rel="noopener noreferrer">
+                            <i class="fa-brands fa-github" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                            GitHub
+                        </a>
+                        <a href="https://www.reddit.com" class="social-link-btn reddit" target="_blank"
+                            rel="noopener noreferrer">
+                            <i class="fa-brands fa-reddit" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                            Reddit
+                        </a>
+                        <a href="https://discord.gg/BdmArz6FHY" class="social-link-btn discord" target="_blank"
+                            rel="noopener noreferrer">
+                            <i class="fa-brands fa-discord" style="font-size: 1.1rem; margin-right: 6px;"></i>
+                            Discord
+                        </a>
+                    </div>
                 </div>
 
-                <div class="about-grid">
-                    <div class="about-card">
-                        <h3 class="about-card-title">Social Ecosystem</h3>
-                        <p class="about-card-desc">Reach out, discuss ideas, and work on open-source projects together.
-                        </p>
+                <div class="about-card">
+                    <h3 class="about-card-title">Development & Support</h3>
+                    <p class="about-card-desc">Crafted with care to assist the UITS student community in organizing,
+                        exploring, and implementing computational projects.</p>
 
-                        <div class="social-links">
-                            <a href="https://facebook.com/groups/1074592960836263/" class="social-link-btn facebook"
-                                target="_blank" rel="noopener noreferrer">
-                                <i class="fa-brands fa-facebook-f" style="font-size: 1.1rem; margin-right: 6px;"></i>
-                                Facebook
-                            </a>
-                            <a href="https://t.me/s/oUITS_ORnU" class="social-link-btn telegram" target="_blank"
-                                rel="noopener noreferrer">
-                                <i class="fa-brands fa-telegram" style="font-size: 1.1rem; margin-right: 6px;"></i>
-                                Telegram
-                            </a>
-                            <a href="https://github.com/oU1TS" class="social-link-btn github" target="_blank"
-                                rel="noopener noreferrer">
-                                <i class="fa-brands fa-github" style="font-size: 1.1rem; margin-right: 6px;"></i>
-                                GitHub
-                            </a>
-                            <a href="https://www.reddit.com" class="social-link-btn reddit" target="_blank"
-                                rel="noopener noreferrer">
-                                <i class="fa-brands fa-reddit" style="font-size: 1.1rem; margin-right: 6px;"></i>
-                                Reddit
-                            </a>
-                            <a href="https://discord.gg/BdmArz6FHY" class="social-link-btn discord" target="_blank"
-                                rel="noopener noreferrer">
-                                <i class="fa-brands fa-discord" style="font-size: 1.1rem; margin-right: 6px;"></i>
-                                Discord
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="about-card">
-                        <h3 class="about-card-title">Development & Support</h3>
-                        <p class="about-card-desc">Crafted with care to assist the UITS student community in organizing,
-                            exploring, and implementing computational projects.</p>
-
-                        <div class="dev-info">
-                            <p class="attribution">Developed by: <a href="https://github.com/b1tranger" target="_blank"
-                                    rel="noopener noreferrer" class="developer-link">b1tranger</a></p>
-                            <a href="https://b1tranger.bro.bd/index.html#support" class="support-btn" target="_blank"
-                                rel="noopener noreferrer">Support the Dev</a>
-                        </div>
+                    <div class="dev-info">
+                        <p class="attribution">Developed by: <a href="https://github.com/b1tranger" target="_blank"
+                                rel="noopener noreferrer" class="developer-link">b1tranger</a></p>
+                        <a href="https://b1tranger.bro.bd/index.html#support" class="support-btn" target="_blank"
+                            rel="noopener noreferrer">Support the Dev</a>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-    </div>
+    <!-- 5. User Registration/Login Section -->
+    <section id="auth" class="spa-section">
+        <div class="container section-content">
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tabLoginBtn">Login</button>
+                    <button class="auth-tab" id="tabRegisterBtn">Register</button>
+                </div>
+
+                <!-- Alert message box -->
+                <div class="auth-alert" id="authAlert" style="display: none;"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="loginEmail" placeholder="you@uits.edu.bd" required
+                                autocomplete="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="loginPassword" placeholder="••••••••" required
+                                autocomplete="current-password">
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">
+                        <span class="btn-text">Sign In</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" class="auth-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="registerName">Full Name</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user input-icon"></i>
+                                <input type="text" id="registerName" placeholder="John Doe" required
+                                    autocomplete="name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope input-icon"></i>
+                                <input type="email" id="registerEmail" placeholder="student@uits.edu.bd" required
+                                    autocomplete="email">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="registerPassword" placeholder="At least 6 characters"
+                                    required autocomplete="new-password" minlength="6">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerStudentId">Student ID</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-id-card input-icon"></i>
+                                <input type="text" id="registerStudentId" placeholder="e.g. 0432410005" required
+                                    pattern="^[0-9]+$" title="Student ID must contain only digits">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerDept">Department</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                <select id="registerDept" required>
+                                    <option value="" disabled selected>Select Department</option>
+                                    <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                    <option value="IT">Information Technology (IT)</option>
+                                    <option value="EEE">Electrical & Electronic Engineering (EEE)</option>
+                                    <option value="Civil">Civil Engineering</option>
+                                    <option value="Pharmacy">Pharmacy</option>
+                                    <option value="BBA">Business Administration (BBA)</option>
+                                    <option value="English">English</option>
+                                    <option value="Law">Law</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">
+                        <span class="btn-text">Create Account</span>
+                        <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+
+                <!-- Social Login -->
+                <button class="oauth-btn" id="googleLoginBtn">
+                    <i class="fa-brands fa-google oauth-icon"></i>
+                    Sign In with Google
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. User Profile Section -->
+    <section id="profile" class="spa-section">
+        <div class="container section-content">
+            <div class="profile-card">
+                <!-- Profile Read View -->
+                <div id="profileReadView">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profileAvatar">U</div>
+                        <h2 class="profile-name" id="displayName">User Name</h2>
+                        <p class="profile-tagline" id="displayDeptAndBatch">CSE • Batch N/A</p>
+                        <div class="profile-badges" id="profileBadges">
+                            <span class="profile-badge">Root</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fa-regular fa-envelope"></i> Email</span>
+                            <span class="detail-value" id="displayEmail">email@uits.edu.bd</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fa-solid fa-id-card"></i> Student ID</span>
+                            <span class="detail-value" id="displayStudentId">0432410005</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fa-solid fa-graduation-cap"></i> Department</span>
+                            <span class="detail-value" id="displayDept">CSE</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fa-solid fa-layer-group"></i> Batch</span>
+                            <span class="detail-value" id="displayBatch">N/A</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fa-solid fa-droplet"></i> Blood Group</span>
+                            <span class="detail-value" id="displayBlood">N/A</span>
+                        </div>
+                    </div>
+
+                    <div class="social-handles-container">
+                        <h3 class="social-header">Social Media Links</h3>
+                        <div class="social-grid">
+                            <a id="linkFacebook" href="#" target="_blank" rel="noopener noreferrer"
+                                class="social-profile-link facebook disabled">
+                                <i class="fa-brands fa-facebook-f"></i> Facebook
+                            </a>
+                            <a id="linkInstagram" href="#" target="_blank" rel="noopener noreferrer"
+                                class="social-profile-link instagram disabled">
+                                <i class="fa-brands fa-instagram"></i> Instagram
+                            </a>
+                            <a id="linkTelegram" href="#" target="_blank" rel="noopener noreferrer"
+                                class="social-profile-link telegram disabled">
+                                <i class="fa-brands fa-telegram"></i> Telegram
+                            </a>
+                            <a id="linkDiscord" href="#" target="_blank" rel="noopener noreferrer"
+                                class="social-profile-link discord disabled">
+                                <i class="fa-brands fa-discord"></i> Discord
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <button class="profile-btn secondary-btn" id="editProfileBtn">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+                        </button>
+                        <button class="profile-btn danger-btn" id="logoutBtn">
+                            <i class="fa-solid fa-right-from-bracket"></i> Log Out
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Profile Edit Form -->
+                <form id="profileEditForm" style="display: none;">
+                    <h2 class="edit-profile-title">Edit Profile Information</h2>
+
+                    <!-- Alert message box for edit -->
+                    <div class="auth-alert" id="profileAlert" style="display: none;"></div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="editName">Full Name</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user input-icon"></i>
+                                <input type="text" id="editName" placeholder="Full Name" required autocomplete="name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editStudentId">Student ID</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-id-card input-icon"></i>
+                                <input type="text" id="editStudentId" placeholder="Numeric Student ID" required
+                                    pattern="^[0-9]+$" title="Student ID must contain only digits">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDept">Department</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                <select id="editDept" required>
+                                    <option value="" disabled>Select Department</option>
+                                    <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                    <option value="IT">Information Technology (IT)</option>
+                                    <option value="EEE">Electrical & Electronic Engineering (EEE)</option>
+                                    <option value="Civil">Civil Engineering</option>
+                                    <option value="Pharmacy">Pharmacy</option>
+                                    <option value="BBA">Business Administration (BBA)</option>
+                                    <option value="English">English</option>
+                                    <option value="Law">Law</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editBatch">Batch</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-layer-group input-icon"></i>
+                                <input type="text" id="editBatch" placeholder="e.g. 61" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editBlood">Blood Group</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-droplet input-icon"></i>
+                                <select id="editBlood" required>
+                                    <option value="" disabled selected>Select Blood Group</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-edit-container">
+                        <h3 class="social-header">Social Links / Handles</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="editFacebook"><i class="fa-brands fa-facebook-f"></i> Facebook Profile
+                                    URL</label>
+                                <div class="input-wrapper">
+                                    <input type="url" id="editFacebook" placeholder="https://facebook.com/username">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editInstagram"><i class="fa-brands fa-instagram"></i> Instagram Profile
+                                    URL</label>
+                                <div class="input-wrapper">
+                                    <input type="url" id="editInstagram" placeholder="https://instagram.com/username">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTelegram"><i class="fa-brands fa-telegram"></i> Telegram Username /
+                                    Link</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="editTelegram" placeholder="e.g. t.me/username or username">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editDiscord"><i class="fa-brands fa-discord"></i> Discord Handle</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="editDiscord" placeholder="e.g. username#1234 or username">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <button type="submit" class="profile-btn success-btn">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                        </button>
+                        <button type="button" class="profile-btn secondary-btn" id="cancelEditBtn">
+                            <i class="fa-solid fa-xmark"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
 
     <!-- SVG Squircle clip-path container -->
     <svg width="0" height="0" style="position: absolute;">
