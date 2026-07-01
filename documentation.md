@@ -65,6 +65,10 @@ To prevent blocked rendering or slow loading times when offline, dependencies ar
   - **Logged In:** Switches to a **Profile** link with a gear icon (`fa-user-gear`) directing to the profile card (`#profile`).
 - **Local Scheme Guard:** `history.pushState` operations are enclosed in `try-catch` blocks to protect local browser tests (such as opening `index.html` via the `file://` protocol) from crashing due to origin constraints.
 
+### 4. Database Schema & Setup
+- The Supabase SQL script is located in [user_profile_schema.sql](file:///c:/Users/gsmur/Documents/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/idea/user_profile_schema.sql).
+- A detailed guide to setting up and configuring the database tables, policies, and triggers on the Supabase dashboard can be found in [supabase_setup_guide.md](file:///c:/Users/gsmur/Documents/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/idea/supabase_setup_guide.md).
+
 ---
 
 ## 🌓 Theme & Animation Variables
