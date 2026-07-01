@@ -67,7 +67,7 @@ To prevent blocked rendering or slow loading times when offline, dependencies ar
 
 ### 4. Database Schema & Setup
 - The Supabase SQL script is located in [user_profile_schema.sql](file:///c:/Users/gsmur/Documents/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/idea/user_profile_schema.sql).
-- A detailed guide to setting up and configuring the database tables, policies, and triggers on the Supabase dashboard can be found in [supabase_setup_guide.md](file:///c:/Users/gsmur/Documents/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/idea/supabase_setup_guide.md).
+- A detailed guide to setting up and configuring the database tables, policies, and triggers on the Supabase dashboard can be found in [supabase_setup_guide.md](file:///c:/Users/gsmur/Documents/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/db/supabase_setup_guide.md).
 
 ---
 
