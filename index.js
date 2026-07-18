@@ -8,7 +8,8 @@ const primaryProjects = [
     { name: "Archive", icon: "fa-solid fa-boxes-packing", url: "https://b1tacad.netlify.app/" },
     { name: "Events", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" },
     { name: "English Speaking", icon: "fa-regular fa-comments", url: "https://ou1ts.github.io/english/" },
-    { name: "QBank", icon: "fa-solid fa-file-circle-question", url: "https://ou1ts.github.io/qbank/" }
+    { name: "QBank", icon: "fa-solid fa-file-circle-question", url: "https://ou1ts.github.io/qbank/" },
+    { name: "Courses", icon: "fa-regular fa-compass", url: "https://ou1ts.github.io/course/" }
 
     // ,{ name: "", icon: "", url: "" }
 ];
@@ -277,7 +278,7 @@ function initNavigation() {
             }, 60);
         }
     }
-    
+
     // Expose switchTab globally for programmatic redirects
     window.switchTab = switchTab;
 
@@ -429,15 +430,15 @@ function loadSupabaseScript() {
 }
 
 const isSupabaseConfigured = () => {
-    return window.supabase && window.__ENV && window.__ENV.SUPABASE_URL && 
-           window.__ENV.SUPABASE_ANON_KEY && 
-           !window.__ENV.SUPABASE_URL.includes("your-supabase-project");
+    return window.supabase && window.__ENV && window.__ENV.SUPABASE_URL &&
+        window.__ENV.SUPABASE_ANON_KEY &&
+        !window.__ENV.SUPABASE_URL.includes("your-supabase-project");
 };
 
 function updateNavLinksForAuth(isLoggedIn) {
     const navAuthLink = document.getElementById('navAuthLink');
     const sidebarAuthLink = document.getElementById('sidebarAuthLink');
-    
+
     if (isLoggedIn) {
         if (navAuthLink) {
             navAuthLink.innerHTML = '<i class="fa-solid fa-user-gear" style="margin-right: 6px; font-size: 0.9em;"></i>Profile';
@@ -567,7 +568,7 @@ async function updateProfile(profileData) {
     if (supabase) {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("No authenticated session found.");
-        
+
         const { error } = await supabase.from('profiles').update({
             full_name: profileData.full_name,
             student_id: profileData.student_id,
@@ -580,14 +581,14 @@ async function updateProfile(profileData) {
             social_discord: profileData.social_discord,
             updated_at: new Date().toISOString()
         }).eq('id', user.id);
-        
+
         if (error) throw error;
     } else {
         const session = localStorage.getItem('mock_session');
         if (!session) throw new Error("No authenticated session found.");
         const users = JSON.parse(localStorage.getItem('mock_users') || '{}');
         if (!users[session]) throw new Error("User profile not found.");
-        
+
         users[session].profile = {
             ...users[session].profile,
             full_name: profileData.full_name,
@@ -686,7 +687,7 @@ function populateProfileUI(profile) {
     if (displayDept) displayDept.innerText = profile.department || 'N/A';
     if (displayBatch) displayBatch.innerText = profile.batch || 'N/A';
     if (displayBlood) displayBlood.innerText = profile.blood_group || 'N/A';
-    
+
     if (profileAvatar) {
         const nameParts = (profile.full_name || 'U').split(' ');
         const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
@@ -775,7 +776,7 @@ async function initAuthSystem() {
             if (window.supabase && window.supabase.createClient) {
                 supabase = window.supabase.createClient(window.__ENV.SUPABASE_URL, window.__ENV.SUPABASE_ANON_KEY);
                 console.log("Supabase Client initialized successfully.");
-                
+
                 // Listen for auth state changes on Supabase
                 supabase.auth.onAuthStateChange(async (event, session) => {
                     console.log("Supabase Auth State Changed:", event);
@@ -855,10 +856,10 @@ async function initAuthSystem() {
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Signing In...';
 
                 await signInUser(email, password);
-                
+
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = origText;
-                
+
                 showAuthAlert("Login successful!", "success", "authAlert");
                 setTimeout(async () => {
                     await syncAuthStatus('#profile');
@@ -933,7 +934,7 @@ async function initAuthSystem() {
         profileEditForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             clearAuthAlerts();
-            
+
             const profileData = {
                 full_name: document.getElementById('editName').value,
                 student_id: document.getElementById('editStudentId').value,
@@ -953,12 +954,12 @@ async function initAuthSystem() {
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Saving...';
 
                 await updateProfile(profileData);
-                
+
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = origText;
-                
+
                 showAuthAlert("Profile updated successfully!", "success", "profileAlert");
-                
+
                 await syncAuthStatus();
                 setTimeout(() => {
                     profileReadView.style.display = 'block';
