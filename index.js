@@ -317,6 +317,18 @@ function initNavigation() {
         });
     }
 
+    // Join oU1TS buttons (rationale card + sidebar)
+    document.querySelectorAll('.rationale-join-btn, .sidebar-join-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const targetId = btn.getAttribute('href');
+            if (targetId && targetId.startsWith('#')) {
+                e.preventDefault();
+                switchTab(targetId);
+                closeSidebar();
+            }
+        });
+    });
+
     // Handle initial hash on page load
     function handleInitialHash() {
         const hash = window.location.hash || '#home';
