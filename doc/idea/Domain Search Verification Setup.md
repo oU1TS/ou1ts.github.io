@@ -80,7 +80,7 @@ If you are using the default `ou1ts.github.io` domain, choose one of the two met
 2. Select **HTML file** as the verification method.
 3. Download the verification file (e.g., `google1234567890abcdef.html`).
 4. Place this file directly into the **root** of your repository:
-   `c:\Users\gsmur\Documents\GitHub\[oU1TS]\ou1ts.github.io/google1234567890abcdef.html`
+   `c:\Users\\Documents\GitHub\[oU1TS]\ou1ts.github.io/google1234567890abcdef.html`
 5. Commit and push the file to your GitHub repository:
    ```bash
    git add google1234567890abcdef.html
