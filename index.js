@@ -1,15 +1,16 @@
 // Project Roster
 const primaryProjects = [
     { name: "Projects Hub", icon: "fa-solid fa-globe", url: "https://ou1ts.github.io/portal" },
-    { name: "Wiki", icon: "fa-solid fa-book", url: "wiki.html" },
-    // { name: "Join Us", icon: "fa-solid fa-handshake", url: "https://forms.gle/treGsBbsE3UTFUos9" },
-    { name: "Blood Donation", icon: "fa-solid fa-droplet", url: "https://bd-ou1ts.netlify.app/" },
-    { name: "Scheduler", icon: "fa-solid fa-calendar-days", url: "https://b1tsched.netlify.app/" },
-    { name: "Archive", icon: "fa-solid fa-boxes-packing", url: "https://b1tacad.netlify.app/" },
-    { name: "Events", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" },
+    { name: "Resource Archive", icon: "fa-solid fa-boxes-packing", url: "https://b1tacad.netlify.app/" },
+    { name: "Courses Mastery", icon: "fa-regular fa-compass", url: "https://ou1ts.github.io/course/" },
+    { name: "Question Bank", icon: "fa-solid fa-file-circle-question", url: "https://ou1ts.github.io/qbank/" },
+    { name: "Academic Scheduler", icon: "fa-solid fa-calendar-days", url: "https://b1tsched.netlify.app/" },
+    { name: "Dev lab", icon: "fa-solid fa-code", url: "https://ou1ts.github.io/dev/" },
     { name: "English Speaking", icon: "fa-regular fa-comments", url: "https://ou1ts.github.io/english/" },
-    { name: "QBank", icon: "fa-solid fa-file-circle-question", url: "https://ou1ts.github.io/qbank/" },
-    { name: "Courses", icon: "fa-regular fa-compass", url: "https://ou1ts.github.io/course/" }
+    { name: "Event Raids", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" },
+    { name: "Job Hunters", icon: "fa-solid fa-briefcase", url: "https://ou1ts.github.io/job/" },
+    { name: "Blood Donation", icon: "fa-solid fa-droplet", url: "https://bd-ou1ts.netlify.app/" },
+    { name: "Wiki", icon: "fa-solid fa-book", url: "wiki.html" }
 
     // ,{ name: "", icon: "", url: "" }
 ];
