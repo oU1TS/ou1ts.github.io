@@ -10,6 +10,8 @@ const primaryProjects = [
     { name: "Event Raids", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" },
     { name: "Job Hunters", icon: "fa-solid fa-briefcase", url: "https://ou1ts.github.io/job/" },
     { name: "Blood Donation", icon: "fa-solid fa-droplet", url: "https://bd-ou1ts.netlify.app/" },
+    { name: "Gym Bros", icon: "fa-solid fa-dumbbell", url: "#" },
+    { name: "Bus Tracker", icon: "fa-solid fa-van-shuttle", url: "#" },
     { name: "Wiki", icon: "fa-solid fa-book", url: "wiki.html" }
 
     // ,{ name: "", icon: "", url: "" }
