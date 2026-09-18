@@ -285,21 +285,25 @@ function initNavigation() {
     // Expose switchTab globally for programmatic redirects
     window.switchTab = switchTab;
 
-    // Bind link event listeners
+    // Bind link event listeners with delegation safety
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            e.preventDefault();
             const targetId = link.getAttribute('href');
-            switchTab(targetId);
+            if (targetId && targetId.startsWith('#')) {
+                e.preventDefault();
+                switchTab(targetId);
+            }
         });
     });
 
     sidebarLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            e.preventDefault();
             const targetId = link.getAttribute('href');
-            switchTab(targetId);
-            closeSidebar();
+            if (targetId && targetId.startsWith('#')) {
+                e.preventDefault();
+                switchTab(targetId);
+                closeSidebar();
+            }
         });
     });
 
@@ -330,6 +334,21 @@ function initNavigation() {
                 closeSidebar();
             }
         });
+    });
+
+    // Respond to hash and popstate changes (browser Back/Forward navigation)
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash || '#home';
+        if (['#home', '#projects', '#repos', '#about', '#auth', '#profile'].includes(hash)) {
+            switchTab(hash);
+        }
+    });
+
+    window.addEventListener('popstate', () => {
+        const hash = window.location.hash || '#home';
+        if (['#home', '#projects', '#repos', '#about', '#auth', '#profile'].includes(hash)) {
+            switchTab(hash);
+        }
     });
 
     // Handle initial hash on page load
@@ -386,8 +405,8 @@ function initParallax() {
     });
 }
 
-// Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize on DOM ready or immediately if already loaded
+function initApp() {
     createStars();
     createFloatingElements();
     renderProjectsGrid();
@@ -396,13 +415,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initThemeSwitcher();
     initParallax();
     initAuthSystem();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
 // ==========================================
 // 6. User Authentication & Profile Engine
 // ==========================================
 
-let supabase = null;
+let supabaseClient = null;
 
 // Dynamically load env-config.js if it exists, otherwise fall back to placeholders
 function loadEnvConfig() {
@@ -481,10 +506,10 @@ function updateNavLinksForAuth(isLoggedIn) {
 
 // Get current user session details
 async function getCurrentUser() {
-    if (supabase) {
-        const { data: { user } } = await supabase.auth.getUser();
+    if (supabaseClient) {
+        const { data: { user } } = await supabaseClient.auth.getUser();
         if (user) {
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             return {
                 id: user.id,
                 email: user.email,
@@ -510,8 +535,8 @@ async function signUpUser(email, password, fullName, studentId, department) {
         throw new Error("Student ID must contain only digits.");
     }
 
-    if (supabase) {
-        const { data, error } = await supabase.auth.signUp({
+    if (supabaseClient) {
+        const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: password,
             options: {
@@ -557,8 +582,8 @@ async function signUpUser(email, password, fullName, studentId, department) {
 
 // Log in user
 async function signInUser(email, password) {
-    if (supabase) {
-        const { data, error } = await supabase.auth.signInWithPassword({
+    if (supabaseClient) {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
             email,
             password
         });
@@ -584,11 +609,11 @@ async function updateProfile(profileData) {
         throw new Error("Invalid blood group selected.");
     }
 
-    if (supabase) {
-        const { data: { user } } = await supabase.auth.getUser();
+    if (supabaseClient) {
+        const { data: { user } } = await supabaseClient.auth.getUser();
         if (!user) throw new Error("No authenticated session found.");
 
-        const { error } = await supabase.from('profiles').update({
+        const { error } = await supabaseClient.from('profiles').update({
             full_name: profileData.full_name,
             student_id: profileData.student_id,
             department: profileData.department,
@@ -627,8 +652,8 @@ async function updateProfile(profileData) {
 
 // Log out user
 async function signOutUser() {
-    if (supabase) {
-        const { error } = await supabase.auth.signOut();
+    if (supabaseClient) {
+        const { error } = await supabaseClient.auth.signOut();
         if (error) throw error;
     } else {
         localStorage.removeItem('mock_session');
@@ -793,11 +818,11 @@ async function initAuthSystem() {
         try {
             await loadSupabaseScript();
             if (window.supabase && window.supabase.createClient) {
-                supabase = window.supabase.createClient(window.__ENV.SUPABASE_URL, window.__ENV.SUPABASE_ANON_KEY);
+                supabaseClient = window.supabase.createClient(window.__ENV.SUPABASE_URL, window.__ENV.SUPABASE_ANON_KEY);
                 console.log("Supabase Client initialized successfully.");
 
                 // Listen for auth state changes on Supabase
-                supabase.auth.onAuthStateChange(async (event, session) => {
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
                     console.log("Supabase Auth State Changed:", event);
                     await syncAuthStatus();
                 });
@@ -1012,9 +1037,9 @@ async function initAuthSystem() {
     const googleLoginBtn = document.getElementById('googleLoginBtn');
     if (googleLoginBtn) {
         googleLoginBtn.addEventListener('click', async () => {
-            if (supabase) {
+            if (supabaseClient) {
                 try {
-                    await supabase.auth.signInWithOAuth({
+                    await supabaseClient.auth.signInWithOAuth({
                         provider: 'google',
                         options: { redirectTo: window.location.origin + window.location.pathname }
                     });
