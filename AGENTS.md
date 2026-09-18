@@ -16,7 +16,11 @@
 - **Automatic Per-Turn Full Conversation Updates**:
   - After **EVERY SINGLE** chat prompt-response cycle, you MUST update the session's comprehensive conversation archive (`doc/prompts/<Prefix>. <Session Title>.md`) by appending the new turn contents to it.
   - **DO NOT** create a new file for each individual prompt turn (avoid creating fragmented files like `<Prefix>.3`, `<Prefix>.4`, `<Prefix>.5`, etc.).
-  - Append the current turn's verbatim user request, internal thinking (`### Thinking`), and final response (`### AI Response`) directly to the end of the session archive file, separated by horizontal rules (`---`).
+  - Append the current turn's verbatim user request, complete internal thinking (`### Thinking`), and full final response (`### AI Response`) directly to the end of the session archive file, separated by horizontal rules (`---`).
+  - **No Summarization — Complete Unabridged Retention**: Do NOT summarize, condense, truncate, or omit conversation turns, user inputs, thinking reasoning, or assistant outputs. Keep everything in full detail so that complete context is preserved across the entire project lifecycle.
+- **Mandatory Secret Redaction & Placeholder Replacement**:
+  - **Zero Secrets in Archives & Docs**: Whenever API keys, database passwords, JWT tokens (such as Supabase `anon` or `service_role` keys), OAuth secrets, or personal access tokens appear in user requests, internal thinking, code diffs, or AI responses, you MUST sanitize them by replacing them with descriptive placeholders (e.g., `<YOUR_SUPABASE_URL>`, `<YOUR_SUPABASE_ANON_KEY>`, `[REDACTED_SECRET]`).
+  - Never allow raw secrets, keys, or sensitive credentials to be stored or committed in `doc/prompts/`, `doc/history.md`, or any markdown files.
 - **Session Continuity & Updating Past Archives**:
   - Whenever an existing conversation or chat thread is continued, resumed, or revisited, you MUST locate and update the corresponding existing archive in `doc/prompts/<Prefix>. <Session Title>.md` by appending the new turns directly to it.
   - **DO NOT** create a new major sequence number or split an ongoing dialogue across multiple files when resuming or updating an existing chat.
@@ -36,9 +40,10 @@
   - Inspect existing files in `doc/prompts/` to identify the current major sequence integer (e.g. `1.`, `2.`, `3.`, `4.`, `5.`, etc.).
   - Increment the sequence integer ONLY when starting an entirely distinct, new conversation session that does not belong to a pre-existing thread.
   - Keep all conversation turns for that session inside the main file `doc/prompts/<Prefix>. <Session Title>.md`.
-- **Chat Archive Fidelity**:
-  - Reproduce the conversation exactly as the source (user request blocks verbatim).
-  - Include the model's internal thinking/reasoning parts (`### Thinking`) alongside the final response (`### AI Response`).
+- **Chat Archive Fidelity & Sanitization**:
+  - Reproduce the conversation in full (user request blocks verbatim, with sensitive keys redacted).
+  - Include the model's unabridged internal thinking/reasoning parts (`### Thinking`) alongside the complete final response (`### AI Response`).
+  - Verify that all API keys and secrets have been replaced with placeholders before writing.
   - Preserve the frontmatter tags comment block at the top of the archive file.
 
 ## 3. Code Quality & Styling Standards

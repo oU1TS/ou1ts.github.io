@@ -242,23 +242,24 @@ If you want to allow "Sign In with Google":
 
 ## Step 6: Configure GitHub Secrets for Production Deployment
 
-Since `env-config.js` is gitignored, your deployed GitHub Pages site needs credentials injected at build time:
+Since `env-config.js` is gitignored to protect secrets, your deployed GitHub Pages site uses a GitHub Actions workflow to generate `env-config.js` automatically on every push:
 
-1. In your GitHub repository, go to **Settings → Secrets and variables → Actions**.
-2. Click **New repository secret** and create:
-   - Name: `SUPABASE_URL`, Secret: `https://YOUR_PROJECT_ID.supabase.co`
-   - Name: `SUPABASE_ANON_KEY`, Secret: `YOUR_ANON_KEY`
-3. In `.github/workflows/deploy.yml` (or your deployment pipeline), inject `env-config.js` before deploying to GitHub Pages:
-   ```yaml
-   - name: Generate env-config.js
-     run: |
-       cat > env-config.js << 'EOF'
-       window.__ENV = {
-         SUPABASE_URL: "${{ secrets.SUPABASE_URL }}",
-         SUPABASE_ANON_KEY: "${{ secrets.SUPABASE_ANON_KEY }}"
-       };
-       EOF
-   ```
+1. **Add Repository Secrets**:
+   - In your GitHub repository, go to **Settings → Secrets and variables → Actions**.
+   - Click **New repository secret** and create:
+     - Name: `SUPABASE_URL`, Secret: `https://YOUR_PROJECT_ID.supabase.co`
+     - Name: `SUPABASE_ANON_KEY`, Secret: `YOUR_ANON_KEY`
+
+2. **Enable GitHub Actions for Pages**:
+   - Go to **Settings → Pages**.
+   - Under **Build and deployment → Source**, select **GitHub Actions** (instead of "Deploy from a branch").
+
+3. **Automated Workflow (`.github/workflows/deploy.yml`)**:
+   - The workflow file has been created at [`.github/workflows/deploy.yml`](file:///d:/GitHub/%5BoU1TS%5D/ou1ts.github.io/.github/workflows/deploy.yml).
+   - Once secrets are saved and changes are pushed to `main`, GitHub Actions will **automatically**:
+     1. Check out the repository.
+     2. Inject `env-config.js` with your repository secrets.
+     3. Deploy the live site to GitHub Pages with working authentication!
 
 ---
 
