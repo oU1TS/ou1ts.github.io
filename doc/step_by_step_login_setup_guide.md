@@ -272,3 +272,5 @@ Since `env-config.js` is gitignored to protect secrets, your deployed GitHub Pag
 | **Duplicate Student ID** | Registration rejected with duplicate error | Partial unique index ensures no two students register with the same ID. |
 | **Redirect after OAuth** | User returned to `#profile` | Verify that the current domain is included in **Allowed Redirect URLs** in Supabase Auth settings. |
 | **Profile Update** | Edits save to `public.profiles` | RLS policy `Users can update own profile` checks `auth.uid() = id`. |
+| **"Supabase variables not set" in Console** | Supabase client initializes successfully | Ensure credentials in `env-config.js` are not default placeholders and hard-refresh browser (`Ctrl + F5` or `Cmd + Shift + R`). |
+| **Favicon 404 in Console** | Clean console without favicon error | SVG favicon is configured in `<head>` to prevent browser 404s. |

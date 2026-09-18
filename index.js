@@ -429,7 +429,7 @@ function loadEnvConfig() {
 // Dynamically load Supabase Client SDK from CDN
 function loadSupabaseScript() {
     return new Promise((resolve) => {
-        if (window.supabase) {
+        if (window.supabase && window.supabase.createClient) {
             resolve();
             return;
         }
@@ -445,9 +445,13 @@ function loadSupabaseScript() {
 }
 
 const isSupabaseConfigured = () => {
-    return window.supabase && window.__ENV && window.__ENV.SUPABASE_URL &&
+    return Boolean(
+        window.__ENV &&
+        window.__ENV.SUPABASE_URL &&
         window.__ENV.SUPABASE_ANON_KEY &&
-        !window.__ENV.SUPABASE_URL.includes("your-supabase-project");
+        !window.__ENV.SUPABASE_URL.includes("your-supabase-project") &&
+        !window.__ENV.SUPABASE_ANON_KEY.includes("your-anon-key")
+    );
 };
 
 function updateNavLinksForAuth(isLoggedIn) {

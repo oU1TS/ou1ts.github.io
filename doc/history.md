@@ -26,5 +26,12 @@
 - **Updated Repository Guidelines**: Modified [`AGENTS.md`](AGENTS.md) Section 2 to strictly prohibit summarizing or condensing chat turns, mandating complete unabridged preservation of user inputs, internal thinking, and outputs.
 - **Enforced Mandatory Secret Redaction**: Added explicit rule requiring all API keys, database passwords, JWT tokens, and OAuth credentials to be replaced with descriptive placeholders (`<YOUR_SUPABASE_URL>`, `<YOUR_SUPABASE_ANON_KEY>`, `[REDACTED_SECRET]`) across all markdown archives and docs.
 
+### **Fix: Frontend Supabase Client Initialization, Static Script Inclusion & Favicon 404**
+- **Resolved Chicken-and-Egg Guard in `isSupabaseConfigured`**: Fixed a bug in [`index.js`](index.js) where `isSupabaseConfigured()` checked `window.supabase` before the Supabase SDK was loaded, erroneously forcing the application into Local Mock mode even when valid credentials were provided.
+- **Static Script Preloading**: Added `<script src="env-config.js"></script>` and `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>` to [`index.html`](index.html) prior to `index.js`, eliminating dynamic script loading race conditions and 404 errors.
+- **Added SVG Favicon**: Added an inline SVG favicon `<link rel="icon" ...>` in [`index.html`](index.html), eliminating browser console `/favicon.ico:1 404` errors.
+- **Enhanced Setup Guide Troubleshooting**: Added troubleshooting checklist items in [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) for cache clearing and mock mode fallback.
+
+
 
 
