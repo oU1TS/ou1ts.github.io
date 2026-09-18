@@ -263,6 +263,25 @@ Since `env-config.js` is gitignored to protect secrets, your deployed GitHub Pag
 
 ---
 
+## Step 7: Configure Netlify Deployment Environment Variables
+
+If your site is hosted on Netlify (e.g. `https://ou1ts.netlify.app`), Netlify automatically builds using [`netlify.toml`](file:///d:/GitHub/[oU1TS]/ou1ts.github.io/netlify.toml) and [`scripts/build-env.js`](file:///d:/GitHub/[oU1TS]/ou1ts.github.io/scripts/build-env.js) to generate `env-config.js` during deployment:
+
+1. **Log in to Netlify Dashboard**:
+   - Go to [Netlify Dashboard](https://app.netlify.com/) and open your site project (`ou1ts`).
+2. **Add Environment Variables**:
+   - Navigate to **Site configuration → Environment variables** (or **Site settings → Build & deploy → Environment**).
+   - Click **Add a variable** → **Add a single variable**:
+     - Key: `SUPABASE_URL` | Value: `https://YOUR_PROJECT_ID.supabase.co`
+     - Key: `SUPABASE_ANON_KEY` | Value: `YOUR_ACTUAL_ANON_KEY`
+   - Set Scope to **All scopes** (or Production + Deploy Previews) and click **Create variable**.
+3. **Trigger Deployment**:
+   - Go to **Deploys** in the top navigation bar.
+   - Click **Trigger deploy** → **Clear cache and deploy site**.
+   - Netlify will run `node scripts/build-env.js`, inject your Supabase credentials into `env-config.js`, and deploy!
+
+---
+
 ## 🔍 Verification & Troubleshooting Checklist
 
 | Test Case | Expected Outcome | Troubleshooting |

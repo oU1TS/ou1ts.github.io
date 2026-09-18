@@ -5,8 +5,12 @@
 ### **Fix: Navbar Responsiveness, Supabase Variable Scope Collision & Navigation Resilience**
 - **Resolved Identifier Scope Collision in `index.js`**: Renamed `let supabase = null;` to `let supabaseClient = null;` across all database and auth references. The CDN bundle for `@supabase/supabase-js@2` declared `var supabase` on the global scope, causing modern JavaScript engines to throw `SyntaxError: Identifier 'supabase' has already been declared` and abort script execution before navigation listeners could attach.
 - **Immediate DOM-Ready Initialization Fallback**: Replaced bare `document.addEventListener('DOMContentLoaded', ...)` with a ready-state guard checking `document.readyState === 'loading'`. This ensures `initApp()` and `initNavigation()` execute immediately if the DOM is already interactive or complete.
-- **Added History & Popstate Listeners**: Bound `hashchange` and `popstate` event listeners so browser Back/Forward navigation smoothly transitions SPA tabs.
 - **Added Pointer Cursor**: Set `cursor: pointer;` on `.nav-link` in [`index.css`](index.css).
+
+### **Automated Netlify Build Environment Injection & Redundant Script Prevention**
+- **Automated Netlify Environment Configuration**: Added [`netlify.toml`](netlify.toml) and cross-platform build script [`scripts/build-env.js`](scripts/build-env.js) to automatically generate `env-config.js` during Netlify deployments from configured environment variables (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
+- **Eliminated Redundant 404 Logging in `loadEnvConfig`**: Added a script-presence guard in `loadEnvConfig()` within [`index.js`](index.js) preventing duplicate dynamic script tag injections when `env-config.js` is already declared in `index.html`.
+- **Expanded Setup Guide for Netlify**: Added Step 7 in [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) documenting Netlify Dashboard environment variable setup and cache-clearing deployment.
 
 # 18.09.26
 

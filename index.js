@@ -436,6 +436,15 @@ function loadEnvConfig() {
             resolve();
             return;
         }
+        // If a script tag for env-config.js was already declared in HTML, do not re-inject it
+        if (document.querySelector('script[src*="env-config.js"]')) {
+            window.__ENV = window.__ENV || {
+                SUPABASE_URL: "https://your-supabase-project.supabase.co",
+                SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key-here"
+            };
+            resolve();
+            return;
+        }
         const script = document.createElement('script');
         script.src = 'env-config.js';
         script.onload = () => resolve();
