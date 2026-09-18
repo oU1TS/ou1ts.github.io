@@ -118,6 +118,7 @@ BEGIN
     student_id, 
     email, 
     full_name, 
+    blood_group,
     project_tags
   )
   VALUES (
@@ -125,6 +126,7 @@ BEGIN
     COALESCE(NEW.raw_user_meta_data->>'student_id', 'OAUTH_USER'),
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NULL),
+    COALESCE(NEW.raw_user_meta_data->>'blood_group', NULL),
     ARRAY['root']::TEXT[]
   )
   ON CONFLICT (id) DO NOTHING;
