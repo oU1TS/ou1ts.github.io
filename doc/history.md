@@ -12,6 +12,24 @@
 - **Eliminated Redundant 404 Logging in `loadEnvConfig`**: Added a script-presence guard in `loadEnvConfig()` within [`index.js`](index.js) preventing duplicate dynamic script tag injections when `env-config.js` is already declared in `index.html`.
 - **Expanded Setup Guide for Netlify**: Added Step 7 in [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) documenting Netlify Dashboard environment variable setup and cache-clearing deployment.
 
+### **Deployment Source Clarification & CI Script Unification**
+- **Unified CI Environment Injection via `scripts/build-env.js`**: Updated [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) to utilize `node scripts/build-env.js` directly with GitHub Secrets mapped via `env:`, standardizing build logic across both GitHub Actions and Netlify and avoiding shell heredoc escaping issues.
+- **Added Local File Preservation Safeguard**: Added an execution guard in [`scripts/build-env.js`](scripts/build-env.js) checking for existing local `env-config.js` when run outside CI environments (`CI`, `NETLIFY`, `GITHUB_ACTIONS`), ensuring local credentials are never accidentally erased by manual script invocations.
+- **Diagnosed Demo Values Fallback in Client-Side Login**:
+  - **GitHub Pages 404**: Confirmed `https://ou1ts.github.io/env-config.js` returned 404 because GitHub Pages repository source was configured to "Deploy from a branch" (which runs GitHub's internal `pages-build-deployment` and excludes gitignored files) rather than "GitHub Actions".
+  - **Netlify Empty Secrets**: Confirmed `https://ou1ts.netlify.app/env-config.js` returned empty string values because `SUPABASE_URL` and `SUPABASE_ANON_KEY` were not yet populated in Netlify Site Configuration environment variables.
+  - **Local Mock Trigger**: Documented that both 404 and empty credential states cause `isSupabaseConfigured()` in [`index.js`](index.js) to evaluate to `false`, activating the fallback demo seed dataset in `localStorage` (`mock_users`).
+
+### **Architectural Clarification: Direct Client-to-Supabase vs Backend Service**
+- **Verified Server Independence for Client Auth**: Confirmed that client authentication, registration, session management, and profile CRUD execute directly against Supabase's hosted API via `@supabase/supabase-js@2`, requiring zero involvement from `ou1ts-backend`.
+- **Confirmed Cause of Mock Fallback**: Reaffirmed that the absence of a running `ou1ts-backend` service does not cause the `env-config.js` 404 or the fallback to demo values; the sole cause is missing client-side environment variables in the static host.
+
+### **Removal of Mock Fallback & Real Authentication Enforcement**
+- **Eliminated Local Mock Fallback**: Completely removed mock dataset seeding (`mock_users`) and simulated session state (`mock_session`) from [`index.js`](index.js). Failed logins, invalid credentials, or unconfigured Supabase environments now throw and display authentic error messages (`Unable to log in: Database connection not configured`) directly in the UI alert banner without silently defaulting to demo profiles.
+- **Removed Simulated Google OAuth**: Replaced simulated mock OAuth handler for Google login in [`index.js`](index.js) with strict Supabase OAuth dispatch, surfacing explicit configuration errors if the client is not initialized.
+- **Purged Legacy Mock Storage**: Added automatic cleanup calls (`localStorage.removeItem('mock_session')`, `localStorage.removeItem('mock_users')`) on app initialization to instantly wipe any leftover demo data from client browsers.
+- **Sanitized Profile Card Template**: Replaced hardcoded demo preview strings ("User Name", "0432410005", "CSE • Batch N/A") in [`index.html`](index.html) with clean neutral indicators (`—`).
+
 # 18.09.26
 
 ### **Database Schema Alignment, Project AGENTS.md & Step-by-Step Login Setup Guide**

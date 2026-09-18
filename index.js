@@ -429,7 +429,7 @@ if (document.readyState === 'loading') {
 
 let supabaseClient = null;
 
-// Dynamically load env-config.js if it exists, otherwise fall back to placeholders
+// Dynamically load env-config.js if it exists
 function loadEnvConfig() {
     return new Promise((resolve) => {
         if (window.__ENV) {
@@ -438,10 +438,7 @@ function loadEnvConfig() {
         }
         // If a script tag for env-config.js was already declared in HTML, do not re-inject it
         if (document.querySelector('script[src*="env-config.js"]')) {
-            window.__ENV = window.__ENV || {
-                SUPABASE_URL: "https://your-supabase-project.supabase.co",
-                SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key-here"
-            };
+            window.__ENV = window.__ENV || null;
             resolve();
             return;
         }
@@ -449,11 +446,7 @@ function loadEnvConfig() {
         script.src = 'env-config.js';
         script.onload = () => resolve();
         script.onerror = () => {
-            // Safe fallback if the config file is missing
-            window.__ENV = window.__ENV || {
-                SUPABASE_URL: "https://your-supabase-project.supabase.co",
-                SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key-here"
-            };
+            window.__ENV = window.__ENV || null;
             resolve();
         };
         document.head.appendChild(script);
@@ -471,7 +464,7 @@ function loadSupabaseScript() {
         script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
         script.onload = () => resolve();
         script.onerror = () => {
-            console.warn("Failed to load Supabase SDK from CDN. Falling back to local mock storage.");
+            console.error("Failed to load Supabase SDK from CDN.");
             resolve();
         };
         document.head.appendChild(script);
@@ -483,6 +476,8 @@ const isSupabaseConfigured = () => {
         window.__ENV &&
         window.__ENV.SUPABASE_URL &&
         window.__ENV.SUPABASE_ANON_KEY &&
+        window.__ENV.SUPABASE_URL.trim() !== "" &&
+        window.__ENV.SUPABASE_ANON_KEY.trim() !== "" &&
         !window.__ENV.SUPABASE_URL.includes("your-supabase-project") &&
         !window.__ENV.SUPABASE_ANON_KEY.includes("your-anon-key")
     );
@@ -515,25 +510,26 @@ function updateNavLinksForAuth(isLoggedIn) {
 
 // Get current user session details
 async function getCurrentUser() {
-    if (supabaseClient) {
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (user) {
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
-            return {
-                id: user.id,
-                email: user.email,
-                ...profile
-            };
-        }
+    if (!supabaseClient) {
         return null;
-    } else {
-        const session = localStorage.getItem('mock_session');
-        if (session) {
-            const users = JSON.parse(localStorage.getItem('mock_users') || '{}');
-            if (users[session]) {
-                return users[session].profile;
-            }
-        }
+    }
+    try {
+        const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+        if (authError || !user) return null;
+
+        const { data: profile, error: profileError } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        return {
+            id: user.id,
+            email: user.email,
+            ...(profile || {})
+        };
+    } catch (err) {
+        console.error("Error retrieving user session:", err);
         return null;
     }
 }
@@ -544,68 +540,37 @@ async function signUpUser(email, password, fullName, studentId, department) {
         throw new Error("Student ID must contain only digits.");
     }
 
-    if (supabaseClient) {
-        const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: {
-                    full_name: fullName,
-                    student_id: studentId,
-                    department: department
-                }
-            }
-        });
-        if (error) throw error;
-        return data;
-    } else {
-        const users = JSON.parse(localStorage.getItem('mock_users') || '{}');
-        if (users[email]) {
-            throw new Error("A user with this email already exists.");
-        }
-        const newId = 'mock-uuid-' + Math.random().toString(36).substr(2, 9);
-        users[email] = {
-            email: email,
-            password: password,
-            profile: {
-                id: newId,
-                email: email,
+    if (!supabaseClient) {
+        throw new Error("Unable to register: Database connection not configured. Supabase credentials are missing.");
+    }
+
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+            data: {
                 full_name: fullName,
                 student_id: studentId,
-                department: department,
-                batch: 'N/A',
-                blood_group: 'A+',
-                social_facebook: '',
-                social_instagram: '',
-                social_telegram: '',
-                social_discord: '',
-                project_tags: ['root']
+                department: department
             }
-        };
-        localStorage.setItem('mock_users', JSON.stringify(users));
-        // Auto sign-in locally
-        localStorage.setItem('mock_session', email);
-        return { user: { email } };
-    }
+        }
+    });
+    if (error) throw error;
+    return data;
 }
 
 // Log in user
 async function signInUser(email, password) {
-    if (supabaseClient) {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-        });
-        if (error) throw error;
-        return data;
-    } else {
-        const users = JSON.parse(localStorage.getItem('mock_users') || '{}');
-        if (!users[email] || users[email].password !== password) {
-            throw new Error("Invalid email or password.");
-        }
-        localStorage.setItem('mock_session', email);
-        return { user: { email } };
+    if (!supabaseClient) {
+        throw new Error("Unable to log in: Database connection not configured. Supabase credentials are missing.");
     }
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+    });
+    if (error) throw error;
+    return data;
 }
 
 // Update profile details
@@ -618,45 +583,27 @@ async function updateProfile(profileData) {
         throw new Error("Invalid blood group selected.");
     }
 
-    if (supabaseClient) {
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (!user) throw new Error("No authenticated session found.");
-
-        const { error } = await supabaseClient.from('profiles').update({
-            full_name: profileData.full_name,
-            student_id: profileData.student_id,
-            department: profileData.department,
-            batch: profileData.batch,
-            blood_group: profileData.blood_group,
-            social_facebook: profileData.social_facebook,
-            social_instagram: profileData.social_instagram,
-            social_telegram: profileData.social_telegram,
-            social_discord: profileData.social_discord,
-            updated_at: new Date().toISOString()
-        }).eq('id', user.id);
-
-        if (error) throw error;
-    } else {
-        const session = localStorage.getItem('mock_session');
-        if (!session) throw new Error("No authenticated session found.");
-        const users = JSON.parse(localStorage.getItem('mock_users') || '{}');
-        if (!users[session]) throw new Error("User profile not found.");
-
-        users[session].profile = {
-            ...users[session].profile,
-            full_name: profileData.full_name,
-            student_id: profileData.student_id,
-            department: profileData.department,
-            batch: profileData.batch,
-            blood_group: profileData.blood_group,
-            social_facebook: profileData.social_facebook,
-            social_instagram: profileData.social_instagram,
-            social_telegram: profileData.social_telegram,
-            social_discord: profileData.social_discord,
-            project_tags: users[session].profile.project_tags || ['root']
-        };
-        localStorage.setItem('mock_users', JSON.stringify(users));
+    if (!supabaseClient) {
+        throw new Error("Unable to update profile: Database connection not configured.");
     }
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) throw new Error("No authenticated session found. Please log in.");
+
+    const { error } = await supabaseClient.from('profiles').update({
+        full_name: profileData.full_name,
+        student_id: profileData.student_id,
+        department: profileData.department,
+        batch: profileData.batch,
+        blood_group: profileData.blood_group,
+        social_facebook: profileData.social_facebook,
+        social_instagram: profileData.social_instagram,
+        social_telegram: profileData.social_telegram,
+        social_discord: profileData.social_discord,
+        updated_at: new Date().toISOString()
+    }).eq('id', user.id);
+
+    if (error) throw error;
 }
 
 // Log out user
@@ -664,9 +611,9 @@ async function signOutUser() {
     if (supabaseClient) {
         const { error } = await supabaseClient.auth.signOut();
         if (error) throw error;
-    } else {
-        localStorage.removeItem('mock_session');
     }
+    localStorage.removeItem('mock_session');
+    localStorage.removeItem('mock_users');
 }
 
 // Alert helper
@@ -819,6 +766,10 @@ async function syncAuthStatus(redirectHash = null) {
 
 // Master Auth System Init
 async function initAuthSystem() {
+    // Purge any legacy mock session data from local storage
+    localStorage.removeItem('mock_session');
+    localStorage.removeItem('mock_users');
+
     // Dynamically load environment variables first
     await loadEnvConfig();
 
@@ -836,37 +787,13 @@ async function initAuthSystem() {
                     await syncAuthStatus();
                 });
             } else {
-                console.warn("Supabase SDK loaded but createClient is not available. Running in Local Mock mode.");
+                console.error("Supabase SDK loaded but createClient is not available.");
             }
         } catch (error) {
             console.error("Error initializing Supabase client:", error);
         }
     } else {
-        console.log("Supabase variables not set. Running in Local Mock mode.");
-        // Seed mock database
-        if (!localStorage.getItem('mock_users')) {
-            const initialUsers = {
-                'test@uits.edu.bd': {
-                    email: 'test@uits.edu.bd',
-                    password: 'password123',
-                    profile: {
-                        id: 'mock-uuid-1',
-                        email: 'test@uits.edu.bd',
-                        full_name: 'Shamiur Hasan',
-                        student_id: '04324100051',
-                        department: 'CSE',
-                        batch: '61',
-                        blood_group: 'A+',
-                        social_facebook: 'https://facebook.com/shamiur',
-                        social_instagram: 'https://instagram.com/shamiur',
-                        social_telegram: 't.me/shamiur',
-                        social_discord: 'shamiur#1337',
-                        project_tags: ['root', 'portal']
-                    }
-                }
-            };
-            localStorage.setItem('mock_users', JSON.stringify(initialUsers));
-        }
+        console.warn("Supabase credentials not configured. Running with authentication disabled until environment variables are set.");
     }
 
     // 2. Setup auth tab toggle
@@ -1046,44 +973,18 @@ async function initAuthSystem() {
     const googleLoginBtn = document.getElementById('googleLoginBtn');
     if (googleLoginBtn) {
         googleLoginBtn.addEventListener('click', async () => {
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.auth.signInWithOAuth({
-                        provider: 'google',
-                        options: { redirectTo: window.location.origin + window.location.pathname }
-                    });
-                } catch (e) {
-                    showAuthAlert(e.message, 'error', 'authAlert');
-                }
-            } else {
-                showAuthAlert("OAuth simulation: Signing in with Google...", "success", "authAlert");
-                const email = 'google.student@uits.edu.bd';
-                const users = JSON.parse(localStorage.getItem('mock_users') || '{}');
-                if (!users[email]) {
-                    users[email] = {
-                        email: email,
-                        password: '',
-                        profile: {
-                            id: 'mock-oauth-uid-1',
-                            email: email,
-                            full_name: 'Google Student',
-                            student_id: 'OAUTH_USER',
-                            department: 'CSE',
-                            batch: 'N/A',
-                            blood_group: 'A+',
-                            social_facebook: '',
-                            social_instagram: '',
-                            social_telegram: '',
-                            social_discord: '',
-                            project_tags: ['root']
-                        }
-                    };
-                    localStorage.setItem('mock_users', JSON.stringify(users));
-                }
-                localStorage.setItem('mock_session', email);
-                setTimeout(async () => {
-                    await syncAuthStatus('#profile');
-                }, 800);
+            if (!supabaseClient) {
+                showAuthAlert("Unable to sign in with Google: Database connection not configured.", 'error', 'authAlert');
+                return;
+            }
+            try {
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: window.location.origin + window.location.pathname }
+                });
+                if (error) throw error;
+            } catch (e) {
+                showAuthAlert(e.message || "Google sign in failed.", 'error', 'authAlert');
             }
         });
     }

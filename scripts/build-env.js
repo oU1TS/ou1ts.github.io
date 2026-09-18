@@ -6,6 +6,12 @@ const fs = require('fs');
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
 
+// Safeguard: If running locally without environment variables and env-config.js already exists, do not overwrite it.
+if (!supabaseUrl && !supabaseAnonKey && fs.existsSync('env-config.js') && !process.env.CI && !process.env.NETLIFY && !process.env.GITHUB_ACTIONS) {
+  console.log('[build-env] Existing local env-config.js detected and no CI variables provided. Preserving local credentials.');
+  process.exit(0);
+}
+
 const content = `// oU1TS Project Environment Configuration
 // Automatically generated during build from deployment environment variables.
 window.__ENV = {
