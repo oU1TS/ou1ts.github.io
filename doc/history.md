@@ -36,6 +36,12 @@
 - **Non-Mock Troubleshooting**: Replaced mock mode troubleshooting items with authentic error diagnostics for `Invalid login credentials`, `Email not confirmed`, and missing environment configurations.
 - **Security Clarification on `localhost` Redirect URLs**: Documented in [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) why having `localhost:5500` in Supabase Redirect URLs is safe, how loopback routing works, and why database authorization is strictly enforced by PostgreSQL Row Level Security (RLS) rather than caller domains.
 
+### **CI/CD Pipeline Hardening & Live Site 404 Root Cause Resolution**
+- **Diagnosed Overwrite by Branch Deployment**: Querying the GitHub Actions API revealed that every push to `main` triggers both `Deploy to GitHub Pages with Env Injection` AND a concurrent `pages build and deployment` (event: `dynamic`). The dynamic job runs GitHub's default Jekyll builder directly against the `main` branch, overwriting the Actions deployment and dropping `env-config.js` (which is gitignored).
+- **Added `.nojekyll` Marker**: Created [`.nojekyll`](.nojekyll) in the repository root to suppress default Jekyll processing.
+- **Added Generation Validation to Workflow**: Added a verification step in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) (`test -f env-config.js && ls -lh env-config.js`) to guarantee that `env-config.js` exists and is logged before packaging.
+- **Sanitized Secrets Input**: Added `.trim()` to `SUPABASE_URL` and `SUPABASE_ANON_KEY` in [`scripts/build-env.js`](scripts/build-env.js) to safeguard against accidental whitespace or newline characters when copying secrets into GitHub Actions settings.
+
 # 18.09.26
 
 ### **Database Schema Alignment, Project AGENTS.md & Step-by-Step Login Setup Guide**

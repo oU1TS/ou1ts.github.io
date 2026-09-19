@@ -3,8 +3,8 @@
 
 const fs = require('fs');
 
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
+const supabaseUrl = (process.env.SUPABASE_URL || '').trim();
+const supabaseAnonKey = (process.env.SUPABASE_ANON_KEY || '').trim();
 
 // Safeguard: If running locally without environment variables and env-config.js already exists, do not overwrite it.
 if (!supabaseUrl && !supabaseAnonKey && fs.existsSync('env-config.js') && !process.env.CI && !process.env.NETLIFY && !process.env.GITHUB_ACTIONS) {
