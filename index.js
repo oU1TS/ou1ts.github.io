@@ -353,11 +353,18 @@ function initNavigation() {
 
     // Handle initial hash on page load
     function handleInitialHash() {
-        const hash = window.location.hash || '#home';
-        if (['#home', '#projects', '#repos', '#about', '#auth', '#profile'].includes(hash)) {
-            switchTab(hash);
-        } else if (hash.includes('profile')) {
+        const hash = window.location.hash || '';
+        const search = window.location.search || '';
+
+        // If returning from an auth redirect (PKCE code or token hash) or profile requested, route to #profile
+        if (search.includes('code=') || hash.includes('access_token=') || hash.includes('profile')) {
             switchTab('#profile');
+            return;
+        }
+
+        const validHash = hash || '#home';
+        if (['#home', '#projects', '#repos', '#about', '#auth', '#profile'].includes(validHash)) {
+            switchTab(validHash);
         }
     }
 
@@ -1300,19 +1307,23 @@ function isProfileComplete(profile) {
 }
 
 // Get current user session details
-async function getCurrentUser() {
+async function getCurrentUser(sessionOverride = null) {
     if (!supabaseClient) {
         return null;
     }
     try {
         let user = null;
-        const { data: sessionData } = await supabaseClient.auth.getSession();
-        if (sessionData && sessionData.session && sessionData.session.user) {
-            user = sessionData.session.user;
+        if (sessionOverride && sessionOverride.user) {
+            user = sessionOverride.user;
         } else {
-            const { data: { user: authUser }, error: authError } = await supabaseClient.auth.getUser();
-            if (authError || !authUser) return null;
-            user = authUser;
+            const { data: sessionData } = await supabaseClient.auth.getSession();
+            if (sessionData && sessionData.session && sessionData.session.user) {
+                user = sessionData.session.user;
+            } else {
+                const { data: { user: authUser }, error: authError } = await supabaseClient.auth.getUser();
+                if (authError || !authUser) return null;
+                user = authUser;
+            }
         }
 
         if (!user) return null;
@@ -1567,9 +1578,9 @@ function populateProfileUI(profile) {
 let currentSessionUser = null;
 
 // Sync session and toggle profile/login sections
-async function syncAuthStatus(redirectHash = null) {
+async function syncAuthStatus(redirectHash = null, sessionOverride = null) {
     try {
-        currentSessionUser = await getCurrentUser();
+        currentSessionUser = await getCurrentUser(sessionOverride);
         const isLoggedIn = !!currentSessionUser;
         updateNavLinksForAuth(isLoggedIn);
 
@@ -1607,8 +1618,10 @@ async function syncAuthStatus(redirectHash = null) {
                 if (window.switchTab) window.switchTab('#profile');
             }
         } else {
-            if (hash === '#profile') {
-                // If they try to go to profile while logged out, move them to home
+            // Only kick back to #home if user intentionally visited #profile while logged out
+            // Do NOT kick back if browser is in the middle of exchanging auth tokens/code
+            const isExchangingAuth = window.location.search.includes('code=') || window.location.hash.includes('access_token=');
+            if (hash === '#profile' && !isExchangingAuth) {
                 if (window.switchTab) window.switchTab('#home');
             } else if (redirectHash) {
                 if (window.switchTab) window.switchTab(redirectHash);
@@ -1636,19 +1649,73 @@ async function initAuthSystem() {
                 supabaseClient = window.supabase.createClient(window.__ENV.SUPABASE_URL, window.__ENV.SUPABASE_ANON_KEY);
                 console.log("Supabase Client initialized successfully.");
 
-                // Listen for auth state changes on Supabase
-                supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                    console.log("Supabase Auth State Changed:", event);
+                // -------------------------------------------------------
+                // PKCE Code Exchange: Must happen BEFORE onAuthStateChange
+                // is registered so the resulting SIGNED_IN event fires into
+                // our listener (not before it exists).
+                // -------------------------------------------------------
+                const urlParams = new URLSearchParams(window.location.search);
+                const authCode = urlParams.get('code');
+                if (authCode) {
+                    console.log("Detected OAuth auth code in URL, exchanging for session...");
+                    try {
+                        const { data: exchangeData, error: exchangeErr } = await supabaseClient.auth.exchangeCodeForSession(authCode);
+                        if (exchangeErr) {
+                            console.error("OAuth code exchange error:", exchangeErr);
+                        } else if (exchangeData && exchangeData.session) {
+                            console.log("OAuth code exchange successful.");
+                            // Clean up the ?code=... from the browser URL
+                            try {
+                                window.history.replaceState(null, document.title, window.location.pathname + '#profile');
+                            } catch (e) {}
+                            // Session is now stored in localStorage; listener will fire SIGNED_IN
+                        }
+                    } catch (err) {
+                        console.error("Unexpected error exchanging auth code:", err);
+                    }
+                }
+
+                // -------------------------------------------------------
+                // Auth State Change Listener
+                // IMPORTANT: Per Supabase docs, do NOT make async Supabase
+                // calls directly inside this callback — it causes deadlocks.
+                // Use setTimeout(fn, 0) to defer out of the microtask queue.
+                // -------------------------------------------------------
+                supabaseClient.auth.onAuthStateChange((event, session) => {
+                    console.log("Supabase Auth State Changed:", event, session ? "Session active" : "No session");
+
                     if (event === 'PASSWORD_RECOVERY') {
-                        showResetPasswordView();
+                        setTimeout(() => showResetPasswordView(), 0);
                         return;
                     }
+
                     if (event === 'SIGNED_IN') {
-                        await syncAuthStatus('#profile');
+                        // Defer async UI update; pass session to avoid re-fetching
+                        setTimeout(() => syncAuthStatus('#profile', session), 0);
+                    } else if (event === 'INITIAL_SESSION') {
+                        if (session && session.user) {
+                            // User has an active session on page load/reload
+                            const currentHash = window.location.hash;
+                            const inSearch = window.location.search;
+                            // Always redirect away from #auth if logged in
+                            // Also redirect to #profile if returning from OAuth code exchange
+                            if (!currentHash || currentHash === '#auth' || currentHash.includes('profile') || inSearch.includes('code=')) {
+                                setTimeout(() => syncAuthStatus('#profile', session), 0);
+                            } else {
+                                // Stay on the current tab, just update nav links
+                                setTimeout(() => syncAuthStatus(null, session), 0);
+                            }
+                        } else {
+                            // No session — sync logged-out nav state, no navigation change
+                            setTimeout(() => syncAuthStatus(null, null), 0);
+                        }
                     } else if (event === 'SIGNED_OUT') {
-                        await syncAuthStatus('#home');
+                        setTimeout(() => syncAuthStatus('#home', null), 0);
+                    } else if (event === 'TOKEN_REFRESHED') {
+                        // Token silently refreshed; update session reference without navigation
+                        setTimeout(() => syncAuthStatus(null, session), 0);
                     } else {
-                        await syncAuthStatus();
+                        setTimeout(() => syncAuthStatus(null, session), 0);
                     }
                 });
             } else {
@@ -1660,6 +1727,7 @@ async function initAuthSystem() {
     } else {
         console.warn("Supabase credentials not configured. Running with authentication disabled until environment variables are set.");
     }
+
 
     // Auth view helper functions
     function showForgotPasswordView() {
@@ -1949,7 +2017,7 @@ async function initAuthSystem() {
                 return;
             }
             try {
-                const redirectUrl = window.location.origin + window.location.pathname + '#profile';
+                const redirectUrl = window.location.origin + window.location.pathname;
                 const { error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: { redirectTo: redirectUrl }
@@ -2098,7 +2166,9 @@ async function initAuthSystem() {
         showResetPasswordView();
     }
 
-    // 10. Initial sync on page load
-    syncAuthStatus();
+    // 10. Fallback initial sync if Supabase is not configured
+    if (!isSupabaseConfigured()) {
+        syncAuthStatus();
+    }
 }
 
