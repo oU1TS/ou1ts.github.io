@@ -30,6 +30,12 @@
 - **Purged Legacy Mock Storage**: Added automatic cleanup calls (`localStorage.removeItem('mock_session')`, `localStorage.removeItem('mock_users')`) on app initialization to instantly wipe any leftover demo data from client browsers.
 - **Sanitized Profile Card Template**: Replaced hardcoded demo preview strings ("User Name", "0432410005", "CSE • Batch N/A") in [`index.html`](index.html) with clean neutral indicators (`—`).
 
+### **Setup Guide Refinement & Schema Synchronization**
+- **Synchronized Trigger Attributes**: Updated `handle_new_user()` in [`doc/db/user_profile_schema.sql`](doc/db/user_profile_schema.sql) and [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) to auto-populate `department` from user registration metadata into `public.profiles`.
+- **End-to-End Walkthrough Updated**: Refined [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) with comprehensive instructions covering project creation, SQL schema execution, email confirmation settings, local Live Server verification, and mandatory GitHub Pages Source switching to **GitHub Actions**.
+- **Non-Mock Troubleshooting**: Replaced mock mode troubleshooting items with authentic error diagnostics for `Invalid login credentials`, `Email not confirmed`, and missing environment configurations.
+- **Security Clarification on `localhost` Redirect URLs**: Documented in [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) why having `localhost:5500` in Supabase Redirect URLs is safe, how loopback routing works, and why database authorization is strictly enforced by PostgreSQL Row Level Security (RLS) rather than caller domains.
+
 # 18.09.26
 
 ### **Database Schema Alignment, Project AGENTS.md & Step-by-Step Login Setup Guide**
