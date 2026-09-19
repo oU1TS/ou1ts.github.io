@@ -2,6 +2,50 @@
 
 # 19.09.26
 
+### **Post-Login Profile Redirection & Robust Session Synchronization**
+- **Guaranteed Post-Login Profile Navigation**:
+  - Updated `supabaseClient.auth.onAuthStateChange` in [`index.js`](index.js) to explicitly call `await syncAuthStatus('#profile')` on `SIGNED_IN` events, ensuring that user authentication (via Email/Password or Google OAuth) immediately transitions directly to the `#profile` section instead of falling back to `#home`.
+  - Updated Google OAuth `redirectTo` to include `#profile` (`window.location.origin + window.location.pathname + '#profile'`), allowing `handleInitialHash()` to recognize the post-OAuth redirect and switch immediately to the profile view on return.
+  - Replaced delayed `setTimeout` redirect invocations in `loginForm` and `registerForm` submit listeners with immediate `await syncAuthStatus('#profile')` navigation.
+- **Fail-Safe User & Profile Record Retrieval (`getCurrentUser`)**:
+  - Enhanced `getCurrentUser()` in [`index.js`](index.js) to check synchronous cached session data (`supabaseClient.auth.getSession()`) first before issuing network requests.
+  - Replaced `.single()` with `.maybeSingle()` wrapped in a try/catch when querying the `profiles` table. This prevents PostgREST `PGRST116` errors (thrown when a newly registered user does not yet have a profile row) from returning `null` for the entire authenticated user session and inadvertently triggering a logout redirect to `#home`.
+
+### **Full-Viewport Modal Overlay, Protruding Mobile Action Buttons & Single-Row Aggregate Metrics**
+- **Full Viewport Overlay & Background Scroll Locking**:
+  - Relocated `#metricsJumpModal` out of the transformed/filtered `#initiativesDashboardCard` container directly into `<body>` in [`index.html`](index.html), removing containing block entrapment and ensuring the modal dialog and backdrop cover the entire screen viewport (`100vw` by `100vh`) with `z-index: 99999`.
+  - Added `body.modal-open { overflow: hidden !important; }` in [`index.css`](index.css) toggled dynamically via `openMetricsModal()` and `closeMetricsModal()` in [`index.js`](index.js) to freeze background document scrolling while the directory modal is active.
+- **Desktop Action Placement & Summarized Metrics Row Layout**:
+  - Reorganized desktop action layout in [`index.css`](index.css): positioned `#dashboardQuickJumpBtn` (`top: 74px; right: 22px;`) directly underneath `#dashboardSwitchToProfileBtn` (`top: 22px; right: 22px;`).
+  - Added `@media (min-width: 640px) { .dashboard-aggregate-stats { grid-template-columns: repeat(4, 1fr); } }` ensuring all 4 summarized telemetry stat pills display cleanly in a single horizontal row whenever screen space permits.
+- **Mobile Protruding Window Switchers & Gallery Controls Quick Jump**:
+  - Anchored `#dashboardSwitchToProfileBtn` (and `#profileSwitchToDashboardBtn`) to the top-right corner of the window (`top: -10px; right: -10px;`) on mobile screens (`@media (max-width: 768px)`), slightly protruding past the card border with elevated dark glass styling and shadow elevation.
+  - Placed `#dashboardQuickJumpBtn` directly into `#metricsGalleryControls` in [`index.html`](index.html), positioned at `top: -10px; right: -8px;` protruding slightly outside the gallery controls container, freeing header space and contextually linking the directory search directly to the single-card gallery view.
+
+### **Reduced Page Gap Above Initiatives Section Title & Scaled Mobile Top Spacing**
+- **Desktop Section Alignment Matching About Section**:
+  - Overrode `.spa-section.active` flex centering behavior for `#projects` and `#about` by configuring `#projects.spa-section.active, #about.spa-section.active { justify-content: flex-start; }` in [`index.css`](index.css).
+  - Eliminated the excessive and variable vertical centering gap that previously pushed the `"Initiatives"` section heading far down on desktop viewports, aligning its top fold gap directly to the `80px` standard established by the `"About oU1TS"` section.
+- **Responsive Mobile & Tablet Viewport Gap Scaling**:
+  - Added responsive padding rules across breakpoints:
+    - Tablet (`@media (max-width: 992px)`): `.spa-section { padding-top: 48px; }` and `#projects.spa-section { padding-top: 40px; }`.
+    - Mobile (`@media (max-width: 768px)`): `.spa-section { padding-top: 28px; }` and `#projects.spa-section { padding-top: 22px; }`.
+    - Compact Mobile (`@media (max-width: 480px)`): `.spa-section { padding-top: 20px; }` and `#projects.spa-section { padding-top: 16px; }`.
+  - Scaled down `.projects-header-container .section-subtitle` bottom margin from `40px` to `18px` on mobile screens, optimizing vertical density and bringing the squircle card grid into immediate viewport prominence without dead whitespace.
+
+### **Profile Mobile Typography Scaling, Project Metrics Gallery View & Quick-Jump Directory Modal**
+- **Mobile Page Element & Typography Scaling**:
+  - Scaled down font sizes, numerical indicators, padding, and avatars across `.profile-card`, `#initiativesDashboardCard`, and inner components under `@media (max-width: 768px)` in [`index.css`](index.css).
+  - Scaled profile avatar from `90px` to `62px`, profile name to `1.25rem`, details grid text and student ID numbers to `0.88rem`, aggregate metrics numbers (`.agg-stat-num`) to `0.95rem`, and KPI values to `0.82rem`, preventing screen overflow.
+- **Single-Card Mobile Gallery View with Serial Counter & Touch Swiping**:
+  - Transformed `.project-metrics-grid` into a mobile gallery view showing exactly one project's performance card at a time with smooth `@keyframes galleryCardFadeIn` transitions.
+  - Added `#metricsGalleryControls` in [`index.html`](index.html) featuring left and right navigation buttons (`#metricsGalleryPrevBtn`, `#metricsGalleryNextBtn`) and a formatted serial counter (`#metricsGalleryCounter` displaying `01 / 13`).
+  - Added touch swipe gesture listeners (`touchstart`/`touchend` horizontal delta detection) in [`index.js`](index.js) for native-feeling carousel navigation.
+- **Top-Right Quick Jump Initiatives Directory Modal**:
+  - Added `.dashboard-top-actions` container in [`index.html`](index.html) housing a quick-jump directory button (`#dashboardQuickJumpBtn` with `<i class="fa-solid fa-layer-group"></i>`) alongside the return profile switcher.
+  - Built an accessible frosted-glass modal (`#metricsJumpModal`) listing all 13 initiatives with live search filtering (`#metricsModalSearch`), category tags, operational status badges, and health score indicators.
+  - Selecting any initiative instantly navigates the mobile gallery view directly to that project's card (or smoothly scrolls to and highlights it on desktop via `@keyframes metricCardPulse`).
+
 ### **Source Code & Rendered Documentation Links Added to About Section**
 - **Bottom Section Footer Navigation**:
   - Inserted `.about-footer-links` container at the bottom of the About section in [`index.html`](index.html).

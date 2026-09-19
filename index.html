@@ -594,7 +594,7 @@
 
                 <!-- Initiatives Performance Metrics Dashboard Window -->
                 <div class="dashboard-card inactive-stage-window" id="initiativesDashboardCard" style="display: none;">
-                    <!-- Window Switcher back to Profile (Right Arrowhead) -->
+                    <!-- Window Switcher to Profile (Right Arrowhead) -->
                     <button type="button" class="window-switcher-btn to-profile" id="dashboardSwitchToProfileBtn"
                         title="Back to User Profile" aria-label="Back to User Profile">
                         <span class="switcher-tooltip">Back to Profile</span>
@@ -632,14 +632,69 @@
                         </div>
                     </div>
 
-                    <!-- Project Metrics Grid -->
-                    <div class="project-metrics-grid" id="projectMetricsGrid">
-                        <!-- Dynamically populated by JS from primaryProjects & metrics registry -->
+                    <!-- Project Metrics Grid & Mobile Gallery View -->
+                    <div class="metrics-stage-container">
+                        <div class="project-metrics-grid" id="projectMetricsGrid">
+                            <!-- Dynamically populated by JS from primaryProjects & metrics registry -->
+                        </div>
+
+                        <!-- Mobile Gallery Navigation Controls & Quick Jump Button -->
+                        <div class="metrics-gallery-controls" id="metricsGalleryControls">
+                            <button type="button" class="window-switcher-btn quick-jump-btn" id="dashboardQuickJumpBtn"
+                                title="All Initiatives Directory" aria-label="All Initiatives Directory">
+                                <i class="fa-solid fa-layer-group"></i>
+                                <span class="switcher-tooltip">All Initiatives</span>
+                            </button>
+                            <button type="button" class="gallery-nav-btn prev-btn" id="metricsGalleryPrevBtn"
+                                aria-label="Previous Initiative" title="Previous Initiative">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <div class="gallery-counter-pill" id="metricsGalleryCounter">
+                                <span class="gallery-counter-current" id="galleryCurrentIndex">01</span>
+                                <span class="gallery-counter-divider">/</span>
+                                <span class="gallery-counter-total" id="galleryTotalCount">13</span>
+                            </div>
+                            <button type="button" class="gallery-nav-btn next-btn" id="metricsGalleryNextBtn"
+                                aria-label="Next Initiative" title="Next Initiative">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Quick Jump Initiatives Directory Modal (Full Viewport Overlay) -->
+    <div class="metrics-jump-modal" id="metricsJumpModal" style="display: none;" aria-hidden="true"
+        role="dialog" aria-labelledby="metricsModalTitle">
+        <div class="metrics-modal-backdrop" id="metricsModalBackdrop"></div>
+        <div class="metrics-modal-dialog">
+            <div class="metrics-modal-header">
+                <div class="metrics-modal-title-wrap">
+                    <div class="metrics-modal-icon">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h3 class="metrics-modal-title" id="metricsModalTitle">Initiatives Directory</h3>
+                        <p class="metrics-modal-subtitle">Jump directly to any initiative's metrics</p>
+                    </div>
+                </div>
+                <button type="button" class="metrics-modal-close-btn" id="closeMetricsModalBtn"
+                    aria-label="Close directory modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="metrics-modal-search-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="metricsModalSearch"
+                    placeholder="Search initiatives by name or category..." autocomplete="off">
+            </div>
+            <div class="metrics-modal-list" id="metricsModalList">
+                <!-- Populated dynamically by JS -->
+            </div>
+        </div>
+    </div>
 
 
     <!-- SVG Squircle clip-path container -->

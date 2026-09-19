@@ -356,6 +356,8 @@ function initNavigation() {
         const hash = window.location.hash || '#home';
         if (['#home', '#projects', '#repos', '#about', '#auth', '#profile'].includes(hash)) {
             switchTab(hash);
+        } else if (hash.includes('profile')) {
+            switchTab('#profile');
         }
     }
 
@@ -750,13 +752,260 @@ const projectPerformanceMetrics = {
     }
 };
 
+let currentMetricsGalleryIndex = 0;
+
+function updateMetricsGalleryView() {
+    const grid = document.getElementById('projectMetricsGrid');
+    const curIdxEl = document.getElementById('galleryCurrentIndex');
+    const totalCountEl = document.getElementById('galleryTotalCount');
+    if (!grid) return;
+
+    const cards = grid.querySelectorAll('.project-metric-card');
+    const total = cards.length;
+    if (total === 0) return;
+
+    if (currentMetricsGalleryIndex < 0) currentMetricsGalleryIndex = total - 1;
+    if (currentMetricsGalleryIndex >= total) currentMetricsGalleryIndex = 0;
+
+    cards.forEach((card, idx) => {
+        if (idx === currentMetricsGalleryIndex) {
+            card.classList.add('active-gallery-card');
+        } else {
+            card.classList.remove('active-gallery-card');
+        }
+    });
+
+    if (curIdxEl) {
+        curIdxEl.textContent = String(currentMetricsGalleryIndex + 1).padStart(2, '0');
+    }
+    if (totalCountEl) {
+        totalCountEl.textContent = String(total).padStart(2, '0');
+    }
+
+    // Synchronize active item in directory modal if open
+    document.querySelectorAll('.metrics-modal-item').forEach(item => {
+        const itemIdx = parseInt(item.dataset.index, 10);
+        if (itemIdx === currentMetricsGalleryIndex) {
+            item.classList.add('active-item');
+        } else {
+            item.classList.remove('active-item');
+        }
+    });
+}
+
+function jumpToProjectMetric(index) {
+    currentMetricsGalleryIndex = index;
+    updateMetricsGalleryView();
+    closeMetricsModal();
+
+    // On desktop, scroll smoothly to the card and trigger highlight pulse
+    if (window.innerWidth > 768) {
+        const grid = document.getElementById('projectMetricsGrid');
+        if (grid) {
+            const cards = grid.querySelectorAll('.project-metric-card');
+            if (cards[index]) {
+                cards[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                cards[index].classList.remove('highlight-pulse');
+                void cards[index].offsetWidth; // force DOM reflow
+                cards[index].classList.add('highlight-pulse');
+                setTimeout(() => {
+                    cards[index].classList.remove('highlight-pulse');
+                }, 1500);
+            }
+        }
+    }
+}
+
+function openMetricsModal() {
+    const modal = document.getElementById('metricsJumpModal');
+    const searchInput = document.getElementById('metricsModalSearch');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    renderMetricsModalList('');
+
+    if (searchInput) {
+        searchInput.value = '';
+        setTimeout(() => searchInput.focus(), 50);
+    }
+}
+
+function closeMetricsModal() {
+    const modal = document.getElementById('metricsJumpModal');
+    if (!modal) return;
+
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+}
+
+function renderMetricsModalList(query = '') {
+    const listEl = document.getElementById('metricsModalList');
+    if (!listEl) return;
+
+    listEl.innerHTML = '';
+    const q = query.trim().toLowerCase();
+
+    let matchCount = 0;
+
+    primaryProjects.forEach((proj, idx) => {
+        if (!proj.name) return;
+        const metrics = projectPerformanceMetrics[proj.name] || {
+            category: "Initiative",
+            status: "Operational",
+            statusType: "online",
+            healthScore: 98.0
+        };
+
+        const nameMatch = proj.name.toLowerCase().includes(q);
+        const catMatch = (metrics.category || '').toLowerCase().includes(q);
+        const statusMatch = (metrics.status || '').toLowerCase().includes(q);
+
+        if (q && !nameMatch && !catMatch && !statusMatch) return;
+
+        matchCount++;
+
+        const item = document.createElement('div');
+        item.className = 'metrics-modal-item' + (idx === currentMetricsGalleryIndex ? ' active-item' : '');
+        item.dataset.index = idx;
+        item.setAttribute('role', 'button');
+        item.setAttribute('tabindex', '0');
+
+        item.innerHTML = `
+            <div class="m-item-left">
+                <div class="m-item-icon">
+                    <i class="${proj.icon}"></i>
+                </div>
+                <div class="m-item-info">
+                    <div class="m-item-name">${proj.name}</div>
+                    <div class="m-item-cat">${metrics.category}</div>
+                </div>
+            </div>
+            <div class="m-item-right">
+                <span class="pm-status-badge ${metrics.statusType}">
+                    <span class="pm-dot"></span>
+                    ${metrics.status}
+                </span>
+                <span class="m-item-health">${metrics.healthScore}%</span>
+            </div>
+        `;
+
+        item.addEventListener('click', () => {
+            jumpToProjectMetric(idx);
+        });
+
+        item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                jumpToProjectMetric(idx);
+            }
+        });
+
+        listEl.appendChild(item);
+    });
+
+    if (matchCount === 0) {
+        listEl.innerHTML = `<div class="metrics-modal-empty"><i class="fa-solid fa-magnifying-glass" style="margin-right: 6px;"></i> No initiatives found matching "${query}"</div>`;
+    }
+}
+
+function initMetricsGalleryAndModal() {
+    const prevBtn = document.getElementById('metricsGalleryPrevBtn');
+    const nextBtn = document.getElementById('metricsGalleryNextBtn');
+    const jumpBtn = document.getElementById('dashboardQuickJumpBtn');
+    const closeBtn = document.getElementById('closeMetricsModalBtn');
+    const backdrop = document.getElementById('metricsModalBackdrop');
+    const searchInput = document.getElementById('metricsModalSearch');
+    const grid = document.getElementById('projectMetricsGrid');
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            const cards = document.querySelectorAll('.project-metric-card');
+            const total = cards.length || primaryProjects.length;
+            currentMetricsGalleryIndex = (currentMetricsGalleryIndex - 1 + total) % total;
+            updateMetricsGalleryView();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const cards = document.querySelectorAll('.project-metric-card');
+            const total = cards.length || primaryProjects.length;
+            currentMetricsGalleryIndex = (currentMetricsGalleryIndex + 1) % total;
+            updateMetricsGalleryView();
+        });
+    }
+
+    // Touch swipe gesture support for mobile gallery
+    if (grid) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        grid.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length > 0) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        grid.addEventListener('touchend', (e) => {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                const diffX = e.changedTouches[0].clientX - touchStartX;
+                const diffY = e.changedTouches[0].clientY - touchStartY;
+
+                // Horizontal swipe detected (more horizontal than vertical, and > 40px)
+                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                    const cards = document.querySelectorAll('.project-metric-card');
+                    const total = cards.length || primaryProjects.length;
+                    if (diffX < 0) {
+                        // Swipe left -> Next
+                        currentMetricsGalleryIndex = (currentMetricsGalleryIndex + 1) % total;
+                    } else {
+                        // Swipe right -> Prev
+                        currentMetricsGalleryIndex = (currentMetricsGalleryIndex - 1 + total) % total;
+                    }
+                    updateMetricsGalleryView();
+                }
+            }
+        }, { passive: true });
+    }
+
+    // Quick Jump Modal triggers
+    if (jumpBtn) {
+        jumpBtn.addEventListener('click', openMetricsModal);
+    }
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeMetricsModal);
+    }
+    if (backdrop) {
+        backdrop.addEventListener('click', closeMetricsModal);
+    }
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            renderMetricsModalList(e.target.value);
+        });
+    }
+
+    // Close modal on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('metricsJumpModal');
+            if (modal && modal.style.display !== 'none') {
+                closeMetricsModal();
+            }
+        }
+    });
+}
+
 function renderProjectMetricsDashboard() {
     const grid = document.getElementById('projectMetricsGrid');
     if (!grid) return;
 
     grid.innerHTML = '';
 
-    primaryProjects.forEach(proj => {
+    primaryProjects.forEach((proj, index) => {
         if (!proj.name) return;
         const metrics = projectPerformanceMetrics[proj.name] || {
             category: "Initiative",
@@ -774,6 +1023,7 @@ function renderProjectMetricsDashboard() {
 
         const card = document.createElement('div');
         card.className = 'project-metric-card';
+        card.dataset.index = index;
 
         const kpisHtml = metrics.kpis.map(kpi => `
             <div class="pm-kpi-item">
@@ -834,6 +1084,8 @@ function renderProjectMetricsDashboard() {
 
         grid.appendChild(card);
     });
+
+    updateMetricsGalleryView();
 }
 
 function initProfileDashboardSwitcher() {
@@ -915,6 +1167,7 @@ function initApp() {
     initParallax();
     initCustomDropdowns();
     renderProjectMetricsDashboard();
+    initMetricsGalleryAndModal();
     initProfileDashboardSwitcher();
     initAuthSystem();
 }
@@ -1052,14 +1305,29 @@ async function getCurrentUser() {
         return null;
     }
     try {
-        const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-        if (authError || !user) return null;
+        let user = null;
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        if (sessionData && sessionData.session && sessionData.session.user) {
+            user = sessionData.session.user;
+        } else {
+            const { data: { user: authUser }, error: authError } = await supabaseClient.auth.getUser();
+            if (authError || !authUser) return null;
+            user = authUser;
+        }
 
-        const { data: profile, error: profileError } = await supabaseClient
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+        if (!user) return null;
+
+        let profile = null;
+        try {
+            const { data, error: profileError } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle();
+            if (!profileError) profile = data;
+        } catch (pe) {
+            console.warn("Could not retrieve profile record:", pe);
+        }
 
         return {
             id: user.id,
@@ -1325,14 +1593,18 @@ async function syncAuthStatus(redirectHash = null) {
                 showAuthAlert("Please complete your profile details (Student ID, Department, Batch, Blood Group, and at least one social link).", "warning", "profileAlert");
             } else {
                 if (incompleteBanner) incompleteBanner.style.display = 'none';
+                if (profileReadView && profileEditForm) {
+                    profileReadView.style.display = 'block';
+                    profileEditForm.style.display = 'none';
+                }
                 if (cancelEditBtn) cancelEditBtn.style.display = 'inline-flex';
             }
 
-            if (hash === '#auth') {
+            if (redirectHash) {
+                if (window.switchTab) window.switchTab(redirectHash);
+            } else if (hash === '#auth') {
                 // If they go to login while active, move them to profile
                 if (window.switchTab) window.switchTab('#profile');
-            } else if (redirectHash) {
-                if (window.switchTab) window.switchTab(redirectHash);
             }
         } else {
             if (hash === '#profile') {
@@ -1371,7 +1643,13 @@ async function initAuthSystem() {
                         showResetPasswordView();
                         return;
                     }
-                    await syncAuthStatus();
+                    if (event === 'SIGNED_IN') {
+                        await syncAuthStatus('#profile');
+                    } else if (event === 'SIGNED_OUT') {
+                        await syncAuthStatus('#home');
+                    } else {
+                        await syncAuthStatus();
+                    }
                 });
             } else {
                 console.error("Supabase SDK loaded but createClient is not available.");
@@ -1527,10 +1805,8 @@ async function initAuthSystem() {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = origText;
 
-                showAuthAlert("Login successful!", "success", "authAlert");
-                setTimeout(async () => {
-                    await syncAuthStatus('#profile');
-                }, 800);
+                showAuthAlert("Login successful! Redirecting to profile...", "success", "authAlert");
+                await syncAuthStatus('#profile');
             } catch (error) {
                 const submitBtn = loginFormElement.querySelector('button[type="submit"]');
                 submitBtn.disabled = false;
@@ -1563,10 +1839,8 @@ async function initAuthSystem() {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = origText;
 
-                showAuthAlert("Registration successful! Logging in...", "success", "authAlert");
-                setTimeout(async () => {
-                    await syncAuthStatus('#profile');
-                }, 1000);
+                showAuthAlert("Registration successful! Redirecting to profile...", "success", "authAlert");
+                await syncAuthStatus('#profile');
             } catch (error) {
                 const submitBtn = registerFormElement.querySelector('button[type="submit"]');
                 submitBtn.disabled = false;
@@ -1675,9 +1949,10 @@ async function initAuthSystem() {
                 return;
             }
             try {
+                const redirectUrl = window.location.origin + window.location.pathname + '#profile';
                 const { error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
-                    options: { redirectTo: window.location.origin + window.location.pathname }
+                    options: { redirectTo: redirectUrl }
                 });
                 if (error) throw error;
             } catch (e) {
