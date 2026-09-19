@@ -2,6 +2,79 @@
 
 # 19.09.26
 
+### **Source Code & Rendered Documentation Links Added to About Section**
+- **Bottom Section Footer Navigation**:
+  - Inserted `.about-footer-links` container at the bottom of the About section in [`index.html`](index.html).
+  - Added repository link as `"Source Code"` pointing to `https://github.com/oU1TS/ou1ts.github.io` with GitHub vector icon.
+  - Added rendered documentation link pointing to `https://b1tranger.netlify.app/render.html?file=https%3A%2F%2Fgithub.com%2FoU1TS%2Fou1ts.github.io%2Fblob%2Fmain%2Fdocumentation.md` with open book icon.
+  - Styled with glassmorphism pill containers, hover elevation transitions, and theme-adaptive shadows in [`index.css`](index.css).
+
+### **About Section Rationale CTA Button Synchronized with Auth State**
+- **Unified Navigation & CTA State**:
+  - Connected `#rationaleJoinBtn` within the About section's rationale card to `updateNavLinksForAuth(isLoggedIn)` in [`index.js`](index.js).
+  - When logged out, it displays `"Join oU1TS"` (`#auth`) with the handshake icon; when logged in, it dynamically transforms into `"Profile"` (`#profile`) with the user gear icon, aligning with the desktop navbar and mobile sidebar navigation anchors.
+
+### **Profile Dashboard Switcher & Initiatives Contextual Metrics Dashboard**
+- **Centered Seamless Window Placing & Picking-Up Animation**:
+  - Replaced side-sliding push transitions with a centered card-deck overlay mechanism using `grid-template-areas: "card"` on `.profile-stage-wrapper` in [`index.css`](index.css). Both the Profile and Dashboard cards stay strictly centered along the same vertical axis without abrupt lateral displacements.
+  - Implemented `@keyframes placeDownOnCard` on the Dashboard card, bringing it from near the screen center with a slight floating scale and elevation shadow and placing it smoothly onto the Profile card to cover it completely.
+  - Implemented `@keyframes pickUpOffCard` to pick up the Dashboard card off the stack and reveal the Profile card resting directly beneath it.
+  - Updated `initProfileDashboardSwitcher()` in [`index.js`](index.js) to sequence `.anim-place-down`, `.anim-covered-under`, `.anim-pick-up`, and `.anim-reveal-under` animations with seamless state transitions.
+- **Profile Window Switcher Structure**:
+  - Encapsulated `.profile-card` and `.dashboard-card` inside `.profile-stage-wrapper` in [`index.html`](index.html).
+  - Added window switcher button (`#profileSwitchToDashboardBtn`) on the top-right corner of the profile card with left arrowhead (`<i class="fa-solid fa-chevron-left"></i>`) and hover tooltip.
+  - Added return switcher button (`#dashboardSwitchToProfileBtn`) on the top-right of the metrics dashboard window with right arrowhead (`<i class="fa-solid fa-chevron-right"></i>`).
+- **Contextual Performance Metrics Registry for Primary Projects**:
+  - Created `projectPerformanceMetrics` in [`index.js`](index.js) detailing domain-specific real-world KPIs for all 13 projects (e.g. materials served for Resource Archive, question solutions for Question Bank, schedule conflicts for Academic Scheduler, emergency donor match rates for Blood Donation, repositories/commits for Dev Lab, etc.).
+  - Built `renderProjectMetricsDashboard()` dynamically building squircle header cards, status badges (`Operational`, `Beta Testing`, `In Development`) with glowing indicators, health progress bars, 2x2 metric pills, and live launch buttons.
+
+### **Custom Responsive Dropdown Component with 2-Line Text Wrapping & Screen Containment**
+- **Mobile Viewport Overflow Prevention**:
+  - Replaced native `<select>` controls with custom, responsive glassmorphic dropdowns (`.custom-select-container`, `.custom-select-trigger`, `.custom-select-menu`, `.custom-select-option`) in [`index.css`](index.css).
+  - Enforced `max-width: 100%; box-sizing: border-box;` on both the trigger and dropdown menu popup to ensure the menu never extends outside the viewport or triggers horizontal scrollbars on mobile devices.
+  - Implemented 2-line text wrapping with `white-space: normal; word-break: break-word; overflow-wrap: break-word; line-height: 1.35;` on option items, cleanly displaying verbose department names like *"Computer Science & Engineering (CSE)"* and *"Electrical & Electronic Engineering (EEE)"*.
+  - Configured high-contrast themes for dropdown menus across dark mode (`#161b26` background, `#f8fafc` text) and light mode (`#ffffff` background, `#0f172a` text).
+- **Dynamic Attachment & Form Synchronization**:
+  - Created `initCustomDropdowns()` in [`index.js`](index.js) that automatically discovers all `.input-wrapper select` elements (`#registerDept`, `#editDept`, `#editBlood`), hides native controls via `.visually-hidden-select`, and renders accessible ARIA listbox structures.
+  - Bound bidirectional value synchronization: option clicks update `<select>.value` and dispatch `change` events for seamless form validation, while programmatically updating inputs via `select._updateCustomDropdown()` synchronizes the visible trigger button.
+  - Built keyboard navigation support (Enter, Space, Escape, Arrow keys) and global document click listeners for auto-closing open dropdowns.
+
+### **Centralized Header Added to Authentication/Login Page**
+- **Auth Page Header Alignment**:
+  - Inserted `.auth-page-header` directly above `.auth-card` in [`index.html`](index.html) displaying heading `"One account for all of oU1TS"` and subtitle `"oU1TS uses central database for all of its initiatives"`, identical to the profile section.
+  - Linked styles in [`index.css`](index.css) to guarantee unified visual identity across both auth and profile pages.
+
+### **Custom SMTP Setup Guide & Rate Limit Diagnostics Added to Setup Documentation**
+- **Expanded Setup Guide with SMTP Protocols**:
+  - Updated [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) with Step 3.3 ("Custom SMTP Setup") detailing how to bypass Supabase's default 3–4 email/hour rate limit.
+  - Documented complete setup instructions for **Gmail SMTP** (App Passwords, zero domain requirement, 500 emails/day) and **Resend** (custom domain DNS verification, 3,000 emails/month).
+  - Added troubleshooting entry for `over_email_send_rate_limit` (HTTP 429) directing users to configure Custom SMTP in Supabase project settings.
+
+### **Supabase Password Recovery Workflow & Forgot Password Trigger**
+- **Forgot Password UI in Login Card**:
+  - Added `.form-label-row` in [`index.html`](index.html) housing a dedicated `#forgotPasswordBtn` ("Forgot Password?") directly above the password field.
+  - Added `#forgotPasswordForm` (email entry + link dispatch) and `#resetPasswordForm` (new password + confirmation) within the `#auth` section.
+  - Styled labels, triggers, and back buttons with responsive glassmorphism in [`index.css`](index.css).
+- **Client Recovery & Reset Logic**:
+  - Bound `supabaseClient.auth.resetPasswordForEmail()` with a 60-second cooldown timer on the submit button and explicit detection for `429` (`over_email_send_rate_limit`) errors in [`index.js`](index.js).
+  - Intercepted `PASSWORD_RECOVERY` events in `supabaseClient.auth.onAuthStateChange` and parsed recovery hashes on page load to reveal `#resetPasswordForm`.
+  - Implemented `supabaseClient.auth.updateUser({ password })` handling with length validation (min 6 characters) and automated login upon completion.
+
+### **Mobile Navigation Refinement, Mandatory Profile Setup & Select Contrast Improvements**
+- **Mobile Sidebar Auth Simplification**:
+  - Removed dedicated `#sidebarAuthLink` ("Login") from `.sidebar-links` in [`index.html`](index.html).
+  - Configured `#sidebarJoinBtn` within `.sidebar-join` as the dynamic authentication anchor in [`index.js`](index.js). When logged out, it displays `"Join oU1TS"` linking to `#auth`. When authenticated, it transforms into `"Profile"` with user icon linking to `#profile`.
+- **Profile Section Header Standardized**:
+  - Inserted `.profile-page-header` directly above `.profile-card` in [`index.html`](index.html) with heading `"One account for all of oU1TS"` and subtitle `"oU1TS uses central database for all of its initiatives"`.
+  - Added matching typography and spacing rules in [`index.css`](index.css).
+- **High-Contrast Dropdown `<select>` Options Across Themes**:
+  - Added `color-scheme: dark;` to `:root` and `.input-wrapper select`, and `color-scheme: light;` to `body.light-mode` in [`index.css`](index.css).
+  - Explicitly styled `.input-wrapper select option` with dark background (`#161b26`) and bright white text (`#f8fafc`) in dark mode, and pure white background (`#ffffff`) with dark slate text (`#0f172a`) in light mode, eliminating invisible white-on-white text in browser dropdown popups.
+- **Mandatory Profile Completion Flow**:
+  - Created `isProfileComplete()` in [`index.js`](index.js) validating presence of numeric Student ID (not `'OAUTH_USER'`), Department, Batch, Blood Group, and at least one social handle (Facebook, Instagram, Telegram, or Discord).
+  - Updated `syncAuthStatus()` to automatically open the edit view (`#profileEditForm`), display an alert banner, and hide the cancel button if an authenticated user's profile is incomplete.
+  - Enforced required validation checks in `updateProfile()` and form submission handler to ensure profile completeness before committing to Supabase `public.profiles`.
+
 ### **Fix: Navbar Responsiveness, Supabase Variable Scope Collision & Navigation Resilience**
 - **Resolved Identifier Scope Collision in `index.js`**: Renamed `let supabase = null;` to `let supabaseClient = null;` across all database and auth references. The CDN bundle for `@supabase/supabase-js@2` declared `var supabase` on the global scope, causing modern JavaScript engines to throw `SyntaxError: Identifier 'supabase' has already been declared` and abort script execution before navigation listeners could attach.
 - **Immediate DOM-Ready Initialization Fallback**: Replaced bare `document.addEventListener('DOMContentLoaded', ...)` with a ready-state guard checking `document.readyState === 'loading'`. This ensures `initApp()` and `initNavigation()` execute immediately if the DOM is already interactive or complete.

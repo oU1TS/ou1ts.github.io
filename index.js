@@ -405,6 +405,505 @@ function initParallax() {
     });
 }
 
+// ==========================================
+// 5. Custom Responsive Dropdowns (2-Line Wrapping & Viewport Constrained)
+// ==========================================
+
+function initCustomDropdowns() {
+    const selects = document.querySelectorAll('.input-wrapper select');
+    selects.forEach(select => {
+        if (select.dataset.customDropdownInit === 'true') return;
+        select.dataset.customDropdownInit = 'true';
+
+        const parentWrapper = select.closest('.input-wrapper');
+        if (!parentWrapper) return;
+
+        // Apply visually hidden accessible styling to native select
+        select.classList.add('visually-hidden-select');
+        select.setAttribute('tabindex', '-1');
+
+        // Create container
+        const container = document.createElement('div');
+        container.className = 'custom-select-container';
+
+        // Trigger button
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'custom-select-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        const label = document.createElement('span');
+        label.className = 'custom-select-label';
+
+        const arrow = document.createElement('i');
+        arrow.className = 'fa-solid fa-chevron-down custom-select-arrow';
+
+        trigger.appendChild(label);
+        trigger.appendChild(arrow);
+
+        // Menu list
+        const menu = document.createElement('ul');
+        menu.className = 'custom-select-menu';
+        menu.setAttribute('role', 'listbox');
+
+        function syncUI() {
+            const selectedOpt = select.options[select.selectedIndex];
+            const hasVal = selectedOpt && selectedOpt.value !== '';
+            label.textContent = hasVal ? selectedOpt.text : (select.options[0]?.text || 'Select an option');
+            if (hasVal) {
+                label.classList.remove('placeholder');
+            } else {
+                label.classList.add('placeholder');
+            }
+
+            menu.querySelectorAll('.custom-select-option').forEach(li => {
+                if (li.dataset.value === select.value) {
+                    li.classList.add('selected');
+                    li.setAttribute('aria-selected', 'true');
+                } else {
+                    li.classList.remove('selected');
+                    li.setAttribute('aria-selected', 'false');
+                }
+            });
+        }
+
+        // Build list items from options
+        Array.from(select.options).forEach(opt => {
+            if (opt.disabled && opt.value === '') {
+                return; // placeholder option skipped in menu
+            }
+
+            const li = document.createElement('li');
+            li.className = 'custom-select-option';
+            li.setAttribute('role', 'option');
+            li.setAttribute('tabindex', '0');
+            li.dataset.value = opt.value;
+            li.textContent = opt.text;
+
+            li.addEventListener('click', (e) => {
+                e.stopPropagation();
+                select.value = opt.value;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                syncUI();
+                close();
+                trigger.focus();
+            });
+
+            li.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    li.click();
+                }
+            });
+
+            menu.appendChild(li);
+        });
+
+        function open() {
+            document.querySelectorAll('.custom-select-container.open').forEach(c => {
+                if (c !== container) {
+                    c.classList.remove('open');
+                    const t = c.querySelector('.custom-select-trigger');
+                    if (t) t.setAttribute('aria-expanded', 'false');
+                }
+            });
+            container.classList.add('open');
+            trigger.setAttribute('aria-expanded', 'true');
+        }
+
+        function close() {
+            container.classList.remove('open');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (container.classList.contains('open')) {
+                close();
+            } else {
+                open();
+            }
+        });
+
+        trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (!container.classList.contains('open')) {
+                    open();
+                }
+                const firstOpt = menu.querySelector('.custom-select-option');
+                if (firstOpt) firstOpt.focus();
+            } else if (e.key === 'Escape') {
+                close();
+            }
+        });
+
+        select.addEventListener('change', syncUI);
+
+        syncUI();
+
+        container.appendChild(trigger);
+        container.appendChild(menu);
+        parentWrapper.appendChild(container);
+
+        select._updateCustomDropdown = syncUI;
+    });
+
+    if (!window._customSelectGlobalCloseHandler) {
+        window._customSelectGlobalCloseHandler = true;
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-select-container')) {
+                document.querySelectorAll('.custom-select-container.open').forEach(c => {
+                    c.classList.remove('open');
+                    const t = c.querySelector('.custom-select-trigger');
+                    if (t) t.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.custom-select-container.open').forEach(c => {
+                    c.classList.remove('open');
+                    const t = c.querySelector('.custom-select-trigger');
+                    if (t) t.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+    }
+}
+
+// ==========================================
+// 5.1 Initiatives Performance Metrics & Profile Window Switcher
+// ==========================================
+
+const projectPerformanceMetrics = {
+    "Projects Hub": {
+        category: "Ecosystem Core",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 99.9,
+        summary: "Central gateway & navigation matrix linking all student initiatives.",
+        kpis: [
+            { label: "Active Nodes", value: "13 Services", trend: "100% Up" },
+            { label: "Monthly Visits", value: "14.2k", trend: "↑ 18%" },
+            { label: "Uptime", value: "99.9%", trend: "Optimal" },
+            { label: "Community Rating", value: "4.9 / 5.0", trend: "★ 4.9" }
+        ]
+    },
+    "Resource Archive": {
+        category: "Academics & Study",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 98.6,
+        summary: "Curated lecture slides, lab manuals, notes, and academic papers.",
+        kpis: [
+            { label: "Curated Docs", value: "1,450+ PDFs", trend: "↑ 85 new" },
+            { label: "Bandwidth Served", value: "88.4 GB", trend: "High Def" },
+            { label: "Downloads", value: "5.8k / mo", trend: "↑ 24%" },
+            { label: "Redundancy", value: "99.8%", trend: "Multi-CDN" }
+        ]
+    },
+    "Courses Mastery": {
+        category: "Learning Pathways",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 97.4,
+        summary: "Structured curriculum tracks, video walkthroughs, and learning guides.",
+        kpis: [
+            { label: "Curated Tracks", value: "38 Courses", trend: "8 Depts" },
+            { label: "Content Hours", value: "460+ hrs", trend: "Indexed" },
+            { label: "Completion Rate", value: "84.2%", trend: "↑ 6.5%" },
+            { label: "Active Learners", value: "1.9k", trend: "Enrolled" }
+        ]
+    },
+    "Question Bank": {
+        category: "Examination Prep",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 99.1,
+        summary: "Midterm and final exam question archive with verified student solutions.",
+        kpis: [
+            { label: "Past Exam Papers", value: "620 Papers", trend: "6 Semesters" },
+            { label: "Solutions Verified", value: "96.4%", trend: "Peer-reviewed" },
+            { label: "Search Queries", value: "24.5k", trend: "Exam spike" },
+            { label: "Coverage", value: "8 Departments", trend: "100%" }
+        ]
+    },
+    "Academic Scheduler": {
+        category: "Smart Campus",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 99.5,
+        summary: "Conflict-free timetable generator, class alerts, and calendar sync.",
+        kpis: [
+            { label: "Routine Syncs", value: "2.4k Students", trend: "↑ 22%" },
+            { label: "Conflict Rate", value: "0.0%", trend: "Zero clash" },
+            { label: "Batch Routines", value: "14 Batches", trend: "Live update" },
+            { label: "Lookup Latency", value: "35 ms", trend: "Edge cache" }
+        ]
+    },
+    "Dev lab": {
+        category: "Engineering & OSS",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 98.9,
+        summary: "Collaborative open-source incubator for campus developers.",
+        kpis: [
+            { label: "Linked Repos", value: "26 Repos", trend: "GitHub OSS" },
+            { label: "Monthly Commits", value: "390+ commits", trend: "↑ 32%" },
+            { label: "Merged PRs", value: "48 PRs", trend: "Active" },
+            { label: "Contributors", value: "65 Developers", trend: "Growing" }
+        ]
+    },
+    "English Speaking": {
+        category: "Skill Development",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 96.8,
+        summary: "Peer-to-peer audio discussions, vocabulary builders, and IELTS circles.",
+        kpis: [
+            { label: "Daily Voice Rooms", value: "8 Sessions", trend: "Active" },
+            { label: "Practice Time", value: "740+ Hours", trend: "↑ 40 hrs/wk" },
+            { label: "Fluency Growth", value: "+32% Avg", trend: "Measured" },
+            { label: "Active Speakers", value: "360 Members", trend: "↑ 18%" }
+        ]
+    },
+    "Event Raids": {
+        category: "Campus Events",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 98.0,
+        summary: "Hackathons, campus workshops, and tech raid coordination.",
+        kpis: [
+            { label: "Events Hosted", value: "18 Raids", trend: "100% Success" },
+            { label: "Total Turnout", value: "1,680 Students", trend: "Cross-campus" },
+            { label: "RSVP Attendance", value: "97.8%", trend: "High loyalty" },
+            { label: "Upcoming Raids", value: "3 Scheduled", trend: "Next: Oct" }
+        ]
+    },
+    "Job Hunters": {
+        category: "Career & Placement",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 97.2,
+        summary: "Internship board, alumni referrals, and CV polishing workshops.",
+        kpis: [
+            { label: "Live Postings", value: "54 Openings", trend: "Tech & BBA" },
+            { label: "Alumni Referrals", value: "135 Matched", trend: "↑ 28%" },
+            { label: "Resumes Reviewed", value: "320+ CVs", trend: "Polished" },
+            { label: "Placement Rate", value: "82.4%", trend: "Hired" }
+        ]
+    },
+    "Blood Donation": {
+        category: "Community Welfare",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 99.7,
+        summary: "Emergency blood donor network connecting students in critical need.",
+        kpis: [
+            { label: "Verified Donors", value: "348 Donors", trend: "All groups" },
+            { label: "Response Time", value: "< 12 Mins", trend: "Emergency" },
+            { label: "Fulfilled Cases", value: "97.5%", trend: "186 Lives" },
+            { label: "Donor Readiness", value: "100% On-call", trend: "Active" }
+        ]
+    },
+    "Gym Bros": {
+        category: "Fitness & Lifestyle",
+        status: "Beta Testing",
+        statusType: "beta",
+        healthScore: 92.5,
+        summary: "Workout splits, nutrition calculators, and personal record trackers.",
+        kpis: [
+            { label: "Curated Splits", value: "24 Programs", trend: "PPL / Upper" },
+            { label: "PRs Logged", value: "980+ Records", trend: "↑ 120 mo" },
+            { label: "Active Athletes", value: "440 Members", trend: "↑ 14%" },
+            { label: "Streak Retention", value: "88.6%", trend: "Consistent" }
+        ]
+    },
+    "Bus Tracker": {
+        category: "Transit Telemetry",
+        status: "In Development",
+        statusType: "dev",
+        healthScore: 91.0,
+        summary: "Live GPS campus bus route telemetry and ETA estimation.",
+        kpis: [
+            { label: "Campus Routes", value: "5 Lines", trend: "Dhaka Metro" },
+            { label: "GPS Telemetry", value: "10s Frequency", trend: "Low latency" },
+            { label: "On-Time Ratio", value: "93.8%", trend: "Traffic-adj" },
+            { label: "Daily Commuters", value: "1.3k Riders", trend: "Targeted" }
+        ]
+    },
+    "Wiki": {
+        category: "Knowledge Base",
+        status: "Operational",
+        statusType: "online",
+        healthScore: 98.4,
+        summary: "Community-maintained documentation, FAQs, and campus guidelines.",
+        kpis: [
+            { label: "Articles Published", value: "215 Docs", trend: "↑ 16 new" },
+            { label: "Curators", value: "52 Contributors", trend: "Verified" },
+            { label: "Weekly Reads", value: "2.1k Views", trend: "↑ 30%" },
+            { label: "Access Level", value: "100% Public", trend: "Open license" }
+        ]
+    }
+};
+
+function renderProjectMetricsDashboard() {
+    const grid = document.getElementById('projectMetricsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    primaryProjects.forEach(proj => {
+        if (!proj.name) return;
+        const metrics = projectPerformanceMetrics[proj.name] || {
+            category: "Initiative",
+            status: "Operational",
+            statusType: "online",
+            healthScore: 98.0,
+            summary: "Active academic community initiative under oU1TS.",
+            kpis: [
+                { label: "Status", value: "Online", trend: "Normal" },
+                { label: "Uptime", value: "99.5%", trend: "Optimal" },
+                { label: "Ecosystem Node", value: "Connected", trend: "Active" },
+                { label: "Access", value: "Public", trend: "Free" }
+            ]
+        };
+
+        const card = document.createElement('div');
+        card.className = 'project-metric-card';
+
+        const kpisHtml = metrics.kpis.map(kpi => `
+            <div class="pm-kpi-item">
+                <span class="pm-kpi-label">${kpi.label}</span>
+                <div class="pm-kpi-val-row">
+                    <span class="pm-kpi-val">${kpi.value}</span>
+                    <span class="pm-kpi-trend">${kpi.trend}</span>
+                </div>
+            </div>
+        `).join('');
+
+        const isLinkActive = proj.url && proj.url !== '#';
+        const buttonHtml = isLinkActive
+            ? `<a href="${proj.url}" target="_blank" rel="noopener noreferrer" class="pm-launch-btn">
+                   <span>Launch Initiative</span>
+                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
+               </a>`
+            : `<button type="button" class="pm-launch-btn disabled" disabled>
+                   <span>In Development</span>
+                   <i class="fa-solid fa-hourglass-half"></i>
+               </button>`;
+
+        card.innerHTML = `
+            <div class="pm-card-header">
+                <div class="pm-header-left">
+                    <div class="pm-icon-wrap">
+                        <i class="${proj.icon}"></i>
+                    </div>
+                    <div>
+                        <h3 class="pm-name">${proj.name}</h3>
+                        <span class="pm-category">${metrics.category}</span>
+                    </div>
+                </div>
+                <span class="pm-status-badge ${metrics.statusType}">
+                    <span class="pm-dot"></span>
+                    ${metrics.status}
+                </span>
+            </div>
+
+            <p class="pm-summary">${metrics.summary}</p>
+
+            <div class="pm-health-container">
+                <div class="pm-health-meta">
+                    <span class="pm-health-label">System Health & Reliability</span>
+                    <span class="pm-health-score">${metrics.healthScore}%</span>
+                </div>
+                <div class="pm-progress-track">
+                    <div class="pm-progress-fill" style="width: ${metrics.healthScore}%;"></div>
+                </div>
+            </div>
+
+            <div class="pm-kpis-grid">
+                ${kpisHtml}
+            </div>
+
+            ${buttonHtml}
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+function initProfileDashboardSwitcher() {
+    const toDashboardBtn = document.getElementById('profileSwitchToDashboardBtn');
+    const toProfileBtn = document.getElementById('dashboardSwitchToProfileBtn');
+    const profileCard = document.getElementById('profileCardWindow');
+    const dashboardCard = document.getElementById('initiativesDashboardCard');
+
+    if (!toDashboardBtn || !toProfileBtn || !profileCard || !dashboardCard) return;
+
+    let isTransitioning = false;
+
+    toDashboardBtn.addEventListener('click', () => {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        // Render metrics if not already rendered
+        renderProjectMetricsDashboard();
+
+        // 1. Stage outgoing card: gently scale & covered directly underneath
+        profileCard.classList.remove('anim-reveal-under', 'anim-place-down', 'anim-pick-up');
+        profileCard.classList.add('anim-covered-under');
+
+        // 2. Stage incoming dashboard card: place down from center on top of profile card
+        dashboardCard.style.display = 'block';
+        dashboardCard.classList.remove('anim-pick-up', 'anim-covered-under', 'anim-reveal-under');
+        dashboardCard.classList.add('anim-place-down');
+
+        setTimeout(() => {
+            profileCard.style.display = 'none';
+            profileCard.classList.remove('anim-covered-under');
+            profileCard.classList.remove('active-stage-window');
+            profileCard.classList.add('inactive-stage-window');
+
+            dashboardCard.classList.remove('anim-place-down');
+            dashboardCard.classList.remove('inactive-stage-window');
+            dashboardCard.classList.add('active-stage-window');
+
+            isTransitioning = false;
+        }, 470);
+    });
+
+    toProfileBtn.addEventListener('click', () => {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        // 1. Stage outgoing dashboard card: pick up from center off the profile card
+        dashboardCard.classList.remove('anim-place-down', 'anim-reveal-under', 'anim-covered-under');
+        dashboardCard.classList.add('anim-pick-up');
+
+        // 2. Stage incoming profile card: reveal directly from underneath
+        profileCard.style.display = 'block';
+        profileCard.classList.remove('anim-covered-under', 'anim-place-down', 'anim-pick-up');
+        profileCard.classList.add('anim-reveal-under');
+
+        setTimeout(() => {
+            dashboardCard.style.display = 'none';
+            dashboardCard.classList.remove('anim-pick-up');
+            dashboardCard.classList.remove('active-stage-window');
+            dashboardCard.classList.add('inactive-stage-window');
+
+            profileCard.classList.remove('anim-reveal-under');
+            profileCard.classList.remove('inactive-stage-window');
+            profileCard.classList.add('active-stage-window');
+
+            isTransitioning = false;
+        }, 440);
+    });
+}
+
 // Initialize on DOM ready or immediately if already loaded
 function initApp() {
     createStars();
@@ -414,6 +913,9 @@ function initApp() {
     initNavigation();
     initThemeSwitcher();
     initParallax();
+    initCustomDropdowns();
+    renderProjectMetricsDashboard();
+    initProfileDashboardSwitcher();
     initAuthSystem();
 }
 
@@ -486,6 +988,8 @@ const isSupabaseConfigured = () => {
 function updateNavLinksForAuth(isLoggedIn) {
     const navAuthLink = document.getElementById('navAuthLink');
     const sidebarAuthLink = document.getElementById('sidebarAuthLink');
+    const sidebarJoinBtn = document.getElementById('sidebarJoinBtn');
+    const rationaleJoinBtn = document.getElementById('rationaleJoinBtn');
 
     if (isLoggedIn) {
         if (navAuthLink) {
@@ -496,6 +1000,14 @@ function updateNavLinksForAuth(isLoggedIn) {
             sidebarAuthLink.innerHTML = '<i class="fa-solid fa-user-gear" style="margin-right: 8px;"></i>Profile';
             sidebarAuthLink.setAttribute('href', '#profile');
         }
+        if (sidebarJoinBtn) {
+            sidebarJoinBtn.innerHTML = '<i class="fa-solid fa-user-gear" style="margin-right: 8px;"></i>Profile';
+            sidebarJoinBtn.setAttribute('href', '#profile');
+        }
+        if (rationaleJoinBtn) {
+            rationaleJoinBtn.innerHTML = '<i class="fa-solid fa-user-gear" style="margin-right: 8px;"></i>Profile';
+            rationaleJoinBtn.setAttribute('href', '#profile');
+        }
     } else {
         if (navAuthLink) {
             navAuthLink.innerHTML = '<i class="fa-solid fa-user-lock" style="margin-right: 6px; font-size: 0.9em;"></i>Login';
@@ -505,7 +1017,33 @@ function updateNavLinksForAuth(isLoggedIn) {
             sidebarAuthLink.innerHTML = '<i class="fa-solid fa-user-lock" style="margin-right: 8px;"></i>Login';
             sidebarAuthLink.setAttribute('href', '#auth');
         }
+        if (sidebarJoinBtn) {
+            sidebarJoinBtn.innerHTML = '<i class="fa-solid fa-handshake" style="margin-right: 8px;"></i>Join oU1TS';
+            sidebarJoinBtn.setAttribute('href', '#auth');
+        }
+        if (rationaleJoinBtn) {
+            rationaleJoinBtn.innerHTML = '<i class="fa-solid fa-handshake" style="margin-right: 8px;"></i>Join oU1TS';
+            rationaleJoinBtn.setAttribute('href', '#auth');
+        }
     }
+}
+
+// Check if user profile has all required mandatory fields
+function isProfileComplete(profile) {
+    if (!profile) return false;
+    const studentId = String(profile.student_id || '').trim();
+    const hasValidStudentId = /^[0-9]+$/.test(studentId) && studentId !== 'OAUTH_USER';
+    const hasDept = Boolean(profile.department && profile.department.trim() !== '');
+    const hasBatch = Boolean(profile.batch && String(profile.batch).trim() !== '');
+    const validBlood = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+    const hasBlood = Boolean(profile.blood_group && validBlood.includes(profile.blood_group));
+    const hasSocial = Boolean(
+        (profile.social_facebook && profile.social_facebook.trim() !== '') ||
+        (profile.social_instagram && profile.social_instagram.trim() !== '') ||
+        (profile.social_telegram && profile.social_telegram.trim() !== '') ||
+        (profile.social_discord && profile.social_discord.trim() !== '')
+    );
+    return hasValidStudentId && hasDept && hasBatch && hasBlood && hasSocial;
 }
 
 // Get current user session details
@@ -575,12 +1113,28 @@ async function signInUser(email, password) {
 
 // Update profile details
 async function updateProfile(profileData) {
-    if (!/^[0-9]+$/.test(profileData.student_id)) {
-        throw new Error("Student ID must contain only digits.");
+    const studentId = String(profileData.student_id || '').trim();
+    if (!studentId || !/^[0-9]+$/.test(studentId) || studentId === 'OAUTH_USER') {
+        throw new Error("Student ID is required and must contain only digits.");
+    }
+    if (!profileData.department || profileData.department.trim() === '') {
+        throw new Error("Department selection is required.");
+    }
+    if (!profileData.batch || String(profileData.batch).trim() === '') {
+        throw new Error("Batch is required.");
     }
     const validBlood = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-    if (profileData.blood_group && !validBlood.includes(profileData.blood_group)) {
-        throw new Error("Invalid blood group selected.");
+    if (!profileData.blood_group || !validBlood.includes(profileData.blood_group)) {
+        throw new Error("A valid Blood Group is required.");
+    }
+    const hasSocial = Boolean(
+        (profileData.social_facebook && profileData.social_facebook.trim() !== '') ||
+        (profileData.social_instagram && profileData.social_instagram.trim() !== '') ||
+        (profileData.social_telegram && profileData.social_telegram.trim() !== '') ||
+        (profileData.social_discord && profileData.social_discord.trim() !== '')
+    );
+    if (!hasSocial) {
+        throw new Error("Please provide at least one social media link (Facebook, Instagram, Telegram, or Discord).");
     }
 
     if (!supabaseClient) {
@@ -592,7 +1146,7 @@ async function updateProfile(profileData) {
 
     const { error } = await supabaseClient.from('profiles').update({
         full_name: profileData.full_name,
-        student_id: profileData.student_id,
+        student_id: studentId,
         department: profileData.department,
         batch: profileData.batch,
         blood_group: profileData.blood_group,
@@ -723,9 +1277,19 @@ function populateProfileUI(profile) {
 
     if (editName) editName.value = profile.full_name || '';
     if (editStudentId) editStudentId.value = profile.student_id || '';
-    if (editDept) editDept.value = profile.department || '';
+    if (editDept) {
+        editDept.value = profile.department || '';
+        if (typeof editDept._updateCustomDropdown === 'function') {
+            editDept._updateCustomDropdown();
+        }
+    }
     if (editBatch) editBatch.value = profile.batch || '';
-    if (editBlood) editBlood.value = profile.blood_group || '';
+    if (editBlood) {
+        editBlood.value = profile.blood_group || '';
+        if (typeof editBlood._updateCustomDropdown === 'function') {
+            editBlood._updateCustomDropdown();
+        }
+    }
     if (editFacebook) editFacebook.value = profile.social_facebook || '';
     if (editInstagram) editInstagram.value = profile.social_instagram || '';
     if (editTelegram) editTelegram.value = profile.social_telegram || '';
@@ -745,6 +1309,25 @@ async function syncAuthStatus(redirectHash = null) {
 
         if (isLoggedIn) {
             populateProfileUI(currentSessionUser);
+            const isComplete = isProfileComplete(currentSessionUser);
+            const profileReadView = document.getElementById('profileReadView');
+            const profileEditForm = document.getElementById('profileEditForm');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const incompleteBanner = document.getElementById('incompleteProfileBanner');
+
+            if (!isComplete) {
+                if (incompleteBanner) incompleteBanner.style.display = 'block';
+                if (profileReadView && profileEditForm) {
+                    profileReadView.style.display = 'none';
+                    profileEditForm.style.display = 'block';
+                }
+                if (cancelEditBtn) cancelEditBtn.style.display = 'none';
+                showAuthAlert("Please complete your profile details (Student ID, Department, Batch, Blood Group, and at least one social link).", "warning", "profileAlert");
+            } else {
+                if (incompleteBanner) incompleteBanner.style.display = 'none';
+                if (cancelEditBtn) cancelEditBtn.style.display = 'inline-flex';
+            }
+
             if (hash === '#auth') {
                 // If they go to login while active, move them to profile
                 if (window.switchTab) window.switchTab('#profile');
@@ -784,6 +1367,10 @@ async function initAuthSystem() {
                 // Listen for auth state changes on Supabase
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
                     console.log("Supabase Auth State Changed:", event);
+                    if (event === 'PASSWORD_RECOVERY') {
+                        showResetPasswordView();
+                        return;
+                    }
                     await syncAuthStatus();
                 });
             } else {
@@ -796,26 +1383,126 @@ async function initAuthSystem() {
         console.warn("Supabase credentials not configured. Running with authentication disabled until environment variables are set.");
     }
 
+    // Auth view helper functions
+    function showForgotPasswordView() {
+        const authTabs = document.querySelector('.auth-tabs');
+        const oauthDivider = document.getElementById('oauthDivider');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+
+        if (authTabs) authTabs.style.display = 'none';
+        if (oauthDivider) oauthDivider.style.display = 'none';
+        if (googleLoginBtn) googleLoginBtn.style.display = 'none';
+        if (loginForm) {
+            loginForm.classList.remove('active');
+            loginForm.style.display = 'none';
+        }
+        if (registerForm) {
+            registerForm.classList.remove('active');
+            registerForm.style.display = 'none';
+        }
+        if (resetPasswordForm) resetPasswordForm.style.display = 'none';
+        if (forgotPasswordForm) {
+            forgotPasswordForm.style.display = 'block';
+            const loginEmail = document.getElementById('loginEmail');
+            const forgotEmail = document.getElementById('forgotEmail');
+            if (loginEmail && forgotEmail && loginEmail.value) {
+                forgotEmail.value = loginEmail.value;
+            }
+        }
+        clearAuthAlerts();
+    }
+
+    function restoreLoginView() {
+        const authTabs = document.querySelector('.auth-tabs');
+        const oauthDivider = document.getElementById('oauthDivider');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+
+        if (authTabs) authTabs.style.display = 'flex';
+        if (oauthDivider) oauthDivider.style.display = 'flex';
+        if (googleLoginBtn) googleLoginBtn.style.display = 'flex';
+        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+        if (resetPasswordForm) resetPasswordForm.style.display = 'none';
+
+        if (tabLoginBtn && tabRegisterBtn) {
+            tabLoginBtn.classList.add('active');
+            tabRegisterBtn.classList.remove('active');
+        }
+        if (loginForm) {
+            loginForm.classList.add('active');
+            loginForm.style.display = 'block';
+        }
+        if (registerForm) {
+            registerForm.classList.remove('active');
+            registerForm.style.display = 'none';
+        }
+        clearAuthAlerts();
+    }
+
+    function showResetPasswordView() {
+        if (window.switchTab) window.switchTab('#auth');
+        const authTabs = document.querySelector('.auth-tabs');
+        const oauthDivider = document.getElementById('oauthDivider');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+
+        if (authTabs) authTabs.style.display = 'none';
+        if (oauthDivider) oauthDivider.style.display = 'none';
+        if (googleLoginBtn) googleLoginBtn.style.display = 'none';
+        if (loginForm) {
+            loginForm.classList.remove('active');
+            loginForm.style.display = 'none';
+        }
+        if (registerForm) {
+            registerForm.classList.remove('active');
+            registerForm.style.display = 'none';
+        }
+        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+        if (resetPasswordForm) resetPasswordForm.style.display = 'block';
+
+        showAuthAlert("You can now enter and save your new password.", "success", "authAlert");
+    }
+
     // 2. Setup auth tab toggle
     const tabLoginBtn = document.getElementById('tabLoginBtn');
     const tabRegisterBtn = document.getElementById('tabRegisterBtn');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
 
     if (tabLoginBtn && tabRegisterBtn && loginForm && registerForm) {
         tabLoginBtn.addEventListener('click', () => {
-            tabLoginBtn.classList.add('active');
-            tabRegisterBtn.classList.remove('active');
-            loginForm.classList.add('active');
-            registerForm.classList.remove('active');
-            clearAuthAlerts();
+            restoreLoginView();
         });
 
         tabRegisterBtn.addEventListener('click', () => {
+            const authTabs = document.querySelector('.auth-tabs');
+            const oauthDivider = document.getElementById('oauthDivider');
+            const googleLoginBtn = document.getElementById('googleLoginBtn');
+            if (authTabs) authTabs.style.display = 'flex';
+            if (oauthDivider) oauthDivider.style.display = 'flex';
+            if (googleLoginBtn) googleLoginBtn.style.display = 'flex';
             tabRegisterBtn.classList.add('active');
             tabLoginBtn.classList.remove('active');
             registerForm.classList.add('active');
+            registerForm.style.display = 'block';
             loginForm.classList.remove('active');
+            loginForm.style.display = 'none';
+            if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+            if (resetPasswordForm) resetPasswordForm.style.display = 'none';
             clearAuthAlerts();
         });
     }
@@ -900,9 +1587,19 @@ async function initAuthSystem() {
             profileReadView.style.display = 'none';
             profileEditForm.style.display = 'block';
             clearAuthAlerts();
+            if (currentSessionUser && !isProfileComplete(currentSessionUser)) {
+                cancelEditBtn.style.display = 'none';
+                showAuthAlert("Please complete all required profile details.", "warning", "profileAlert");
+            } else {
+                cancelEditBtn.style.display = 'inline-flex';
+            }
         });
 
         cancelEditBtn.addEventListener('click', () => {
+            if (currentSessionUser && !isProfileComplete(currentSessionUser)) {
+                showAuthAlert("You must complete your profile details before proceeding.", "warning", "profileAlert");
+                return;
+            }
             profileReadView.style.display = 'block';
             profileEditForm.style.display = 'none';
             clearAuthAlerts();
@@ -989,7 +1686,144 @@ async function initAuthSystem() {
         });
     }
 
-    // 9. Initial sync on page load
+    // 9. Bind Forgot Password & Reset Password handlers
+    const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    const backToLoginBtn = document.getElementById('backToLoginBtn');
+
+    if (forgotPasswordBtn) {
+        forgotPasswordBtn.addEventListener('click', showForgotPasswordView);
+    }
+    if (backToLoginBtn) {
+        backToLoginBtn.addEventListener('click', restoreLoginView);
+    }
+
+    if (forgotPasswordForm) {
+        let resetCooldownTimer = null;
+        forgotPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAuthAlerts();
+
+            const emailInput = document.getElementById('forgotEmail');
+            const email = emailInput ? emailInput.value.trim() : '';
+            if (!email) {
+                showAuthAlert("Please enter a valid email address.", "error", "authAlert");
+                return;
+            }
+
+            if (!supabaseClient) {
+                showAuthAlert("Unable to send recovery email: Database connection not configured.", "error", "authAlert");
+                return;
+            }
+
+            const submitBtn = document.getElementById('sendResetLinkBtn');
+            const origText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Sending Link...';
+
+            try {
+                const redirectUrl = window.location.origin + window.location.pathname;
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl
+                });
+
+                if (error) {
+                    if (error.status === 429 || error.message.toLowerCase().includes('rate limit') || error.message.toLowerCase().includes('too many')) {
+                        showAuthAlert("Email rate limit reached (3-4 emails/hour on free tier). Please wait a few minutes before trying again.", "error", "authAlert");
+                    } else {
+                        showAuthAlert(error.message || "Failed to send reset link.", "error", "authAlert");
+                    }
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = origText;
+                    return;
+                }
+
+                showAuthAlert("Password recovery link sent! Please check your email inbox (and spam folder).", "success", "authAlert");
+
+                // Start 60-second cooldown timer
+                let countdown = 60;
+                submitBtn.innerHTML = `<i class="fa-solid fa-clock" style="margin-right: 8px;"></i>Resend in ${countdown}s`;
+                if (resetCooldownTimer) clearInterval(resetCooldownTimer);
+                resetCooldownTimer = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        submitBtn.innerHTML = `<i class="fa-solid fa-clock" style="margin-right: 8px;"></i>Resend in ${countdown}s`;
+                    } else {
+                        clearInterval(resetCooldownTimer);
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origText;
+                    }
+                }, 1000);
+
+            } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origText;
+                showAuthAlert(err.message || "An unexpected error occurred.", "error", "authAlert");
+            }
+        });
+    }
+
+    if (resetPasswordForm) {
+        resetPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAuthAlerts();
+
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            if (newPassword.length < 6) {
+                showAuthAlert("Password must be at least 6 characters long.", "error", "authAlert");
+                return;
+            }
+            if (newPassword !== confirmNewPassword) {
+                showAuthAlert("Passwords do not match. Please re-enter.", "error", "authAlert");
+                return;
+            }
+
+            if (!supabaseClient) {
+                showAuthAlert("Database connection not configured.", "error", "authAlert");
+                return;
+            }
+
+            const submitBtn = document.getElementById('saveNewPasswordBtn');
+            const origText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Updating Password...';
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (error) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = origText;
+                    showAuthAlert(error.message || "Failed to update password.", "error", "authAlert");
+                    return;
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origText;
+                showAuthAlert("Password updated successfully! Logging you in...", "success", "authAlert");
+
+                setTimeout(async () => {
+                    restoreLoginView();
+                    await syncAuthStatus('#profile');
+                }, 1500);
+
+            } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origText;
+                showAuthAlert(err.message || "An unexpected error occurred.", "error", "authAlert");
+            }
+        });
+    }
+
+    // Check if user landed on page via recovery link
+    if (window.location.hash.includes('type=recovery') || window.location.hash === '#reset-password') {
+        showResetPasswordView();
+    }
+
+    // 10. Initial sync on page load
     syncAuthStatus();
 }
 

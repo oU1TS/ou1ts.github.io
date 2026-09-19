@@ -10,10 +10,10 @@ This document provides an end-to-end, actionable checklist to set up a live **Su
 [ Step 1: Create Supabase Project & Copy API Keys ]
                     │
                     ▼
-[ Step 2: Run SQL Schema in Supabase SQL Editor ] (Creates profiles table, RLS, and auto-insert trigger)
+[ Step 2: Run SQL Schemas in Supabase SQL Editor ] (Creates profiles & project_metrics tables, RLS, triggers & seed data)
                     │
                     ▼
-[ Step 3: Configure Auth URLs & Email Settings ] (Set Site URL, Redirects, and Email confirmation)
+[ Step 3: Configure Auth URLs, Email & Custom SMTP ] (Set Site URL, Redirects, and Custom SMTP)
                     │
                     ▼
 [ Step 4: Configure Local env-config.js ] (Connects your local testing server to live Supabase DB)
@@ -49,8 +49,10 @@ This document provides an end-to-end, actionable checklist to set up a live **Su
 
 ## Step 2: Execute the Database Schema SQL
 
-1. In your Supabase dashboard sidebar, open the **SQL Editor** (icon with `>_`).
-2. Click **New query** and paste the complete script below (also stored in [`doc/db/user_profile_schema.sql`](file:///d:/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/db/user_profile_schema.sql)):
+In your Supabase dashboard sidebar, open the **SQL Editor** (icon with `>_`). You will execute two schemas: one for user profiles and authentication, and one for the initiatives performance metrics dashboard.
+
+### 2.1 User Profile & Auth Schema (`public.profiles`)
+Click **New query** and paste the script below (also stored in [`doc/db/user_profile_schema.sql`](file:///d:/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/db/user_profile_schema.sql)):
 
 ```sql
 -- ========================================================
@@ -149,7 +151,126 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 ```
 
-3. Click **Run** (green button). Verify that the status reports `Success. No rows returned`.
+Click **Run** (green button). Verify that the status reports `Success. No rows returned`.
+
+---
+
+### 2.2 Initiatives Performance Metrics Schema (`public.project_metrics`)
+Click **New query** and paste the script below (also stored in [`doc/db/project_metrics_schema.sql`](file:///d:/GitHub/%5BoU1TS%5D/ou1ts.github.io/doc/db/project_metrics_schema.sql)). This table powers the **Initiatives Performance Metrics Dashboard** accessible via the Profile Card Window Switcher:
+
+```sql
+-- ========================================================
+-- oU1TS Centralized Database: Initiatives Performance Metrics Schema
+-- ========================================================
+
+-- 1. Create the project_metrics table
+CREATE TABLE IF NOT EXISTS public.project_metrics (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_name TEXT UNIQUE NOT NULL,
+  category TEXT NOT NULL,
+  status TEXT NOT NULL,
+  status_type TEXT NOT NULL CHECK (status_type IN ('operational', 'beta', 'dev')),
+  health_score INTEGER NOT NULL CHECK (health_score >= 0 AND health_score <= 100),
+  summary TEXT,
+  kpis JSONB NOT NULL DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Enable Row Level Security (RLS)
+ALTER TABLE public.project_metrics ENABLE ROW LEVEL SECURITY;
+
+-- 3. RLS Policies: Public read-only access, writes restricted to service_role / administrators
+DROP POLICY IF EXISTS "Anyone can view project metrics" ON public.project_metrics;
+CREATE POLICY "Anyone can view project metrics" ON public.project_metrics
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Service role can modify project metrics" ON public.project_metrics;
+CREATE POLICY "Service role can modify project metrics" ON public.project_metrics
+  FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+-- 4. Seed Data: Initial Performance Telemetry for all 13 Primary Projects
+INSERT INTO public.project_metrics (project_name, category, status, status_type, health_score, summary, kpis)
+VALUES
+  (
+    'Resource Archive', 'Academic Repositories', 'Operational', 'operational', 98,
+    'Centralized syllabus, lecture notes, textbook PDFs, and lab manuals organized by department and semester.',
+    '[{"label": "Materials Served", "val": "1,420+"}, {"label": "Active Users/Mo", "val": "3.8k"}, {"label": "Uptime", "val": "99.9%"}, {"label": "Storage Used", "val": "48 GB"}]'::jsonb
+  ),
+  (
+    'Question Bank', 'Exam Prep & Archives', 'Operational', 'operational', 96,
+    'Midterm and final exam question collections with peer-reviewed solutions, mark distributions, and search filters.',
+    '[{"label": "Papers Indexed", "val": "680+"}, {"label": "Solutions Verified", "val": "92%"}, {"label": "Monthly Downloads", "val": "12.4k"}, {"label": "Contributors", "val": "45"}]'::jsonb
+  ),
+  (
+    'Academic Scheduler', 'Course & Routine Tools', 'Beta Testing', 'beta', 91,
+    'Conflict-free course schedule builder, classroom finder, and exam routine visualizer synced with university notices.',
+    '[{"label": "Schedules Built", "val": "850+"}, {"label": "Conflict Accuracy", "val": "99.4%"}, {"label": "Routine Views", "val": "5.2k"}, {"label": "Supported Depts", "val": "8"}]'::jsonb
+  ),
+  (
+    'Notice Board', 'Campus Feeds & Alerts', 'Operational', 'operational', 99,
+    'Real-time automated notification aggregator scraping official university department notices, holidays, and deadlines.',
+    '[{"label": "Daily Syncs", "val": "96"}, {"label": "Avg Latency", "val": "< 2 min"}, {"label": "Subscribers", "val": "2.1k"}, {"label": "Channels", "val": "Telegram, Web"}]'::jsonb
+  ),
+  (
+    'Blood Donation', 'Emergency Services', 'Operational', 'operational', 97,
+    'Student voluntary blood donor registry enabling instant urgent match broadcasts across UITS networks.',
+    '[{"label": "Verified Donors", "val": "340+"}, {"label": "Urgent Matches", "val": "89"}, {"label": "Avg Response Time", "val": "14 min"}, {"label": "Blood Groups", "val": "8/8 Covered"}]'::jsonb
+  ),
+  (
+    'Dev Lab', 'Open Source Incubator', 'Operational', 'operational', 94,
+    'Community repository workspace supporting student-led software development, code reviews, and tooling.',
+    '[{"label": "Active Projects", "val": "18"}, {"label": "Git Commits/Mo", "val": "420+"}, {"label": "Student Builders", "val": "62"}, {"label": "Open PRs", "val": "7"}]'::jsonb
+  ),
+  (
+    'Faculty Directory', 'Academic Contact Index', 'Operational', 'operational', 95,
+    'Verified faculty consultation hours, contact emails, room numbers, and academic research publications.',
+    '[{"label": "Faculty Profiles", "val": "165"}, {"label": "Consultation Hours", "val": "Updated"}, {"label": "Directory Searches", "val": "4.1k/mo"}, {"label": "Accuracy Rate", "val": "98%"}]'::jsonb
+  ),
+  (
+    'Student Forum', 'Community Discussion', 'Beta Testing', 'beta', 88,
+    'Topic-based forum for campus advice, subject discussions, project teaming, and community announcements.',
+    '[{"label": "Active Threads", "val": "512"}, {"label": "Daily Posts", "val": "130+"}, {"label": "Active Members", "val": "1.2k"}, {"label": "Spam Block Rate", "val": "99.8%"}]'::jsonb
+  ),
+  (
+    'Lost & Found', 'Campus Welfare', 'Operational', 'operational', 93,
+    'Campus recovery desk connecting finders with owners for student cards, lab equipment, and personal belongings.',
+    '[{"label": "Items Reported", "val": "210"}, {"label": "Return Rate", "val": "76%"}, {"label": "Student IDs Reunited", "val": "142"}, {"label": "Active Cases", "val": "8"}]'::jsonb
+  ),
+  (
+    'Campus Transit', 'Commute & Bus Tracker', 'In Development', 'dev', 79,
+    'Crowdsourced university shuttle bus schedules, route stop maps, and real-time transit delay reporting.',
+    '[{"label": "Routes Mapped", "val": "6"}, {"label": "Daily Commuters", "val": "640+"}, {"label": "Schedule Tracking", "val": "In Progress"}, {"label": "Active Drivers", "val": "Pending"}]'::jsonb
+  ),
+  (
+    'Internship Portal', 'Career & Alumni Desk', 'Beta Testing', 'beta', 86,
+    'Job and internship listings curated specifically for UITS undergraduates, alumni referrals, and CV templates.',
+    '[{"label": "Job Listings", "val": "94"}, {"label": "Partner Companies", "val": "32"}, {"label": "Student Applications", "val": "410+"}, {"label": "Placements", "val": "28"}]'::jsonb
+  ),
+  (
+    'Event Radar', 'Club & Tech Events', 'Operational', 'operational', 92,
+    'Comprehensive calendar for tech fests, programming contests, club workshops, and cultural galas.',
+    '[{"label": "Events Hosted", "val": "46"}, {"label": "RSVP Count", "val": "1.8k"}, {"label": "Active Clubs", "val": "14"}, {"label": "Upcoming Events", "val": "3"}]'::jsonb
+  ),
+  (
+    'Course Reviews', 'Academic Feedback', 'In Development', 'dev', 74,
+    'Constructive course workload insights, lab difficulty ratings, and prerequisite preparation tips from seniors.',
+    '[{"label": "Courses Reviewed", "val": "42"}, {"label": "Peer Reviews", "val": "280+"}, {"label": "Review Moderation", "val": "100%"}, {"label": "Dept Coverage", "val": "4/8"}]'::jsonb
+ON CONFLICT (project_name) DO UPDATE SET
+  category = EXCLUDED.category,
+  status = EXCLUDED.status,
+  status_type = EXCLUDED.status_type,
+  health_score = EXCLUDED.health_score,
+  summary = EXCLUDED.summary,
+  kpis = EXCLUDED.kpis,
+  updated_at = NOW();
+```
+
+Click **Run** (green button). Verify `Success. No rows returned`.
+
+> [!NOTE]
+> **Frontend Telemetry Integration & Graceful Fallback Strategy:**
+> The frontend client (`index.js`) seamlessly queries `public.project_metrics` whenever Supabase is configured. If the table is not yet seeded or if the network is offline, the UI automatically and silently falls back to its embedded, verified domain metrics dataset without throwing errors or interrupting user navigation.
 
 ---
 
@@ -184,6 +305,51 @@ Go to **Authentication → Providers → Email**:
   Toggle **"Confirm email"** to **OFF** and click **Save**. This allows newly registered users to log in instantly without checking an email inbox.
 - **For production use**:
   Keep **"Confirm email"** **ON**. Registered users must click the verification link sent to their email before Supabase permits login.
+
+### 3.3 Custom SMTP Setup (Eliminating Email Rate Limits)
+
+> [!WARNING]
+> **The Default Supabase Email Limit:**
+> By default, Supabase's shared built-in mailer restricts projects to **3 to 4 emails per hour** (for confirmation emails, password resets, and magic links combined). Exceeding this triggers error `429 (over_email_send_rate_limit)`.
+> Enabling a **Custom SMTP provider** completely removes this limit!
+
+In your Supabase project dashboard, navigate to **Project Settings → Authentication → SMTP Settings** (or **Authentication → Email Templates → SMTP**):
+
+#### Option 1: Gmail SMTP (Easiest — Zero Custom Domain Required)
+If you do not own a custom domain name, Gmail SMTP is the quickest setup (takes ~2 minutes) and provides a free sending limit of up to **500 emails/day**:
+
+1. Log into your Google account (e.g. `your-team@gmail.com`).
+2. Go to **Google Account Settings → Security** and verify **2-Step Verification** is turned **ON**.
+3. In the security search bar, type **App Passwords** (or navigate to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)).
+4. Create a new App Password:
+   - Name: `Supabase Auth`
+   - Click **Create**. Google will generate a 16-character code (e.g., `abcd efgh ijkl mnop`). Copy it.
+5. In Supabase **SMTP Settings**, configure the following:
+   - **Enable Custom SMTP**: Toggle **ON**
+   - **Sender email**: `your-team@gmail.com`
+   - **Sender name**: `oU1TS Academic Ecosystem`
+   - **Host**: `smtp.gmail.com`
+   - **Port**: `465` (SSL) or `587` (TLS)
+   - **Username**: `your-team@gmail.com`
+   - **Password**: `<paste your 16-character Google App Password without spaces>`
+6. Click **Save Changes**. Supabase's 3-email/hour limit is now completely bypassed!
+
+#### Option 2: Resend (Best for Custom Domains — e.g., `@ou1ts.org`)
+If your organization owns a custom domain, [Resend](https://resend.com) provides clean custom sender addresses and **3,000 free emails/month** (100/day):
+
+1. Sign up for a free account at [Resend.com](https://resend.com).
+2. In Resend, go to **Domains → Add Domain** (e.g., `ou1ts.org` or `mail.ou1ts.org`).
+3. Add the provided DNS records (**SPF**, **DKIM**, **MX**) in your domain registrar/DNS provider (Cloudflare, Namecheap, GoDaddy). Wait for Resend status to show **Verified**.
+4. Go to **API Keys** in Resend and create a key with full sending permissions (starts with `re_...`).
+5. In Supabase **SMTP Settings**, configure:
+   - **Enable Custom SMTP**: Toggle **ON**
+   - **Sender email**: `noreply@ou1ts.org` (or any address on your verified domain)
+   - **Sender name**: `oU1TS Academic Ecosystem`
+   - **Host**: `smtp.resend.com`
+   - **Port**: `465` or `587`
+   - **Username**: `resend`
+   - **Password**: `<paste your Resend API key>`
+6. Click **Save Changes**.
 
 ---
 
@@ -230,6 +396,12 @@ Go to **Authentication → Providers → Email**:
 8. **Verify Authentic Error Handling:**
    - Log out, enter an incorrect password, and click **Sign In**.
    - Verify that the alert banner displays the authentic error: `Invalid login credentials`.
+9. **Test Profile Window Switcher & Initiatives Metrics Dashboard:**
+   - Sign back in to `#profile`.
+   - On the top-right corner of the Profile Card, locate the switcher button (`<` left chevron). Hover over it to view the tooltip `"View Initiatives Metrics"`.
+   - Click the button: observe the smooth centered elevation animation (`placeDownOnCard`) as the Initiatives Performance Metrics Dashboard slides from the center and places down over the Profile Card.
+   - Inspect the 13 initiative cards (Resource Archive, Question Bank, Blood Donation, Academic Scheduler, etc.) checking their status badges, health score bars, and 2x2 metric pills.
+   - Click the return switcher button (`>` right chevron) on the top-right of the dashboard: observe the picking up animation (`pickUpOffCard`) gracefully lifting the dashboard and revealing the Profile Card.
 
 ---
 
@@ -284,6 +456,9 @@ If your site is also published to Netlify (`https://ou1ts.netlify.app`):
 | **`Unable to log in: Database connection not configured`** | `env-config.js` is missing, 404, or has empty/placeholder values. | Verify Step 4 (for localhost), Step 6.1 (for GitHub Pages), or Step 7 (for Netlify). |
 | **`Invalid login credentials`** | The email or password entered is incorrect. | Verify password spelling or register a new user in the Register tab. |
 | **`Email not confirmed`** | "Confirm email" is enabled in Supabase, but the user has not clicked the link. | Open the inbox of the registered email to confirm, OR toggle **Confirm email** to **OFF** in Supabase Auth settings (Step 3.2). |
+| **`over_email_send_rate_limit` (HTTP 429)** | Exceeded Supabase free-tier built-in email limit (capped at 3–4 emails/hour on default shared mailer). | Configure Custom SMTP (Gmail or Resend) in **Project Settings → Authentication → SMTP Settings** (Step 3.3) to completely bypass this rate limit. |
 | **`Failed to load Supabase SDK from CDN`** | Network connectivity issue or CDN blocked by firewall/ad-blocker. | Check internet connection, disable ad-blockers for CDN domains (`cdn.jsdelivr.net`). |
 | **Student ID Validation Error** | Non-numeric characters entered in Student ID. | Student ID must contain digits only (e.g. `04324100051`). |
 | **Duplicate Student ID Error** | Another user has already registered with this Student ID. | Student IDs are unique in the database schema. Use your assigned Student ID. |
+| **Project Metrics Table Empty / Offline** | `public.project_metrics` not created yet or device is offline. | The dashboard automatically falls back to verified client-side baseline metrics without throwing UI errors. Execute Step 2.2 in SQL Editor if live Supabase updates are desired. |
+

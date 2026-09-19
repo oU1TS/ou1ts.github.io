@@ -4,6 +4,12 @@
 - **Automatic History Updates**: Whenever adding new features, fixing bugs, refactoring components, or altering UI/styles in this codebase:
   1. Document all changes in [`doc/history.md`](doc/history.md).
   2. Keep [`README.md`](README.md) and relevant documentation synchronized with feature and release states.
+- **Documentation Maintenance Cadence (`README.md`, `documentation.md`)**:
+  - Keep [`README.md`](README.md) and [`documentation.md`](documentation.md) synchronized with the project's evolving features, architecture, and deployment setup.
+  - **Major Update Trigger**: The project documentations (`README.md`, `documentation.md`) should be updated **only when major updates are applied**:
+    - For example, when the latest date recorded in [`doc/history.md`](doc/history.md) is **not today's date** (indicating a new session date, release cycle, or milestone day), the agent must review all accumulated changes recorded in [`doc/history.md`](doc/history.md) and companion session archives in [`doc/prompts/`](doc/prompts/) and comprehensively update [`README.md`](README.md) and [`documentation.md`](documentation.md).
+    - Documentation must also be updated whenever major architectural features or new sub-systems are landed (such as database schemas, auth workflows, new dashboards, or CI/CD pipelines).
+    - Avoid updating full documentation on minor, isolated single-line tweaks within the same day unless they represent a milestone or user-requested doc update.
 - **Date Format & Placement**:
   - In `doc/history.md`, group entries under the current date using the format `# DD.MM.YY` (e.g., `# 18.09.26`) placed chronologically at the top of the file directly beneath the frontmatter tags comment block.
   - Record detailed release notes and comprehensive per-change descriptions directly in `doc/history.md` and companion walkthrough files in `doc/prompts/`.
