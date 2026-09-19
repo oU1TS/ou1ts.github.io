@@ -46,24 +46,40 @@ The oU1TS ecosystem operates as a lightweight, performance-focused **Single Page
   - `@keyframes placeDownOnCard`: Brought in from near the center of the screen with subtle elevation scaling (`scale(1.03) translateY(-12px)`), casting a soft shadow, and gracefully settling flat (`scale(1) translateY(0)`) onto the underlying profile card to cover it completely.
   - `@keyframes pickUpOffCard`: Reverses the sequence, lifting the dashboard card off the stack and revealing the profile card resting beneath.
 - **Sequential Animation Controllers:** Managed in `initProfileDashboardSwitcher()` (`index.js`) using `.anim-place-down`, `.anim-covered-under`, `.anim-pick-up`, and `.anim-reveal-under` classes with cleanup handlers.
+- **Mobile Protruding Switchers:** On screens `<= 768px`, the window switch buttons (`#profileSwitchToDashboardBtn` and `#dashboardSwitchToProfileBtn`) are anchored to the top-right corner (`top: -10px; right: -10px;`), slightly protruding outside the card boundaries with elevated glass styling and high-contrast drop shadows.
 
-### 5. Custom Responsive Dropdown Listbox Engine
+### 5. Mobile Initiatives Gallery Carousel & Directory Jump Modal
+- **Single-Card Carousel (`@media (max-width: 768px)`):** Transforms the multi-column desktop initiatives grid into a focused single-card showcase showing one initiative at a time.
+  - Features dedicated touch-friendly previous (`#galleryPrevBtn`) and next (`#galleryNextBtn`) navigation buttons.
+  - Live serial counter (`#galleryCounter`) rendering current position (`1 / 13`, `2 / 13`, etc.).
+- **Full-Viewport Quick Jump Directory Modal (`#metricsJumpModal`):**
+  - Triggered via top-right directory buttons (`#dashboardQuickJumpBtn` on desktop, `#mobileMetricsJumpBtn` on mobile).
+  - Attached directly to `<body>` to eliminate CSS transform/filter container clipping and ensure full-screen coverage (`100vw` by `100vh`) with `z-index: 99999`.
+  - Dynamically toggles `body.modal-open { overflow: hidden !important; }` to lock background document scrolling while the directory is open.
+  - Clicking any initiative instantly sets the mobile carousel index, scrolls the card into view, and dismisses the modal.
+
+### 6. Desktop Metrics Layout & Single-Row Aggregates
+- **Desktop Action Hierarchy:** Aligns `#dashboardQuickJumpBtn` directly beneath `#dashboardSwitchToProfileBtn` in the upper-right corner of the dashboard card.
+- **Single-Row Metric Badges:** Uses `@media (min-width: 640px) { .dashboard-aggregate-stats { grid-template-columns: repeat(4, 1fr); } }` to display all four global ecosystem telemetry pills in a single unified horizontal row.
+
+### 7. Custom Responsive Dropdown Listbox Engine
 - **Mobile Viewport Containment:** Replaced browser-native `<select>` popups with glassmorphic ARIA listbox components (`.custom-select-container`, `.custom-select-trigger`, `.custom-select-menu`). Rigid `max-width: 100%; box-sizing: border-box;` constraints prevent the menu from ever extending outside narrow mobile viewports.
 - **2-Line Text Wrapping:** Option items wrap cleanly across two lines with `line-height: 1.35; word-break: break-word;`, ensuring verbose university department titles (*"Electrical & Electronic Engineering (EEE)"*) display without truncation.
 - **Form Synchronization:** Automatically binds bidirectional event synchronization with native hidden `<select>` controls for native form validation, plus full keyboard accessibility (Enter, Space, Escape, Arrow navigation).
 
-### 6. Dynamic Triple-Anchor Navigation Synchronization
+### 8. Dynamic Triple-Anchor Navigation Synchronization
 - Global auth state changes automatically synchronize three primary navigation anchors:
   1. **Desktop Navbar:** `#navAuthLink` toggles between `"Login"` (`#auth`) and `"Profile"` (`#profile`).
   2. **Mobile Sidebar Drawer:** `#sidebarJoinBtn` within the drawer transitions between `"Join oU1TS"` and `"Profile"`.
   3. **About Rationale Card:** `#rationaleJoinBtn` dynamically switches between `"Join oU1TS"` (`#auth`) and `"Profile"` (`#profile`).
 
-### 7. Responsive Drawer Menu (Mobile)
+### 9. Responsive Drawer Menu (Mobile)
 - Standard navbar links transition to a mobile hamburger toggle button on touch displays.
 - Clicking the hamburger slides out a high-blur sidebar drawer (`.sidebar-menu`) with a backdrop overlay.
 
-### 8. Global Scrollbar Hiding
+### 10. Global Scrollbar Hiding & Section Spacing Normalization
 - Visual scrollbars are hidden globally (`scrollbar-width: none` and `::-webkit-scrollbar { display: none; }`) while standard touch gestures, trackpads, and mouse wheel actions remain fully interactive.
+- Section header gap spacing normalized across the Projects and About sections for consistent visual rhythm on mobile and desktop viewports.
 
 ---
 
@@ -95,6 +111,12 @@ The oU1TS ecosystem operates as a lightweight, performance-focused **Single Page
   - **Gmail SMTP:** Enables up to 500 emails/day via Google App Passwords without requiring a custom domain.
   - **Resend SMTP:** Delivers up to 3,000 emails/month for verified custom domains (`@ou1ts.org`).
   - Bypasses Supabase's default shared limit of 3–4 emails/hour, resolving `429 (over_email_send_rate_limit)`.
+
+### 5. OAuth 2.0 PKCE Flow & Deadlock-Free Session Coordination
+- **PKCE Authorization Code Exchange (`exchangeCodeForSession`):** Supports OAuth 2.0 PKCE redirects (e.g. Google Sign-In) with `?code=...`. The code is exchanged via `supabaseClient.auth.exchangeCodeForSession(authCode)` prior to listener attachment, and URL query strings are sanitized cleanly using `window.history.replaceState`.
+- **Supabase JS v2 Client Deadlock Prevention:** Calling asynchronous Supabase SDK queries directly within an `async` `onAuthStateChange` callback triggers internal event dispatch deadlocks in `@supabase/supabase-js@2`. The listener is declared synchronous, and all state synchronization routines (`syncAuthStatus`) are deferred using `setTimeout(fn, 0)` to run outside the internal event lock.
+- **Hardened Initial Session Navigation:** Evaluates `INITIAL_SESSION` state upon page load or reload; if an active session is detected and the user is either on `#auth`, an empty hash (`''`), or returning from an OAuth callback, the router transitions immediately to `#profile`.
+
 
 ---
 
@@ -163,6 +185,20 @@ The background starfield and floating bubbles dynamically adapt when toggling Da
 ---
 
 ## 📜 Version History
+
+### **v4.1.0 (Mobile Initiatives Gallery, Quick Jump Modal, PKCE Auth Flow & Deadlock Resolution Milestone)**
+- **Mobile Initiatives Single-Card Gallery Carousel**:
+  - Transformed multi-column metrics grid on mobile screens (`<= 768px`) into an intuitive single-card carousel with touch-friendly navigation arrows and serial position counter (`X / 13`).
+  - Implemented `#metricsJumpModal` full-screen directory overlay attached to `<body>` (`100vw` by `100vh`, `z-index: 99999`) with background document scroll locking (`body.modal-open`).
+  - Added protruding top-right card switcher buttons (`#profileSwitchToDashboardBtn`, `#dashboardSwitchToProfileBtn`) on mobile cards.
+  - Formatted aggregate telemetry pills to display in a unified single row for viewports `>= 640px`.
+- **OAuth 2.0 PKCE Flow & Supabase JS v2 Deadlock Resolution**:
+  - Implemented PKCE authorization code exchange (`exchangeCodeForSession`) on return from OAuth / magic link redirects.
+  - Resolved internal client event dispatch deadlocks in `@supabase/supabase-js@2` by switching `onAuthStateChange` to a synchronous callback and deferring downstream async state synchronization routines using `setTimeout(fn, 0)`.
+  - Hardened `INITIAL_SESSION` routing to automatically navigate to `#profile` upon successful authentication when landing with an empty URL hash.
+- **Section Spacing & Ecosystem Repository Links**:
+  - Added verified direct external links for repository **Source Code** and rendered **Documentation** to the About section footer.
+  - Normalized section header spacing between Projects and About sections on both mobile and desktop viewports.
 
 ### **v4.0.0 (Initiatives Metrics Dashboard, Custom Dropdown Engine & Production Auth Milestone)**
 - **Initiatives Performance Metrics Dashboard**:

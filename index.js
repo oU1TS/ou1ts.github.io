@@ -357,7 +357,7 @@ function initNavigation() {
         const search = window.location.search || '';
 
         // If returning from an auth redirect (PKCE code or token hash) or profile requested, route to #profile
-        if (search.includes('code=') || hash.includes('access_token=') || hash.includes('profile')) {
+        if (search.includes('code=') || hash.includes('access_token=') || hash === '#profile') {
             switchTab('#profile');
             return;
         }
@@ -1328,6 +1328,7 @@ async function getCurrentUser(sessionOverride = null) {
 
         if (!user) return null;
 
+        const metadata = user.user_metadata || {};
         let profile = null;
         try {
             const { data, error: profileError } = await supabaseClient
@@ -1335,7 +1336,7 @@ async function getCurrentUser(sessionOverride = null) {
                 .select('*')
                 .eq('id', user.id)
                 .maybeSingle();
-            if (!profileError) profile = data;
+            if (!profileError && data) profile = data;
         } catch (pe) {
             console.warn("Could not retrieve profile record:", pe);
         }
@@ -1343,7 +1344,16 @@ async function getCurrentUser(sessionOverride = null) {
         return {
             id: user.id,
             email: user.email,
-            ...(profile || {})
+            full_name: (profile && profile.full_name) || metadata.full_name || metadata.name || '',
+            student_id: (profile && profile.student_id) || metadata.student_id || '',
+            department: (profile && profile.department) || metadata.department || '',
+            batch: (profile && profile.batch) || metadata.batch || '',
+            blood_group: (profile && profile.blood_group) || metadata.blood_group || '',
+            social_facebook: (profile && profile.social_facebook) || '',
+            social_instagram: (profile && profile.social_instagram) || '',
+            social_telegram: (profile && profile.social_telegram) || '',
+            social_discord: (profile && profile.social_discord) || '',
+            project_tags: (profile && profile.project_tags) || ['root']
         };
     } catch (err) {
         console.error("Error retrieving user session:", err);
@@ -1423,7 +1433,9 @@ async function updateProfile(profileData) {
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
     if (authError || !user) throw new Error("No authenticated session found. Please log in.");
 
-    const { error } = await supabaseClient.from('profiles').update({
+    const { error } = await supabaseClient.from('profiles').upsert({
+        id: user.id,
+        email: user.email,
         full_name: profileData.full_name,
         student_id: studentId,
         department: profileData.department,
@@ -1434,7 +1446,7 @@ async function updateProfile(profileData) {
         social_telegram: profileData.social_telegram,
         social_discord: profileData.social_discord,
         updated_at: new Date().toISOString()
-    }).eq('id', user.id);
+    });
 
     if (error) throw error;
 }
@@ -1594,35 +1606,29 @@ async function syncAuthStatus(redirectHash = null, sessionOverride = null) {
             const cancelEditBtn = document.getElementById('cancelEditBtn');
             const incompleteBanner = document.getElementById('incompleteProfileBanner');
 
-            if (!isComplete) {
-                if (incompleteBanner) incompleteBanner.style.display = 'block';
-                if (profileReadView && profileEditForm) {
-                    profileReadView.style.display = 'none';
-                    profileEditForm.style.display = 'block';
-                }
-                if (cancelEditBtn) cancelEditBtn.style.display = 'none';
-                showAuthAlert("Please complete your profile details (Student ID, Department, Batch, Blood Group, and at least one social link).", "warning", "profileAlert");
-            } else {
-                if (incompleteBanner) incompleteBanner.style.display = 'none';
-                if (profileReadView && profileEditForm) {
-                    profileReadView.style.display = 'block';
-                    profileEditForm.style.display = 'none';
-                }
-                if (cancelEditBtn) cancelEditBtn.style.display = 'inline-flex';
+            // Show gentle warning if profile is incomplete, but ALWAYS present the profile card
+            if (incompleteBanner) {
+                incompleteBanner.style.display = isComplete ? 'none' : 'block';
+            }
+            if (profileReadView && profileEditForm) {
+                profileReadView.style.display = 'block';
+                profileEditForm.style.display = 'none';
+            }
+            if (cancelEditBtn) {
+                cancelEditBtn.style.display = 'inline-flex';
             }
 
             if (redirectHash) {
                 if (window.switchTab) window.switchTab(redirectHash);
             } else if (hash === '#auth') {
-                // If they go to login while active, move them to profile
+                // If on login view while active, move to profile
                 if (window.switchTab) window.switchTab('#profile');
             }
         } else {
-            // Only kick back to #home if user intentionally visited #profile while logged out
-            // Do NOT kick back if browser is in the middle of exchanging auth tokens/code
+            // Only route away from #profile if definitely logged out and NOT in the middle of auth exchange
             const isExchangingAuth = window.location.search.includes('code=') || window.location.hash.includes('access_token=');
             if (hash === '#profile' && !isExchangingAuth) {
-                if (window.switchTab) window.switchTab('#home');
+                if (window.switchTab) window.switchTab('#auth');
             } else if (redirectHash) {
                 if (window.switchTab) window.switchTab(redirectHash);
             }
@@ -1646,41 +1652,22 @@ async function initAuthSystem() {
         try {
             await loadSupabaseScript();
             if (window.supabase && window.supabase.createClient) {
-                supabaseClient = window.supabase.createClient(window.__ENV.SUPABASE_URL, window.__ENV.SUPABASE_ANON_KEY);
+                supabaseClient = window.supabase.createClient(
+                    window.__ENV.SUPABASE_URL,
+                    window.__ENV.SUPABASE_ANON_KEY,
+                    {
+                        auth: {
+                            persistSession: true,
+                            autoRefreshToken: true,
+                            detectSessionInUrl: true,
+                            flowType: 'pkce'
+                        }
+                    }
+                );
                 console.log("Supabase Client initialized successfully.");
 
-                // -------------------------------------------------------
-                // PKCE Code Exchange: Must happen BEFORE onAuthStateChange
-                // is registered so the resulting SIGNED_IN event fires into
-                // our listener (not before it exists).
-                // -------------------------------------------------------
-                const urlParams = new URLSearchParams(window.location.search);
-                const authCode = urlParams.get('code');
-                if (authCode) {
-                    console.log("Detected OAuth auth code in URL, exchanging for session...");
-                    try {
-                        const { data: exchangeData, error: exchangeErr } = await supabaseClient.auth.exchangeCodeForSession(authCode);
-                        if (exchangeErr) {
-                            console.error("OAuth code exchange error:", exchangeErr);
-                        } else if (exchangeData && exchangeData.session) {
-                            console.log("OAuth code exchange successful.");
-                            // Clean up the ?code=... from the browser URL
-                            try {
-                                window.history.replaceState(null, document.title, window.location.pathname + '#profile');
-                            } catch (e) {}
-                            // Session is now stored in localStorage; listener will fire SIGNED_IN
-                        }
-                    } catch (err) {
-                        console.error("Unexpected error exchanging auth code:", err);
-                    }
-                }
-
-                // -------------------------------------------------------
                 // Auth State Change Listener
-                // IMPORTANT: Per Supabase docs, do NOT make async Supabase
-                // calls directly inside this callback — it causes deadlocks.
-                // Use setTimeout(fn, 0) to defer out of the microtask queue.
-                // -------------------------------------------------------
+                // Note: Callbacks run synchronously; deferred async calls via setTimeout prevent event locks
                 supabaseClient.auth.onAuthStateChange((event, session) => {
                     console.log("Supabase Auth State Changed:", event, session ? "Session active" : "No session");
 
@@ -1690,34 +1677,50 @@ async function initAuthSystem() {
                     }
 
                     if (event === 'SIGNED_IN') {
-                        // Defer async UI update; pass session to avoid re-fetching
+                        if (window.location.search.includes('code=')) {
+                            try {
+                                window.history.replaceState(null, document.title, window.location.pathname + '#profile');
+                            } catch (e) {}
+                        }
                         setTimeout(() => syncAuthStatus('#profile', session), 0);
                     } else if (event === 'INITIAL_SESSION') {
                         if (session && session.user) {
-                            // User has an active session on page load/reload
+                            if (window.location.search.includes('code=')) {
+                                try {
+                                    window.history.replaceState(null, document.title, window.location.pathname + '#profile');
+                                } catch (e) {}
+                            }
                             const currentHash = window.location.hash;
-                            const inSearch = window.location.search;
-                            // Always redirect away from #auth if logged in
-                            // Also redirect to #profile if returning from OAuth code exchange
-                            if (!currentHash || currentHash === '#auth' || currentHash.includes('profile') || inSearch.includes('code=')) {
+                            if (!currentHash || currentHash === '#auth' || currentHash === '#profile') {
                                 setTimeout(() => syncAuthStatus('#profile', session), 0);
                             } else {
-                                // Stay on the current tab, just update nav links
                                 setTimeout(() => syncAuthStatus(null, session), 0);
                             }
                         } else {
-                            // No session — sync logged-out nav state, no navigation change
                             setTimeout(() => syncAuthStatus(null, null), 0);
                         }
                     } else if (event === 'SIGNED_OUT') {
                         setTimeout(() => syncAuthStatus('#home', null), 0);
                     } else if (event === 'TOKEN_REFRESHED') {
-                        // Token silently refreshed; update session reference without navigation
                         setTimeout(() => syncAuthStatus(null, session), 0);
                     } else {
                         setTimeout(() => syncAuthStatus(null, session), 0);
                     }
                 });
+
+                // Immediately verify cached session on startup
+                try {
+                    const { data: initialData } = await supabaseClient.auth.getSession();
+                    if (initialData && initialData.session) {
+                        const targetHash = (window.location.hash === '#profile' || window.location.hash === '#auth') ? '#profile' : null;
+                        await syncAuthStatus(targetHash, initialData.session);
+                    } else {
+                        await syncAuthStatus();
+                    }
+                } catch (sessErr) {
+                    console.warn("Error checking initial session:", sessErr);
+                    await syncAuthStatus();
+                }
             } else {
                 console.error("Supabase SDK loaded but createClient is not available.");
             }
@@ -1726,6 +1729,7 @@ async function initAuthSystem() {
         }
     } else {
         console.warn("Supabase credentials not configured. Running with authentication disabled until environment variables are set.");
+        syncAuthStatus();
     }
 
 
@@ -1868,13 +1872,13 @@ async function initAuthSystem() {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Signing In...';
 
-                await signInUser(email, password);
+                const result = await signInUser(email, password);
 
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = origText;
 
                 showAuthAlert("Login successful! Redirecting to profile...", "success", "authAlert");
-                await syncAuthStatus('#profile');
+                await syncAuthStatus('#profile', result && result.session ? result.session : null);
             } catch (error) {
                 const submitBtn = loginFormElement.querySelector('button[type="submit"]');
                 submitBtn.disabled = false;
@@ -1902,13 +1906,17 @@ async function initAuthSystem() {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i>Registering...';
 
-                await signUpUser(email, password, fullName, studentId, department);
+                const result = await signUpUser(email, password, fullName, studentId, department);
 
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = origText;
 
-                showAuthAlert("Registration successful! Redirecting to profile...", "success", "authAlert");
-                await syncAuthStatus('#profile');
+                if (result && result.session) {
+                    showAuthAlert("Registration successful! Redirecting to profile...", "success", "authAlert");
+                    await syncAuthStatus('#profile', result.session);
+                } else {
+                    showAuthAlert("Registration successful! Please check your email inbox to confirm your account, or sign in.", "success", "authAlert");
+                }
             } catch (error) {
                 const submitBtn = registerFormElement.querySelector('button[type="submit"]');
                 submitBtn.disabled = false;
@@ -1929,19 +1937,10 @@ async function initAuthSystem() {
             profileReadView.style.display = 'none';
             profileEditForm.style.display = 'block';
             clearAuthAlerts();
-            if (currentSessionUser && !isProfileComplete(currentSessionUser)) {
-                cancelEditBtn.style.display = 'none';
-                showAuthAlert("Please complete all required profile details.", "warning", "profileAlert");
-            } else {
-                cancelEditBtn.style.display = 'inline-flex';
-            }
+            cancelEditBtn.style.display = 'inline-flex';
         });
 
         cancelEditBtn.addEventListener('click', () => {
-            if (currentSessionUser && !isProfileComplete(currentSessionUser)) {
-                showAuthAlert("You must complete your profile details before proceeding.", "warning", "profileAlert");
-                return;
-            }
             profileReadView.style.display = 'block';
             profileEditForm.style.display = 'none';
             clearAuthAlerts();
@@ -2164,11 +2163,6 @@ async function initAuthSystem() {
     // Check if user landed on page via recovery link
     if (window.location.hash.includes('type=recovery') || window.location.hash === '#reset-password') {
         showResetPasswordView();
-    }
-
-    // 10. Fallback initial sync if Supabase is not configured
-    if (!isSupabaseConfigured()) {
-        syncAuthStatus();
     }
 }
 

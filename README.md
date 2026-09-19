@@ -27,6 +27,11 @@ The primary ecosystem website operates as a high-performance, dependency-light *
   - Real-time telemetry dashboard covering **13 primary initiatives** (Resource Archive, Question Bank, Academic Scheduler, Notice Board, Blood Donation, Dev Lab, Faculty Directory, Student Forum, Lost & Found, Campus Transit, Internship Portal, Event Radar, Course Reviews).
   - Domain-specific KPIs, health score progress indicators, operational status badges (`Operational`, `Beta Testing`, `In Development`), and direct launch links.
   - Database-backed via `public.project_metrics` with seamless offline fallback to client baseline telemetry.
+  - **Mobile Initiatives Gallery Carousel & Directory Jump Modal:** Responsive single-card carousel view on mobile displays (`< 768px`) with touch-friendly previous/next buttons and serial counter (`X / 13`). Features a full-screen directory modal (`#metricsJumpModal`) with background scroll locking (`body.modal-open`) allowing instant jumping to any initiative.
+  - **Responsive Protruding Action Switchers:** Elevated top-right protruding action buttons (`#profileSwitchToDashboardBtn`, `#dashboardSwitchToProfileBtn`) on mobile cards for rapid window switching, and single-row aggregate telemetry metrics for wider viewports (`>= 640px`).
+- **OAuth 2.0 PKCE Flow & Deadlock-Free Auth Coordination:**
+  - Full OAuth 2.0 PKCE code exchange (`exchangeCodeForSession`) for Google sign-in callbacks.
+  - Synchronous `onAuthStateChange` dispatcher with deferred `setTimeout(fn, 0)` task scheduling, eliminating Supabase client deadlocks and ensuring reliable `INITIAL_SESSION` routing.
 - **Custom Responsive Dropdown Listbox Engine:**
   - Viewport-contained custom glassmorphic dropdowns preventing horizontal mobile overflow.
   - Multi-line option text wrapping (up to 2 lines) for long academic department names.
@@ -35,9 +40,11 @@ The primary ecosystem website operates as a high-performance, dependency-light *
   - Default Deep Space Indigo dark theme and high-contrast Slate-Blue light theme.
   - Transition-aware twinkling starfield and floating organic bubble backdrop animations.
   - Smooth glassmorphism, squircle-clipped card cells, and hardware-accelerated section fade/slide transitions.
-- **Primary Projects Scroller:**
+  - Normalized section header spacing across mobile and desktop breakpoints.
+- **Primary Projects Scroller & Ecosystem Links:**
   - 4-row infinite carousel grid (4x4 layout on desktop, 4x3 layout on mobile).
   - Custom touch/mouse drag inertia with physics momentum glide decay and overlaid navigation chevrons.
+  - Embedded direct repository **Source Code** and rendered **Documentation** links in the About section footer.
 - **Automated CI/CD & Deployment:**
   - Automated build script (`scripts/build-env.js`) injecting environment variables into `env-config.js`.
   - Zero-maintenance deployment to GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`) and Netlify (`netlify.toml`).

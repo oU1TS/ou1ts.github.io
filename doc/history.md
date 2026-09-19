@@ -1,5 +1,37 @@
 <!-- Frontmatter Tags: #changelog #history #ou1ts #login #database -->
 
+# 20.09.26
+
+### **Fix: Authentication Refresh Disconnect, Metadata Fallback & Uninterrupted Profile Display**
+- **Instant Session Pass-Through on Login**:
+  - Updated `loginFormElement` and `registerFormElement` in [`index.js`](index.js) to capture the authentication response from `signInUser()` and `signUpUser()` and pass the active `session` directly into `syncAuthStatus('#profile', session)`. This eliminates local storage read lag and guarantees instantaneous routing to `#profile`.
+- **User Metadata Fallback in `getCurrentUser`**:
+  - Enhanced `getCurrentUser(sessionOverride)` in [`index.js`](index.js) to merge `user.user_metadata` (`full_name`, `student_id`, `department`) alongside database `profiles` records. If database triggers are delayed or profile rows have not yet populated (e.g. for Google OAuth or new signups), user identity attributes remain intact and display correctly rather than reverting to blank values (`—`).
+- **Uninterrupted Profile Screen Presentation (`profileReadView`)**:
+  - Modified `syncAuthStatus()` so that logged-in users are always presented with their profile showcase (`profileReadView`), even when `isProfileComplete()` is false. Rather than hiding the profile card and trapping the user in the edit form, a gentle banner (`#incompleteProfileBanner`) alerts them to missing fields while preserving view access, avatar, badges, and logout buttons.
+- **Clean PKCE Configuration & Race Elimination**:
+  - Configured `window.supabase.createClient` with `{ auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } }`, allowing Supabase JS v2's native URL detection to exchange OAuth codes cleanly without competing against manual `exchangeCodeForSession` calls.
+  - Added clean query string sanitization via `window.history.replaceState` upon successful auth event processing.
+- **Page Load & Reload Session Verification**:
+  - Restored immediate session verification on startup in `initAuthSystem()` via `supabaseClient.auth.getSession()`, keeping logged-in users on `#profile` upon browser refresh (`F5`) instead of erroneously kicking them to `#home`.
+- **Form Submit & Button Type Hardening**:
+  - Explicitly added `type="button"` to `#tabLoginBtn`, `#tabRegisterBtn`, `#googleLoginBtn`, `#editProfileBtn`, and `#logoutBtn` in [`index.html`](index.html), preventing browser native form submission events from triggering unwanted page refreshes.
+- **Profile Database Upsert Operation**:
+  - Switched `updateProfile()` in [`index.js`](index.js) from `.update().eq('id', user.id)` to `.upsert()`, guaranteeing that users with un-provisioned profile records can save details without silent failures.
+
+### **Session 6 Archival, Comprehensive Documentation Synchronization & v4.1.0 Milestone**
+- **Session 6 Archival**:
+  - Fully concluded and archived chat session 6 in [`doc/prompts/6. Mobile Navigation, Profile Setup and Theme Contrast.md`](doc/prompts/6.%20Mobile%20Navigation,%20Profile%20Setup%20and%20Theme%20Contrast.md), preserving all prompt cycles, technical deliberations, companion plans, and walkthroughs (`6.1` through `6.8`).
+- **Comprehensive Project Documentation Maintenance (`README.md`, `documentation.md`)**:
+  - In accordance with repository guidelines in [`AGENTS.md`](AGENTS.md), synchronized all accumulated architectural and UI features landed during Session 6 into [`README.md`](README.md) and [`documentation.md`](documentation.md) (Milestone v4.1.0):
+    - Mobile single-card initiatives gallery carousel with prev/next navigation, serial index counter, and quick-jump directory modal.
+    - Viewport-contained full-screen overlay dialog (`#metricsJumpModal`) attached to `<body>` with dynamic background scroll locking (`body.modal-open`).
+    - Responsive protruding switch buttons on mobile cards for rapid navigation between Profile and Initiatives Dashboard.
+    - Single-row aggregate telemetry metrics layout (`grid-template-columns: repeat(4, 1fr)` on `>= 640px`).
+    - Robust Supabase Auth v2 PKCE flow integration (`exchangeCodeForSession`) and non-async event listener deadlock resolution using `setTimeout(fn, 0)`.
+    - Embedded direct repository Source Code and rendered Documentation links in the About section footer.
+    - Refined section header spacing across mobile and desktop breakpoints.
+
 # 19.09.26
 
 ### **PKCE Code Exchange, Initial Session Handling & OAuth URL Normalization**
