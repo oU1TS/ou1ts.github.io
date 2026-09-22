@@ -63,12 +63,15 @@ body.light-mode {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
 }
 
 *::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
+    display: none;
+    /* Chrome, Safari, and Opera */
 }
 
 html {
@@ -1361,7 +1364,8 @@ body.light-mode .about-footer-link {
    5. Authentication & Profile Styles
    ========================================== */
 
-.auth-card, .profile-card {
+.auth-card,
+.profile-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 24px;
@@ -1376,7 +1380,8 @@ body.light-mode .about-footer-link {
     text-align: left;
 }
 
-.auth-card:hover, .profile-card:hover {
+.auth-card:hover,
+.profile-card:hover {
     box-shadow: var(--card-shadow-hover);
     border-color: var(--accent-blue);
 }
@@ -1451,6 +1456,7 @@ body.light-mode .about-footer-link {
     .form-grid {
         grid-template-columns: 1fr 1fr;
     }
+
     .form-grid .form-group:first-child {
         grid-column: span 2;
     }
@@ -1578,8 +1584,8 @@ body.light-mode .input-wrapper select option {
     color: var(--text-muted);
 }
 
-.input-wrapper input:focus + .input-icon,
-.input-wrapper select:focus + .input-icon {
+.input-wrapper input:focus+.input-icon,
+.input-wrapper select:focus+.input-icon {
     color: var(--accent-blue);
 }
 
@@ -1855,8 +1861,15 @@ body.light-mode .oauth-btn:hover {
 }
 
 @keyframes alertSlideIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .auth-alert.error {
@@ -2043,10 +2056,21 @@ body.light-mode .oauth-btn:hover {
     filter: brightness(1.1);
 }
 
-.social-profile-link.facebook { background: #1877F2; }
-.social-profile-link.instagram { background: #E1306C; }
-.social-profile-link.telegram { background: #229ED9; }
-.social-profile-link.discord { background: #5865F2; }
+.social-profile-link.facebook {
+    background: #1877F2;
+}
+
+.social-profile-link.instagram {
+    background: #E1306C;
+}
+
+.social-profile-link.telegram {
+    background: #229ED9;
+}
+
+.social-profile-link.discord {
+    background: #5865F2;
+}
 
 .profile-actions {
     display: flex;
@@ -2284,10 +2308,12 @@ body.light-mode .switcher-tooltip {
         filter: blur(4px);
         box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
     }
+
     50% {
         opacity: 1;
         filter: blur(0);
     }
+
     100% {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -2302,6 +2328,7 @@ body.light-mode .switcher-tooltip {
         transform: scale(1) translateY(0);
         filter: blur(0);
     }
+
     100% {
         opacity: 0;
         transform: scale(0.97) translateY(4px);
@@ -2316,6 +2343,7 @@ body.light-mode .switcher-tooltip {
         filter: blur(0);
         box-shadow: 0 20px 50px var(--shadow-color);
     }
+
     100% {
         opacity: 0;
         transform: scale(1.05) translateY(-24px);
@@ -2330,6 +2358,7 @@ body.light-mode .switcher-tooltip {
         transform: scale(0.97) translateY(4px);
         filter: blur(2px);
     }
+
     100% {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -2707,10 +2736,12 @@ body.light-mode .pm-launch-btn {
         box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.7);
         transform: translateY(-4px) scale(1.02);
     }
+
     60% {
         box-shadow: 0 0 0 16px rgba(0, 212, 255, 0);
         transform: translateY(-4px) scale(1.02);
     }
+
     100% {
         box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
         transform: translateY(0) scale(1);
@@ -2838,8 +2869,13 @@ body.modal-open {
 }
 
 @keyframes modalBackdropFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .metrics-modal-dialog {
@@ -2873,6 +2909,7 @@ body.light-mode .metrics-modal-dialog {
         opacity: 0;
         transform: scale(0.94) translateY(12px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -3100,6 +3137,7 @@ body.light-mode .metrics-modal-item {
    Mobile Scaling (Fonts & Numbers) & Gallery View for Profile Section
    ========================================== */
 @media (max-width: 768px) {
+
     /* Section Headers */
     .profile-page-header {
         margin-bottom: 16px;
@@ -3360,6 +3398,7 @@ body.light-mode .metrics-modal-item {
             opacity: 0;
             transform: scale(0.97) translateY(6px);
         }
+
         to {
             opacity: 1;
             transform: scale(1) translateY(0);
@@ -3536,4 +3575,4 @@ body.light-mode .metrics-modal-item {
         height: 32px;
         font-size: 0.9rem;
     }
-}
+}

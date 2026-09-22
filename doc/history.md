@@ -1,5 +1,12 @@
 <!-- Frontmatter Tags: #changelog #history #ou1ts #login #database -->
 
+# 22.09.26
+
+### **Redirect: Domain Redirection from Netlify to GitHub Pages**
+- **Host Check & Target Normalization**:
+  - Updated the inline redirect script in [`index.html`](index.html#L5-L16) to check if `window.location.hostname === 'ou1ts.netlify.app'`.
+  - Configured `window.location.replace` to seamlessly forward incoming traffic to `https://ou1ts.github.io` preserving pathname, search query parameters, and hash fragments (with automated extension normalization for `.html`).
+
 # 20.09.26
 
 ### **Fix: Authentication Refresh Disconnect, Metadata Fallback & Uninterrupted Profile Display**

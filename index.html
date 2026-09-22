@@ -2,6 +2,18 @@
 <html lang="en">
 
 <head>
+    <script>
+        (function () {
+            const host = window.location.hostname;
+            if (host === 'ou1ts.netlify.app') {
+                let path = window.location.pathname;
+                if (!path.endsWith('.html') && !path.endsWith('/')) {
+                    path += '.html';
+                }
+                window.location.replace('https://ou1ts.github.io' + path + window.location.search + window.location.hash);
+            }
+        })();
+    </script>
     <meta name="google-site-verification" content="qV9fcPqCsDeNledm-N2o5zepI8tPcRmPCHbnaiTpNvs" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
