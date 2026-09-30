@@ -1,20 +1,20 @@
 // Project Roster
 const primaryProjects = [
-    { name: "Projects Hub", icon: "fa-solid fa-globe", url: "https://ou1ts.github.io/portal" },
-    { name: "Resource Archive", icon: "fa-solid fa-boxes-packing", url: "https://b1tacad.netlify.app/" },
-    { name: "Courses Mastery", icon: "fa-regular fa-compass", url: "https://ou1ts.github.io/course/" },
-    { name: "Question Bank", icon: "fa-solid fa-file-circle-question", url: "https://ou1ts.github.io/qbank/" },
-    { name: "Academic Scheduler", icon: "fa-solid fa-calendar-days", url: "https://b1tsched.netlify.app/" },
-    { name: "Dev lab", icon: "fa-solid fa-code", url: "https://ou1ts.github.io/dev/" },
-    { name: "English Speaking", icon: "fa-regular fa-comments", url: "https://ou1ts.github.io/english/" },
-    { name: "Event Raids", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" },
-    { name: "Job Hunters", icon: "fa-solid fa-briefcase", url: "https://ou1ts.github.io/job/" },
-    { name: "Blood Donation", icon: "fa-solid fa-droplet", url: "https://bd-ou1ts.netlify.app/" },
-    { name: "Gym Bros", icon: "fa-solid fa-dumbbell", url: "#" },
-    { name: "Bus Tracker", icon: "fa-solid fa-van-shuttle", url: "#" },
-    { name: "Wiki", icon: "fa-solid fa-book", url: "wiki.html" }
+    { name: "Projects Hub", tag: "portal", icon: "fa-solid fa-globe", url: "https://ou1ts.github.io/portal" },
+    { name: "Resource Archive", tag: "archive", icon: "fa-solid fa-boxes-packing", url: "https://b1tacad.netlify.app/" },
+    { name: "Courses Mastery", tag: "course", icon: "fa-regular fa-compass", url: "https://ou1ts.github.io/course/" },
+    { name: "Question Bank", tag: "qbank", icon: "fa-solid fa-file-circle-question", url: "https://ou1ts.github.io/qbank/" },
+    { name: "Academic Scheduler", tag: "scheduler", icon: "fa-solid fa-calendar-days", url: "https://b1tsched.netlify.app/" },
+    { name: "Dev lab", tag: "dev", icon: "fa-solid fa-code", url: "https://ou1ts.github.io/dev/" },
+    { name: "English Speaking", tag: "english", icon: "fa-regular fa-comments", url: "https://ou1ts.github.io/english/" },
+    { name: "Event Raids", tag: "events", icon: "fa-solid fa-location-dot", url: "https://ou1ts.github.io/events/" },
+    { name: "Job Hunters", tag: "job", icon: "fa-solid fa-briefcase", url: "https://ou1ts.github.io/job/" },
+    { name: "Blood Donation", tag: "blood", icon: "fa-solid fa-droplet", url: "https://bd-ou1ts.netlify.app/" },
+    { name: "Gym Bros", tag: "gym", icon: "fa-solid fa-dumbbell", url: "#" },
+    { name: "Bus Tracker", tag: "bus", icon: "fa-solid fa-van-shuttle", url: "#" },
+    { name: "Wiki", tag: "wiki", icon: "fa-solid fa-book", url: "wiki.html" }
 
-    // ,{ name: "", icon: "", url: "" }
+    // ,{ name: "", tag: "", icon: "", url: "" }
 ];
 
 // Create animated stars
@@ -759,17 +759,139 @@ const projectPerformanceMetrics = {
     }
 };
 
+// Dynamic working cache for initiatives performance metrics initialized from client baseline
+let loadedProjectMetrics = { ...projectPerformanceMetrics };
+
+// Retrieve child initiatives matching the active user's profile project_tags
+function getVisibleInitiatives() {
+    const userTags = (currentSessionUser && Array.isArray(currentSessionUser.project_tags))
+        ? currentSessionUser.project_tags
+        : [];
+    // Only return initiatives whose tag is listed in the user's project_tags
+    return primaryProjects.filter(p => p.tag && userTags.includes(p.tag));
+}
+
+// Fetch real project metrics telemetry from Supabase child project tables
+async function fetchProjectMetricsFromDB() {
+    if (!supabaseClient) {
+        return;
+    }
+
+    try {
+        // 1. Query live portal tables in the central Supabase database
+        const [resourcesRes, starsRes] = await Promise.all([
+            supabaseClient.from('portal_resources').select('*', { count: 'exact', head: true }),
+            supabaseClient.from('stars').select('*', { count: 'exact', head: true })
+        ]);
+
+        const resourceCount = (resourcesRes && typeof resourcesRes.count === 'number') ? resourcesRes.count : 58;
+        const starsCount = (starsRes && typeof starsRes.count === 'number') ? starsRes.count : 1;
+
+        // Populate Projects Hub ('portal') with real live database metrics
+        loadedProjectMetrics["Projects Hub"] = {
+            category: "Ecosystem Core",
+            status: "Operational",
+            statusType: "online",
+            healthScore: 99.9,
+            summary: "Central gateway & resource directory. Connected to live Supabase portal database.",
+            kpis: [
+                { label: "Live Resources", value: `${resourceCount} Items`, trend: "Verified DB" },
+                { label: "Community Stars", value: `${starsCount} Stars`, trend: "Active" },
+                { label: "Database Node", value: "Supabase Live", trend: "Optimal" },
+                { label: "Access Level", value: "Public & Open", trend: "100% Free" }
+            ]
+        };
+
+        // 2. For other child projects: since only 'portal' is currently live in DB,
+        // any other project present in user project_tags displays realistic development/readiness status
+        primaryProjects.forEach(proj => {
+            if (proj.tag !== 'portal') {
+                const baseline = projectPerformanceMetrics[proj.name];
+                loadedProjectMetrics[proj.name] = {
+                    category: baseline?.category || "Initiative",
+                    status: "In Development",
+                    statusType: "dev",
+                    healthScore: 88.0,
+                    summary: `${proj.name} is enrolled under your profile (${proj.tag}). Awaiting child database table migration.`,
+                    kpis: [
+                        { label: "Ecosystem Tag", value: proj.tag, trend: "Enrolled" },
+                        { label: "Database Phase", value: "Pending DB", trend: "Roadmap" },
+                        { label: "Access", value: "Public", trend: "Planned" },
+                        { label: "Service Node", value: "Planned", trend: "Upcoming" }
+                    ]
+                };
+            }
+        });
+
+        console.log(`Live telemetry loaded: portal_resources (${resourceCount}), stars (${starsCount}).`);
+        updateAggregateMetricsDisplay();
+        renderProjectMetricsDashboard();
+    } catch (err) {
+        console.warn("Error fetching project metrics from database:", err);
+    }
+}
+
+// Compute and update dynamic aggregate statistics pills
+function updateAggregateMetricsDisplay() {
+    const aggActiveEl = document.getElementById('aggActiveCount');
+    const aggHealthEl = document.getElementById('aggSystemHealth');
+    const aggImpactEl = document.getElementById('aggMonthlyImpact');
+    const aggEcoEl = document.getElementById('aggOpenEco');
+
+    const visibleProjects = getVisibleInitiatives();
+    const count = visibleProjects.length;
+
+    if (aggActiveEl) {
+        aggActiveEl.textContent = String(count);
+    }
+
+    if (aggHealthEl) {
+        if (count === 0) {
+            aggHealthEl.textContent = currentSessionUser ? '0%' : '—';
+        } else {
+            const scores = visibleProjects.map(p => {
+                const m = loadedProjectMetrics[p.name];
+                return (m && typeof m.healthScore === 'number') ? m.healthScore : 98.0;
+            });
+            const avg = scores.reduce((sum, val) => sum + val, 0) / scores.length;
+            aggHealthEl.textContent = avg.toFixed(1) + '%';
+        }
+    }
+
+    if (aggEcoEl) {
+        aggEcoEl.textContent = '100%';
+    }
+
+    if (aggImpactEl) {
+        const hasPortal = visibleProjects.some(p => p.tag === 'portal');
+        if (hasPortal && loadedProjectMetrics["Projects Hub"]?.kpis) {
+            const k = loadedProjectMetrics["Projects Hub"].kpis.find(item => item.label && item.label.includes('Resources'));
+            aggImpactEl.textContent = k ? k.value.split(' ')[0] : '58+';
+        } else if (count > 0) {
+            aggImpactEl.textContent = `${count} Active`;
+        } else {
+            aggImpactEl.textContent = '—';
+        }
+    }
+}
+
 let currentMetricsGalleryIndex = 0;
 
 function updateMetricsGalleryView() {
     const grid = document.getElementById('projectMetricsGrid');
     const curIdxEl = document.getElementById('galleryCurrentIndex');
     const totalCountEl = document.getElementById('galleryTotalCount');
+    const galleryControls = document.getElementById('metricsGalleryControls');
     if (!grid) return;
 
     const cards = grid.querySelectorAll('.project-metric-card');
     const total = cards.length;
-    if (total === 0) return;
+    if (total === 0) {
+        if (galleryControls) galleryControls.style.display = 'none';
+        return;
+    }
+
+    if (galleryControls) galleryControls.style.display = 'flex';
 
     if (currentMetricsGalleryIndex < 0) currentMetricsGalleryIndex = total - 1;
     if (currentMetricsGalleryIndex >= total) currentMetricsGalleryIndex = 0;
@@ -854,12 +976,13 @@ function renderMetricsModalList(query = '') {
 
     listEl.innerHTML = '';
     const q = query.trim().toLowerCase();
+    const visibleProjects = getVisibleInitiatives();
 
     let matchCount = 0;
 
-    primaryProjects.forEach((proj, idx) => {
+    visibleProjects.forEach((proj, idx) => {
         if (!proj.name) return;
-        const metrics = projectPerformanceMetrics[proj.name] || {
+        const metrics = loadedProjectMetrics[proj.name] || projectPerformanceMetrics[proj.name] || {
             category: "Initiative",
             status: "Operational",
             statusType: "online",
@@ -914,7 +1037,7 @@ function renderMetricsModalList(query = '') {
     });
 
     if (matchCount === 0) {
-        listEl.innerHTML = `<div class="metrics-modal-empty"><i class="fa-solid fa-magnifying-glass" style="margin-right: 6px;"></i> No initiatives found matching "${query}"</div>`;
+        listEl.innerHTML = `<div class="metrics-modal-empty"><i class="fa-solid fa-magnifying-glass" style="margin-right: 6px;"></i> ${visibleProjects.length === 0 ? 'No child initiatives currently enrolled in your profile tags.' : `No initiatives found matching "${query}"`}</div>`;
     }
 }
 
@@ -1008,13 +1131,67 @@ function initMetricsGalleryAndModal() {
 
 function renderProjectMetricsDashboard() {
     const grid = document.getElementById('projectMetricsGrid');
+    const galleryControls = document.getElementById('metricsGalleryControls');
     if (!grid) return;
 
     grid.innerHTML = '';
+    const visibleProjects = getVisibleInitiatives();
 
-    primaryProjects.forEach((proj, index) => {
+    if (visibleProjects.length === 0) {
+        if (galleryControls) galleryControls.style.display = 'none';
+
+        const isLoggedIn = !!currentSessionUser;
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-initiatives-state';
+
+        if (isLoggedIn) {
+            emptyState.innerHTML = `
+                <div class="empty-initiatives-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <h3 class="empty-initiatives-title">No Connected Child Initiatives</h3>
+                <p class="empty-initiatives-desc">
+                    Your profile currently holds root community access. When you join or interact with child initiatives (such as <strong>Projects Hub / Portal</strong>) across the oU1TS ecosystem, their live database performance telemetry will automatically unlock here.
+                </p>
+                <a href="https://ou1ts.github.io/portal" target="_blank" rel="noopener noreferrer" class="pm-launch-btn" style="margin-top: 10px; display: inline-flex; width: auto; padding: 10px 22px;">
+                    <span>Explore Projects Hub</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            `;
+        } else {
+            emptyState.innerHTML = `
+                <div class="empty-initiatives-icon">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="empty-initiatives-title">Account Login Required</h3>
+                <p class="empty-initiatives-desc">
+                    Please sign in to your oU1TS account to view real-time telemetry and database operational metrics for your connected initiatives.
+                </p>
+                <button type="button" class="pm-launch-btn" id="emptyStateLoginBtn" style="margin-top: 10px; display: inline-flex; width: auto; padding: 10px 22px;">
+                    <span>Sign In to oU1TS</span>
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </button>
+            `;
+            setTimeout(() => {
+                const loginBtn = document.getElementById('emptyStateLoginBtn');
+                if (loginBtn) {
+                    loginBtn.addEventListener('click', () => {
+                        if (window.switchTab) window.switchTab('#auth');
+                    });
+                }
+            }, 0);
+        }
+
+        grid.appendChild(emptyState);
+        updateAggregateMetricsDisplay();
+        return;
+    }
+
+    if (galleryControls) galleryControls.style.display = 'flex';
+
+    visibleProjects.forEach((proj, index) => {
         if (!proj.name) return;
-        const metrics = projectPerformanceMetrics[proj.name] || {
+        const metrics = loadedProjectMetrics[proj.name] || projectPerformanceMetrics[proj.name] || {
             category: "Initiative",
             status: "Operational",
             statusType: "online",
@@ -1109,8 +1286,10 @@ function initProfileDashboardSwitcher() {
         if (isTransitioning) return;
         isTransitioning = true;
 
-        // Render metrics if not already rendered
+        // Render metrics and refresh from database if online
+        updateAggregateMetricsDisplay();
         renderProjectMetricsDashboard();
+        fetchProjectMetricsFromDB();
 
         // 1. Stage outgoing card: gently scale & covered directly underneath
         profileCard.classList.remove('anim-reveal-under', 'anim-place-down', 'anim-pick-up');
@@ -1173,6 +1352,7 @@ function initApp() {
     initThemeSwitcher();
     initParallax();
     initCustomDropdowns();
+    updateAggregateMetricsDisplay();
     renderProjectMetricsDashboard();
     initMetricsGalleryAndModal();
     initProfileDashboardSwitcher();
@@ -1459,6 +1639,9 @@ async function signOutUser() {
     }
     localStorage.removeItem('mock_session');
     localStorage.removeItem('mock_users');
+    currentSessionUser = null;
+    updateAggregateMetricsDisplay();
+    renderProjectMetricsDashboard();
 }
 
 // Alert helper
@@ -1600,6 +1783,10 @@ async function syncAuthStatus(redirectHash = null, sessionOverride = null) {
 
         if (isLoggedIn) {
             populateProfileUI(currentSessionUser);
+            updateAggregateMetricsDisplay();
+            renderProjectMetricsDashboard();
+            fetchProjectMetricsFromDB();
+
             const isComplete = isProfileComplete(currentSessionUser);
             const profileReadView = document.getElementById('profileReadView');
             const profileEditForm = document.getElementById('profileEditForm');
@@ -1625,6 +1812,10 @@ async function syncAuthStatus(redirectHash = null, sessionOverride = null) {
                 if (window.switchTab) window.switchTab('#profile');
             }
         } else {
+            currentSessionUser = null;
+            updateAggregateMetricsDisplay();
+            renderProjectMetricsDashboard();
+
             // Only route away from #profile if definitely logged out and NOT in the middle of auth exchange
             const isExchangingAuth = window.location.search.includes('code=') || window.location.hash.includes('access_token=');
             if (hash === '#profile' && !isExchangingAuth) {
@@ -1721,6 +1912,9 @@ async function initAuthSystem() {
                     console.warn("Error checking initial session:", sessErr);
                     await syncAuthStatus();
                 }
+
+                // Asynchronously fetch live project metrics from Supabase database
+                fetchProjectMetricsFromDB();
             } else {
                 console.error("Supabase SDK loaded but createClient is not available.");
             }

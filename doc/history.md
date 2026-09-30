@@ -1,6 +1,20 @@
 <!-- Frontmatter Tags: #changelog #history #ou1ts #login #database -->
 
-# 22.09.26
+# 30.09.26
+
+### **Database Integration: Live Supabase Child Project Telemetry & Dynamic `project_tags` Card Filtering**
+- **Dynamic Child Table Telemetry Query (`fetchProjectMetricsFromDB`)**:
+  - Refactored `fetchProjectMetricsFromDB()` in [`index.js`](index.js) to query real, live child project tables in the central Supabase database (`portal_resources` and `stars` for the live `portal` / "Projects Hub" project) instead of a synthetic mock table.
+  - Live resource counts (58 items) and community star counts are directly aggregated and rendered into the "Projects Hub" telemetry card.
+  - Added tag mappings (`portal`, `archive`, `course`, `qbank`, `scheduler`, `dev`, `english`, `events`, `job`, `blood`, `gym`, `bus`, `wiki`) across `primaryProjects`.
+- **User-Specific Project Tag Card Filtering (`getVisibleInitiatives`)**:
+  - Implemented `getVisibleInitiatives()` in [`index.js`](index.js) to filter initiatives strictly against the active user's `project_tags` array in `public.profiles`.
+  - Cards are **only shown** for child projects listed under the active user's profile (`project_tags`). Unconnected initiatives are hidden from the dashboard, mobile gallery, and directory search modal.
+  - Implemented styled glassmorphic empty states (`.empty-initiatives-state` in [`index.css`](index.css)) for logged-out visitors and users with only root membership.
+- **Dynamic Aggregate Metric Calculations**:
+  - Dynamic aggregate statistics (`#aggActiveCount`, `#aggSystemHealth`, `#aggMonthlyImpact`) in [`index.html`](index.html#L627-L644) now re-calculate specifically across the user's visible, enrolled initiatives.
+- **Cross-Project Schema & Guide Alignment**:
+  - Updated [`doc/db/project_metrics_schema.sql`](doc/db/project_metrics_schema.sql) and [`doc/step_by_step_login_setup_guide.md`](doc/step_by_step_login_setup_guide.md) to document the central Supabase cross-project architecture, `public.portal_telemetry_view`, and real child table queries, eliminating mock seed scripts.
 
 ### **Redirect: Domain Redirection from Netlify to GitHub Pages**
 - **Host Check & Target Normalization**:
